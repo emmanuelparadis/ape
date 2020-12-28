@@ -1,0 +1,31 @@
+\usepackage{fancyvrb}
+\usepackage{color,amsmath,booktabs}
+\usepackage[margin=3.5cm]{geometry}
+
+\makeatletter
+\renewcommand{\maketitle}{%
+   \begin{flushleft}%
+      \sffamily
+      {\LARGE\bfseries\color{darkblue}\@title\par}%
+      \medskip
+      {\large\bfseries\@author\par}%
+      \medskip
+      {\textit{\@date}\par}%
+      \bigskip\hrule\vspace*{1pc}%
+   \end{flushleft}%
+}
+\makeatother
+
+\definecolor{darkblue}{rgb}{0, 0, 0.9}
+
+\newcommand{\code}{\texttt}
+\newcommand{\pkg}{\textsf}
+\newcommand{\ape}{\pkg{ape}}
+\newcommand{\phangorn}{\pkg{phangorn}}
+\newcommand{\R}{\pkg{R}}
+
+\usepackage{tcolorbox,xcolor}
+\tcbuselibrary{skins,breakable}
+
+\newenvironment{Schunk}{\begin{tcolorbox}[breakable,colback=black!10,top=1mm,bottom=0mm,left=1mm,right=0mm,boxrule=.1mm]}{\end{tcolorbox}}
+
