@@ -26,7 +26,7 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     }
 
     tree <- gsub("[ \t]", "", tree)
-    tree <- gsub("''", "", tree)
+    tree <- gsub("'", "", tree)
 
     single_quotes <- function(x, start = 1L) {
         z <- unlist(gregexpr("'", x))
