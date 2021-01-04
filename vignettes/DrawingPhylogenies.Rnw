@@ -1,0 +1,675 @@
+\documentclass[a4paper]{article}
+%\VignetteIndexEntry{Drawing Phylogenies}
+%\VignettePackage{ape}
+\usepackage{ape}
+
+\author{Emmanuel Paradis}
+\title{Drawing Phylogenies in \R: Basic and Advanced Features With
+  \pkg{ape} \color{red}{[[DRAFT IN PROGRESS]]}}
+
+\begin{document}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{formatcom=\color{darkblue}}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{formatcom=\color{black}\vspace{-1.5em}}
+
+\maketitle
+\tableofcontents\vspace*{1pc}\hrule
+
+%\setkeys{Gin}{width=\textwidth}
+<<echo=false,quiet=true>>=
+options(width = 80, prompt = "> ")
+@
+
+\vspace{1cm}
+
+Graphical functions have been in the first version of \ape\ (0.1
+released in August 2002). Over the years, these tools have been
+improved to become quite sophisticated although complicated to use
+efficiently. This document gives an overview of \ape's graphical
+functionalities.
+
+\section{Basic Concepts}
+
+The core of \ape's graphical tools is the \code{plot} method for the
+class \code{"phylo"}, that is the function \code{plot.phylo}. This
+function is studied in details in the Section~\ref{sec:plotphylo}, but
+first we see the basic ideas behind it.
+
+\subsection{Graphical Model}
+
+The graphical functions in \ape\ use the base \pkg{graphics}
+package. Overall, the conventions of this package are followed quite
+closely (see Murrell's book \cite{Murrell2006}), so users familiar
+with these are expected to find their way relatively easily when
+plotting phylogenies with \ape.
+
+\ape\ has several functions to perform computations before drawing a
+tree, so that these may be use to implement the same graphical
+functionalities with other graphical engines such as the \pkg{grid}
+package. These functions are detailed in the next section.
+
+To start simply, we build a small tree with three genera of primates
+that we will use in several examples in this document:
+
+<<>>=
+library(ape)
+mytr <- read.tree(text = "((Pan:5,Homo:5):2,Gorilla:7);")
+@
+
+\noindent Now let's build a dummy function to show the frame around
+the plot with dots and the $x$- and $y$-axes in green:
+
+<<>>=
+foo <- function() {
+    col <- "green"
+    for (i in 1:2)
+        axis(i, col = col, col.ticks = col, col.axis = col, las = 1)
+    box(lty = "19")
+}
+@
+
+\noindent We then plot the tree in four different ways (see below for
+explanations about the options) and call for each of them the previous
+dummy function:
+
+<<fig=true>>=
+layout(matrix(1:4, 2, 2, byrow = TRUE))
+plot(mytr); foo()
+plot(mytr, "c", FALSE); foo()
+plot(mytr, "u"); foo()
+par(xpd = TRUE)
+plot(mytr, "f"); foo()
+box("outer")
+@
+
+\noindent The last command (\code{box("outer")}) makes visible the
+most outer frame of the figure showing more clearly the margins around
+each tree (more on this later). We note also the command \code{par(xpd
+  = TRUE)} which is explained below. These small figures illustrate
+the way trees are drawn with \ape. This can be summarised with the
+following (pseudo-)algorithm:
+
+\bigskip\hrule height 1pt\relax
+%\renewcommand{\theenumi}{\alph{enumi}}
+\renewcommand{\labelenumi}{\textbf{\theenumi.}}
+\begin{enumerate}\small
+\item Compute the node coordinates depending on the type of tree plot,
+  the branch lengths, and possibly other parameters.
+\item Evaluate the space required for printing the tip labels.
+\item Depending on the options, do some rotations and/or translations.
+\item Set the limits on the $x$- and $y$-axes.
+\item Open a graphical device (or reset it if already open) and draw
+  an ``empty'' plot with the limits found at the previous step.
+\item Call \code{segments()} to draw the branches.
+\item Call \code{text()} to draw the labels.
+\end{enumerate}
+\hrule height 1pt\relax\bigskip
+
+There are a lot of ways to control these steps.
+
+\noindent\textbf{Step 1. } The option \code{type} specifies the shape
+of the tree plot: five values are possible, \code{"phylogram"},
+\code{"cladogram"}, \code{"fan"}, \code{"unrooted"}, and
+\code{"radial"} (the last one is not considered in this document). The
+first three types are valid for rooted trees, while the fourth one
+should be selected for unrooted trees.
+
+The node coordinates depend also on whether the tree has branch
+lengths or not, and on the options \code{node.pos} and
+\code{node.depth}. This is illustrated below using a tree with eight
+tips and all branch length equal to one:
+
+<<>>=
+tr <- compute.brlen(stree(8, "l"), 0.1)
+tr$tip.label[] <- ""
+@
+
+\noindent We now draw this tree using the option \code{type =
+  "phylogram"} (first column of plots) or \code{type = "cladogram"}
+(second column) and different option:
+
+<<echo=false,quiet=true>>=
+foo <- function() {
+    col <- "green"
+    axis(1, col = col, col.ticks = col, col.axis = col)
+    axis(2, col = col, col.ticks = col, col.axis = col, at = 1:Ntip(tr), las = 1)
+    box(lty = "19")
+}
+@
+<<>>=
+@
+
+<<fig=true>>=
+layout(matrix(1:12, 6, 2))
+par(mar = c(2, 2, 0.3, 0))
+for (type in c("p", "c")) {
+   plot(tr, type); foo()
+   plot(tr, type, node.pos = 2); foo()
+   plot(tr, type, FALSE); foo()
+   plot(tr, type, FALSE, node.pos = 1, node.depth = 2); foo()
+   plot(tr, type, FALSE, node.pos = 2); foo()
+   plot(tr, type, FALSE, node.pos = 2, node.depth = 2); foo()
+}
+@
+
+\noindent Some different combinations of options may result in the
+tree shape as shown by the last two rows of trees. For unrooted and
+circualr trees, only the option \code{use.edge.length} has an effect:
+
+<<echo=false,quiet=true>>=
+foo <- function() {
+    col <- "green"
+    for (i in 1:2) axis(i, col = col, col.ticks = col, col.axis = col, las = 1)
+    box(lty = "19")
+}
+@
+
+<<fig=true>>=
+layout(matrix(1:4, 2, 2))
+par(las = 1)
+plot(tr, "u"); foo()
+plot(tr, "u", FALSE); foo()
+plot(tr, "f"); foo()
+plot(tr, "f", FALSE); foo()
+@
+
+\noindent\textbf{Step 2.} In the \pkg{graphics} package, text are
+printed in constant size, which means that whether you draw a small
+tree or a large tree, on a small or large device, the labels will
+always have the same size. However, before anything is plotted or
+drawn on the device it is difficult to find the correspondence between
+this size (in inches) and the user coordinates used for the node
+coordinates. Therefore, the following steps are implemented to
+determined the limits on the $x$-axis:
+
+\renewcommand{\labelenumi}{\theenumi.}
+\begin{enumerate}
+\item Find the width of the device in inches (see
+  Sect.~\ref{sec:overlay}).
+\item Find the widths of all labels in inches: if at least one of them is
+wider than the device, assign two thirds of the device for the
+branches and one third to the tip labels. This make sure that by
+default the tree is visible in the case there are very long tip
+labels.
+\item Otherwise, the space allocated to the tip labels is increased
+incrementally until all labels are visible.
+\end{enumerate}
+
+The limits on the $y$-axis is easier to determine since it depends
+only on the number of branches in the tree. All limits can be changed
+manually with options \code{x.lim} and \code{y.lim} which takes,
+unlike their standard counterparts \code{xlim} and \code{ylim}, one or
+two values: if only one value is given this will set the rightmost or
+uppermost limit; if two values are given these will set both limits.
+
+By default, there is no space between the tip labels and the tip of
+the terminal branches. However, text strings are printed with a
+bounding box around them making sure there is actually always a small
+space (besides, the default font being italics making this space more
+visible). The option \code{label.offset} (which is 0 by default) makes
+possible to add an explicit space between them (this must be in user
+coordinates).
+
+\noindent\textbf{Step 3.} For rooted trees, only 90\textdegree\
+rotations are supported using the option \code{direction}.\footnote{If
+you want ``full rotation'' of the tree, then the option `rotate' is
+\LaTeX\ does well the job.} For
+unrooted and circular (\code{type = "fan"}) trees, full rotation is
+supported with the option \code{rotate.tree}. If these options are
+used, the tip labels are not rotated. Label rotation is controlled by
+other options: \code{srt}\footnote{\code{srt} is for \textit{string
+    rotation}, not to be confused with the function \code{str} to
+  print the \textit{structure} of an object.} for all trees, and
+\code{lab4ut} for unrooted trees.
+
+\noindent\textbf{Step 4.} These can be fully controlled with the
+options \code{x.lim} and \code{y.lim}. Note that the options
+\code{xlim} and \code{ylim} \emph{cannot} be used from \code{plot.phylo}.
+
+\noindent\textbf{Step 5.} If the options \code{plot = FALSE} is used,
+then steps 6 and 7 are not executed.
+
+\subsection{Computations}
+
+As we can see from the above section, a lot of computations are done
+before a tree is plotted. Some of these computations can be performed
+by special functions accessible to all users, particularly the three
+functions used to calculate the node coordinates. First, two functions
+calculate ``node depths'' which the coordinates of the nodes on the
+$x$-axis for rooted trees:
+
+<<>>=
+args(node.depth.edgelength)
+args(node.depth)
+@
+
+\noindent Here, \code{phy} is an object of class \code{"phylo"}. The
+first function uses edge lengths to calculate these coordinates, while
+the second one calculates these coordinates proportional to the number
+of tips descending from each node (if \code{method = 1}), or evenly
+spaced (if \code{method = 2}).
+
+The third function is \code{node.height} is used to calculate ``node
+heights'', the coordinates of the nodes on the $y$-axis:
+
+<<>>=
+args(node.height)
+@
+
+\noindent If \code{clado.style = TRUE}, the node heights are
+calculated for a ``triangular cladogram'' (see figure
+above). Otherwise, by default they are calculated to fall in the
+middle of the vertical segments with the default \code{type =
+  "phylogram"}.\footnote{It may be good to remind here than these segments,
+  vertical since \code{direction = "rightwards"} is the default, are
+  not part of the edges of the tree.}
+
+For unrooted trees, the node coordinates are calculated with the
+``equal angle'' algorithm described by Felsenstein in his book
+\cite{Felsenstein2004}. This is done by an internal function which
+arguments are:
+
+<<>>=
+args(unrooted.xy)
+@
+
+\noindent There are three other internal functions used to plot the
+segments of the tree after the above calculations have been performed
+(steps 1--4):
+
+<<>>=
+args(phylogram.plot)
+args(cladogram.plot)
+args(circular.plot)
+@
+
+\noindent Although these four functions are not formally documented,
+they are anyway exported because they are used by several packages
+outside of \ape.
+
+\section{The \code{plot.phylo} Function}\label{sec:plotphylo}
+
+The \code{plot} method for \code{"phylo"} objects follows quite
+closely the \R\ standard practice for its functions with a relatively
+large number of arguments. Its first argument (\code{x}) is mandatory
+and is the tree to be drawn. It is thus not needed to name it, so in
+practice the tree \code{tr} can be plotted with the command
+\code{plot(tr)}. All other arguments have default values:
+
+<<>>=
+args(plot.phylo)
+@
+
+\noindent The second and third arguments are the two which are mostly
+used in practice, so they can be modified without explicitly naming like
+in the above examples. Besides, \code{"cladogram"} can be abbreviated
+with \code{"c"}, \code{"unrooted"} with \code{"u"}, and so on.
+For the other arguments, it is better to name them if they are used or
+modified (e.g., \code{lab4ut = "a"})
+
+\subsection{Overview on the Options}
+
+The logic of this long list of options is double: the user can modify
+the aspect of the tree plot, and use some of these options to display
+some data in association with the tree. Therefore, the table below
+group these options into three categories. The following two sections
+show how data can be shown in connection to the tips and to the branches.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Aspect of the tree & Attributes of the labels & Attributes of the edges\\
+\midrule
+\code{type} & \code{show.tip.label} & \code{edge.color}\\
+\code{use.edge.length} & \code{show.node.label} & \code{edge.width}\\
+\code{node.pos} & \code{font} & \code{edge.lty}\\
+\code{x.lim} & \code{tip.color}\\
+\code{y.lim} & \code{cex}\\
+\code{direction} & \code{adj}\\
+\code{no.margin} & \code{underscore}\\
+\code{root.edge} & \code{srt}\\
+\code{rotate.tree} & \code{lab4ut}\\
+\code{open.angle} & \code{label.offset}\\
+\code{node.depth} & \code{align.tip.label}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Connecting Data to the Tips}
+
+It is common that some data are associated with the tips of a tree:
+body mass, population, treatment, \dots\ The options \code{font},
+\code{tip.color}, and \code{cex} make possible to show this kind of
+information by changing the font (normal, bold, italics, or
+bold-italics), the colour, or the size of the tip labels, or any
+combination of these. These three arguments work in the usual \R\ way:
+they can a vector of any length with the values eventually recycled if
+this length is less than the number of tips. This makes possible to
+change all tips if a single value is given.
+
+For instance, consider the small primate tree where we want to show
+the geographic distributions which are stored in a factor such as:
+
+<<>>=
+geo <- factor(c("Africa", "World", "Africa"))
+@
+
+\noindent We can define a color for each region and use the above
+factor as a numeric index vector and pass it to \code{tip.color}:
+
+<<fig=true,width=7>>=
+(mycol <- c("blue", "red")[geo])
+plot(mytr, tip.color = mycol)
+@
+
+\noindent The values must be in the same order than order than in the
+vector of tip labels, here \code{mytr\$tip.label}. Reordering can be
+done in the usual \R\ way (e.g., with \code{names} or with
+\code{row.names} if the data are in a data frame). This can be
+combined with another argument, for instance to show (relative) body
+size:
+
+<<fig=true,width=7>>=
+plot(mytr, tip.color = mycol, cex = c(1, 1, 1.5))
+@
+
+The function \code{def} gives another way to define the above
+arguments given a vector of labels (\code{x}):
+
+<<>>=
+args(def)
+@
+
+\noindent The `\code{...}' are arguments separated by commas of the
+form \code{\textsl{<label> = <value>}} with \code{\textsl{<label>}} being one of
+the label in \code{x} and \code{\textsl{<value>}} the value which will be
+given to this element, whereas the value \code{default} will given to
+the others. This default value is either 1 if \code{\textsl{<value>}} is numeric,
+or \code{"black"} if it is character. The above set of colours could
+have thus be defined with:
+
+<<>>=
+mycol2 <- def(mytr$tip.label, Homo = "red", default = "blue")
+identical(mycol, mycol2)
+@
+
+The function \code{tiplabels}, presented below, gives more
+possibilities to display data on tips of a tree.
+
+\subsection{Connecting Data to the Branches}
+
+The three options in the third column of the above table control the
+aspect of the branches of the tree. Like the options for the tips,
+there is recycling of the arguments. In the present case, the values
+given as argument(s) must be in the same order than in the \code{edge}
+matrix of the tree.\footnote{See the document defining the class
+  \code{"phylo"} on \texttt{ape-package.ird.fr}.} There are several
+ways to find these numbers:
+
+\begin{itemize}
+\item The function \code{which.clade}
+\item \code{edgelabels()}
+\item \code{chronos}
+\end{itemize}
+
+\section{Annotating Trees}
+
+\subsection{Tips, Nodes, and Edges}
+
+<<>>=
+args(nodelabels)
+args(tiplabels)
+args(edgelabels)
+@
+
+\subsection{Data Plots Besides Trees}
+
+<<>>=
+args(phydataplot)
+args(ring)
+@
+
+\section{Specialized Functions}
+
+We see in this section several functions, built from
+\code{plot.phylo}, that each have a specific purpose.
+
+\subsection{\code{plotBreakLongEdges}}
+
+It happens sometimes, in a tree, that one (or several) branch is much
+longer than the others, for instance the branch between the ingroup
+and a very distant outgroup. When plotting such a tree, the contrast
+between the shortest branches will, very likely, not be
+visible. \code{plotBreakLongEdges()} helps to solve this problem: it
+shortens the longest branch of the tree and represents it with a
+broken segment. We illustrate this with a random tree where the first
+branch is given a length of 1000 (all others have random lengths
+between 0 and 1):
+
+<<fig=true>>=
+tree <- rtree(10)
+tree$edge.length[1] <- 1000
+layout(matrix(1:2, 1))
+plot(tree); axisPhylo()
+plotBreakLongEdges(tree); axisPhylo()
+@
+
+\noindent This function has the option \code{n = 1} which specified
+the number of branches to be broken. This can be automated in some
+way, for instance if we want to find how many branches in the above
+tree are longer than the mean plus twice the standard-deviation:
+
+<<>>=
+el <- tree$edge.length
+sum(el > mean(el) + 2 * sd(el))
+@
+
+\noindent We test with approach after changing a second branch length:
+
+<<fig=true>>=
+tree$edge.length[8] <- 1000
+el <- tree$edge.length
+sum(el > mean(el) + 2 * sd(el))
+layout(matrix(1:2, 1))
+plotBreakLongEdges(tree)
+plotBreakLongEdges(tree, n = 2)
+@
+
+\subsection{\code{drawSupportOnEdges}}
+
+\cite{Czech2017}
+
+\subsection{\code{kronoviz}}
+
+<<fig=true>>=
+TR <- replicate(10, rcoal(sample(11:20, size = 1)), simplify = FALSE)
+kronoviz(TR, type = "c", show.tip.label = FALSE)
+@
+
+\subsection{\code{plotTreeTime}}
+
+<<fig=true>>=
+example(plotTreeTime)
+@
+
+\section{Multiple Plots and Composite Figures}
+
+\subsection{Single Plotting Region}
+
+
+<<fig=true>>=
+par(oma = rep(2, 4))
+plot(mytr)
+box(lty = 3)
+box("figure", col = "blue")
+o <- mapply(mtext, text = "Outer margin", side = 1:4, outer = TRUE,
+            line = 1/2, font = 2, col = "blue")
+box("outer")
+@
+
+
+\subsection{Multiple Layout}
+
+<<fig=true>>=
+layout(matrix(1:4, 2, 2))
+par(oma = rep(2, 4))
+for (i in 1:4) {
+    plot(mytr)
+    box(lty = 3)
+    box("figure", col = "blue")
+}
+o <- mapply(mtext, text = "Outer margin", side = 1:4, outer = TRUE,
+            line = 1/2, font = 2, col = "blue")
+box("outer")
+@
+
+\section{Building Your Own Code and Functions}
+
+\subsection{Getting the Recorded Parameters}
+
+<<fig=true,width=5,height=4>>=
+plot(mytr)
+(pp <- get("last_plot.phylo", envir = .PlotPhyloEnv))
+@
+
+\subsection{Overlaying Layouts}\label{sec:overlay}
+
+The \pkg{graphics} package does not have an easy way to interact with
+the plots of a multiple layout. For instance, after calling
+\code{layout} as above and after the second plot has been made, it not
+possible to add elements (points, arrows, \dots) to the first
+plot. That limits the possibilities of connecting these plots in a
+physical way. However, the command \code{par(new = TRUE)} offers a way
+to just do that. The idea is to keep track of the coordinates of the
+nodes (and other graphical elements if needed) on the whole graphical
+device. However, because the plots very likely use different
+coordinate systems (e.g., due to different scales of the branch
+lenghts) these coordinates must be in physical units on the device
+(usually inches). This is made possible by the fact that \code{par()}
+returns, among many parameters, the physical dimensions of the
+plotting region, the margins, and the device in inches with the
+parameters \code{"pin"}, \code{"mai"}, and \code{"din"}, respectively
+(it also has the \code{"fin"} for the size of the figure, which
+excludes the outer margins, which will be needed if these outer
+margins are wider than zero). An additional graphical parameter that
+we will use here is given by \code{par("usr")} for the extremes of the
+coordinates of the plotting region.
+
+\begin{enumerate}
+\item Rescale the node coordinates so they are between 0 and 1.
+\item Convert these coordinates in inches (by simply multiplying by
+  the relevant value in \code{"fin"} and adding the size (also in
+  inches) of the relevant margin. This gives the coordinates in inches
+  in each figure (i.e., including the margins).
+\item Use the geometry eventually defined by \code{layout} to add to
+  the coordinates output at the previous step.
+\end{enumerate}
+
+After these three steps have been performed, we have the coordinates
+of the nodes in inches over the whole device independently of the
+various scales used in each plot. Now, the call to \code{par(new =
+  TRUE)} makes like nothing is plotting and \R\ will not delete what
+is already drawn on the device. We then call \code{plot} with the
+options \code{type = "n", ann = FALSE, axes = FALSE} which gives an
+``bare'' plot. The important options here are \code{[x|y]lim = 0:1}
+which sets the scale on each axis and \code{[x|y]axs = "i"} which sets
+the axes to extend exactly to the data range.\footnote{By default,
+  these parameters are equal to \code{"r"} which adds 4\% on each side
+  of the data range.}
+
+<<fig=true>>=
+layout(matrix(1:2, 2))
+plot(rtree(4))
+pp <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+x <- pp$xx[1]
+y <- pp$yy[1]
+## fraction of the plot region:
+pu <- par("usr")
+(x - pu[1]) / (pu[2] - pu[1])
+(y - pu[3]) / (pu[4] - pu[3])
+## convert into inches:
+pi <- par("pin")
+mi <- par("mai")
+xi1 <- (x - pu[1]) / (pu[2] - pu[1]) * pi[1] + mi[2]
+yi1 <- (y - pu[3]) / (pu[4] - pu[3]) * pi[2] + mi[1]
+
+## the 2nd tree
+plot(rtree(4))
+pp <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+x <- pp$xx[5]
+y <- pp$yy[5]
+## same as above:
+pu <- par("usr")
+pi <- par("pin")
+mi <- par("mai")
+xi2 <- (x - pu[1]) / (pu[2] - pu[1]) * pi[1] + mi[2]
+yi2 <- (y - pu[3]) / (pu[4] - pu[3]) * pi[2] + mi[1]
+
+yi1 <- yi1 + par("fin")[2]
+
+di <- par("din")
+
+layout(1)
+par(new = TRUE, mai = rep(0, 4))
+plot(NA, type = "n", ann = FALSE, axes = FALSE, xlim = 0:1,
+     ylim = 0:1, xaxs = "i", yaxs = "i")
+fancyarrows(xi1/di[1], yi1/di[2], xi2/di[1], yi2/di[2], 1,
+            lwd = 10, col = rgb(1, .5, 0, .5), type = "h")
+@
+
+<<>>=
+foo <- function(phy1, phy2, from)
+{
+    layout(matrix(1:2, 2))
+    plot(phy1, font = 1)
+    pp <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+    from <- which(phy1$tip.label == from)
+    x <- pp$xx[from]
+    y <- pp$yy[from]
+    ## fraction of the plot region:
+    pu <- par("usr")
+    ## convert into inches:
+    pi <- par("pin")
+    mi <- par("mai")
+    xi1 <- (x - pu[1]) / (pu[2] - pu[1]) * pi[1] + mi[2]
+    yi1 <- (y - pu[3]) / (pu[4] - pu[3]) * pi[2] + mi[1]
+    plot(phy2)
+    pp <- get("last_plot.phylo", envir = .PlotPhyloEnv)
+    to <- Ntip(phy2) + 1
+    x <- pp$xx[to]
+    y <- pp$yy[to]
+    ## same as above:
+    pu <- par("usr")
+    pi <- par("pin")
+    mi <- par("mai")
+    xi2 <- (x - pu[1]) / (pu[2] - pu[1]) * pi[1] + mi[2]
+    yi2 <- (y - pu[3]) / (pu[4] - pu[3]) * pi[2] + mi[1]
+    yi1 <- yi1 + par("fin")[2]
+    di <- par("din")
+    layout(1)
+    par(new = TRUE, mai = rep(0, 4))
+    plot(NA, type = "n", ann = FALSE, axes = FALSE, xlim = 0:1,
+         ylim = 0:1, xaxs = "i", yaxs = "i")
+    fancyarrows(xi1/di[1], yi1/di[2], xi2/di[1], yi2/di[2], 1,
+                lwd = 10, col = rgb(1, .5, 0, .5), type = "h")
+}
+@
+
+<<fig=true>>=
+trb <- read.tree(text = "((Primates,Carnovira),Monotremata);")
+foo(trb, mytr, "Primates")
+@
+
+\section{Other Packages}
+
+\subsection{\pkg{phangorn}}
+
+\subsection{\pkg{phytools}}
+
+\subsection{\pkg{treeio} and \pkg{ggtree}}
+
+\bibliographystyle{plain}
+\bibliography{ape}
+%\setlength{\bibsep}{0pt}
+\addcontentsline{toc}{section}{References}
+
+\end{document}

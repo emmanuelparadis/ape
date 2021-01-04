@@ -3,7 +3,6 @@
 \alias{phylogram.plot}
 \alias{cladogram.plot}
 \alias{circular.plot}
-\alias{unrooted.plot}
 \alias{unrooted.xy}
 \alias{BOTHlabels}
 \alias{floating.pie.asp}
