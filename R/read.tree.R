@@ -1,8 +1,8 @@
-## read.tree.R (2018-07-23)
+## read.tree.R (2021-01-04)
 
 ##   Read Tree Files in Parenthetic Format
 
-## Copyright 2002-2018 Emmanuel Paradis, Daniel Lawson and Klaus Schliep
+## Copyright 2002-2021 Emmanuel Paradis, Daniel Lawson and Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -26,7 +26,7 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     }
 
     tree <- gsub("[ \t]", "", tree)
-    tree <- gsub("'", "", tree)
+    tree <- gsub("'", "", tree) # fixed by GuangchuangYu (2021-01-04)
 
     single_quotes <- function(x, start = 1L) {
         z <- unlist(gregexpr("'", x))
