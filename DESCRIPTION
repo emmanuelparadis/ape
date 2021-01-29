@@ -1,6 +1,6 @@
 Package: ape
 Version: 5.4-2
-Date: 2021-01-22
+Date: 2021-01-29
 Title: Analyses of Phylogenetics and Evolution
 Authors@R: c(person("Emmanuel", "Paradis", role = c("aut", "cre", "cph"), email = "Emmanuel.Paradis@ird.fr", comment = c(ORCID = "0000-0003-3092-2199")),
   person("Simon", "Blomberg", role = c("aut", "cph"), comment = c(ORCID = "0000-0003-1062-0839")),
@@ -35,7 +35,7 @@ Authors@R: c(person("Emmanuel", "Paradis", role = c("aut", "cre", "cph"), email 
   person("Korbinian", "Strimmer", role = c("aut", "cph"), comment = c(ORCID = "0000-0001-7917-2056")),
   person("Damien", "de Vienne", role = c("aut", "cph"), comment = c(ORCID = "0000-0001-9532-5251")))
 Depends: R (>= 3.2.0)
-Suggests: gee, expm, igraph
+Suggests: gee, expm, igraph, phangorn
 Imports: nlme, lattice, graphics, methods, stats, tools, utils, parallel, Rcpp (>= 0.12.0)
 LinkingTo: Rcpp
 ZipData: no

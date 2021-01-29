@@ -28,7 +28,7 @@ efficiently. This document gives an overview of these functionalities.
 Section~\ref{sec:basic} explains the basic concepts
 and tools behind graphics in \ape. A figure made with \ape\ usually
 starts by calling the function \code{plot.phylo} which is detailed in
-Section~\ref{sec:plotphylo}, and further graphical annotations can done with
+Section~\ref{sec:plotphylo}, and further graphical annotations can be done with
 functions covered in Section~\ref{sec:annot}. Section~\ref{sec:spec}
 shows some specialized functions available in \ape, and finally,
 Sections~\ref{sec:geom} and \ref{sec:build} give an overview of some
@@ -51,7 +51,7 @@ with graphics in \R\ are expected to find their way relatively easily when
 plotting phylogenies with \ape.
 
 \ape\ has several functions to perform computations before drawing a
-tree, so that these may be use to implement the same graphical
+tree, so that they may be used to implement the same graphical
 functionalities with other graphical engines such as the \pkg{grid}
 package. These functions are detailed in the next section.
 
@@ -108,9 +108,9 @@ the margins or beyond) are cut (clipped).\footnote{\code{par(xpd = TRUE)} is
   the branch lengths, and other parameters.
 \item Evaluate the space required for printing the tip labels.
 \item Depending on the options, do some rotations and/or translations.
-\item Set the limits on the $x$- and $y$-axes.
+\item Set the limits of the $x$- and $y$-axes.
 \item Open a graphical device (or reset it if already open) and draw
-  an ``empty'' plot with the limits found at the previous step.
+  an empty plot with the limits found at the previous step.
 \item Call \code{segments()} to draw the branches.
 \item Call \code{text()} to draw the labels.
 \end{enumerate}
@@ -165,7 +165,7 @@ for (type in c("p", "c")) {
 }
 @
 
-\noindent Some different combinations of options may result in the
+\noindent Some combinations of options may result in the same
 tree shape as shown by the last two rows of trees. For unrooted and
 circular trees, only the option \code{use.edge.length} has an effect
 on the layout and/or the scales of the axes:
@@ -189,7 +189,7 @@ plot(tr, "f", FALSE); foo()
 
 \textbf{Step 2.} In the \pkg{graphics} package, text are
 printed with a fixed size, which means that whether you draw a small
-tree or a large tree, on a small or a large device, the labels will
+tree or a large tree, on a small or large device, the labels will
 have the same size. However, before anything is plotted or
 drawn on the device it is difficult to find the correspondence between
 this size (in inches) and the user coordinates used for the node
@@ -243,12 +243,12 @@ other options: \code{srt}\footnote{\code{srt} is for \textit{string
 \code{ylim} \emph{cannot} be used from \code{plot.phylo}.
 
 \textbf{Step 5.} If the options \code{plot = FALSE} is used, then
-steps 6 and 7 are not executed.
+steps 6 and 7 are not performed.
 
 \subsection{Computations}\label{sec:comput}
 
 As we can see from the previous section, a lot of computations are done
-before a tree is plotted. Some of these computations can be performed
+before a tree is plotted. Some of these computations are performed
 by special functions accessible to all users, particularly the three
 functions used to calculate the node coordinates. First, two functions
 calculate ``node depths'' which are the coordinates of the nodes on the
@@ -281,7 +281,7 @@ middle of the vertical segments with the default \code{type =
   not part of the edges of the tree.}
 
 For unrooted trees, the node coordinates are calculated with the
-``equal angle'' algorithm described by Felsenstein in his book
+``equal angle'' algorithm described by Felsenstein
 \cite{Felsenstein2004}. This is done by an internal function which
 arguments are:
 
@@ -299,9 +299,9 @@ args(cladogram.plot)
 args(circular.plot)
 @
 
-\noindent Although the four previous functions are not formally documented,
+\noindent Although these four functions are not formally documented,
 they are anyway exported because they are used by several packages
-outside of \ape.
+outside \ape.
 
 \section{The \code{plot.phylo} Function}\label{sec:plotphylo}
 
@@ -316,7 +316,7 @@ practice the tree \code{tr} can be plotted with the command
 args(plot.phylo)
 @
 
-\noindent The second and third arguments are the two mostly
+\noindent The second and third arguments are the two commonly
 used in practice, so they can be modified without explicitly naming them like
 in the above examples. Besides, \code{"cladogram"} can be abbreviated
 with \code{"c"}, \code{"unrooted"} with \code{"u"}, and so on.
@@ -329,7 +329,7 @@ The logic of this long list of options is double: the user can modify
 the aspect of the tree plot, and/or use some of these options to display
 some data in association with the tree. Therefore, the table below
 group these options into three categories. The following two sections
-show how data can be shown in connection to the tips or to the branches.
+show how data can be displayed in connection to the tips or to the branches of the tree.
 
 \begin{center}
 \begin{tabular}{lll}
@@ -380,7 +380,7 @@ factor as a numeric index vector and pass it to \code{tip.color}:
 plot(mytr, tip.color = mycol)
 @
 \end{center}
-The values must be in the same order than order than in the
+The values must be in the same order than in the
 vector of tip labels, here \code{mytr\$tip.label}. Reordering can be
 done in the usual \R\ way (e.g., with \code{names} or with
 \code{row.names} if the data are in a data frame). This can be
@@ -405,7 +405,7 @@ args(def)
 \noindent The `\code{...}' are arguments separated by commas of the
 form \code{\textsl{<label> = <value>}} with \code{\textsl{<label>}} being one of
 the labels in \code{x} and \code{\textsl{<value>}} the value which will be
-given to this element, whereas the value \code{default} will given to
+given to this element, whereas the value \code{default} will be given to
 the others. This default value is either 1 if \code{\textsl{<value>}} is numeric,
 or \code{"black"} if \code{\textsl{<value>}} is character. The above set of colours could
 have thus be defined with:
@@ -422,9 +422,9 @@ possibilities to display data on the tips of a tree.
 
 The three options in the third column of the above table control the
 aspect of the branches of the tree. Like the options for the tips,
-there is recycling of the arguments. The values
+the arguments are recycled. The values
 given as argument(s) must be in the same order than in the \code{edge}
-matrix of the tree. There are several ways to find these numbers:
+matrix of the tree. There are several ways to find these numbers.
 
 The function \code{which.edge} returns the row indices of the
 \code{edge} matrix given a list of tip labels so that the edges define
@@ -495,7 +495,7 @@ args(add.scale.bar)
 @
 
 \noindent If \code{ask = TRUE}, the function calls \code{locator()}
-and the user is asked to click on the plot to show where to draw the
+and the user is asked to click on the plot to specify where to draw the
 scale bar.
 
 The example below illustrates both functions and draws the standard
@@ -550,12 +550,12 @@ to diplay pie charts of ancestral values. Several functions in \ape\
 reconstructions indexed along the nodes of the tree so that
 using \code{nodelabels} is usually straightforward.
 
-Like for \code{plot.phylo}, the options can be used as either showing
-some data, or as formatting the annotations. The option \code{text}
+Like for \code{plot.phylo}, the options can be used for either showing
+some data, or formatting the annotations. The option \code{text}
 works in the same way than the standard function of the same name;
 formatting of the character strings is done with the option \code{col}
 and others (e.g., \code{font} or \code{cex} can be passed with
-`\code{...'}'). A frame is drawn around the character strings unless
+`\code{...}'). A frame is drawn around the character strings unless
 \code{frame = "none"}. The option \code{pch} is used to plot
 standard plotting symbols, this can take the values from 1 to 25, as
 shown below:
@@ -572,12 +572,12 @@ the user wishes with possibly different formatting options which could
 be easier than using a single call (see the first example in
 \code{?nodelabels}).
 
-The option \code{adj} is used also the set the adjustment of the
+The option \code{adj} is used to set the adjustment of the
 character strings passed to \code{text} (and also the plotting symbols
 drawn with \code{pch}, unlike the function \code{points}). This can
 used to print several series of numbers around nodes (see
 \code{?nodelabels}). The adjustment is made with respect to the size of each
-string, so that useful values are 0 (left- or bottom-aligned), 0.5
+string, so useful values are 0 (left- or bottom-aligned), 0.5
 (centred), and 1 (right- or top-aligned):
 
 <<fig=true>>=
@@ -606,14 +606,14 @@ text(0, 0:2, mytr$tip.label, adj = 2, font = 2)
 @
 \end{center}
 
-The option \code{pie} or \code{thermo}, by contrast to the previous
+The options \code{pie} and \code{thermo}, by contrast to the previous
 ones, take a matrix whose values are taken as proportions which
-are displayed as piecharts or as thermometers. The colours of the
-``slices'' of the pies (or the ``levels''  of the thermometers) are
+are displayed as piecharts or as thermometres. The colours of the
+``slices'' of the pies, or the ``levels''  of the thermometers, are
 specified with \code{piecol} (by default,
 the function \code{rainbow} is used to define these colours). The
 options \code{horiz}, \code{width}, and \code{height} are used to
-format the aspect of the thermometers.
+format the aspect of the thermometres.
 
 \subsection{Data Plots Besides Trees}
 
@@ -630,7 +630,7 @@ functions because it is usually needed to leave some space when
 plotting the tree using
 \code{x.lim} and/or \code{y.lim} (see above). It may not be
 straightforward to find how much space must be left: in practice the
-simplest solution might be to try different values, possibly using
+simplest solution is to try different values, possibly using
 \code{axis} as shown above, or using the (invisibly) returned value of
 \code{plot.phylo}. Once some values of these limits are found for a
 given data set, they are expected to work similarly accross different
@@ -646,8 +646,8 @@ needed to reorder the data if they have such (row)names.
 
 The option \code{style} can take seven different values giving a
 lot of possibilities. Furthermore, further arguments can be given
-which are then passed to a function of the \pkg{graphics} package giving a
-lot of flexibility to customize the appearance of the plot. The table
+which are then passed to a function of the \pkg{graphics} package giving
+flexibility to customize the appearance of the plot. The table
 below gives the correspondence between the values of \code{style} and
 the \pkg{graphics} functions called by \code{phydataplot}:\footnote{\code{fancyarrows()} is in
   \ape: it has the same arguments than \code{arrows()} plus the option
@@ -691,9 +691,9 @@ mytr$tip.label
 continuous variables. With \code{phydataplot}, this is controlled by the
 option \code{continuous} which is either a logical value (\code{FALSE}
 by default, so the variables are considered as categorical), or an
-integer specifying the number classes used to represent the data (if
-\code{continuous = TRUE} then ten classes are used). Because we will
-call \code{phydataplot} twice, we will obviously use the option
+integer specifying the number of classes used to represent the data (if
+\code{continuous = TRUE}, then ten classes are used). Because we
+call \code{phydataplot} twice, we use the option
 \code{offset} which sets the space between the tree and the graph:
 
 <<fig=true,width=11,height=6>>=
@@ -711,13 +711,14 @@ first mosaic makes easy to check that the data were correctly matched
 between the rows of the matrix and tips of the tree.
 
 For circular trees, \code{offset} is the key to combine different
-``rings'' of data, like in the next example with a random coalescent
+`rings' of data, like in the next example with a random coalescent
 tree with 100 tips and three variables from a uniform distribution:
 
 \setkeys{Gin}{width=\textwidth}
 <<fig=true>>=
 n <- 100
 p <- 3
+set.seed(3)
 tr <- rcoal(n)
 x <- matrix(runif(p * n), n, p)
 rownames(x) <- tr$tip.label
@@ -742,7 +743,7 @@ We see in this section several functions, built from
 It happens sometimes that, in a tree, one (or several) branch is much
 longer than the others, for instance the branch between the ingroup
 and a very distant outgroup. When plotting such a tree, the contrast
-between the shortest branches will, very likely, not be
+between the shortest branches will likely not be
 visible. \code{plotBreakLongEdges()}
 shortens the longest branch of the tree and represents it with a
 broken segment. We illustrate this with a random tree where the first
@@ -781,7 +782,7 @@ plotBreakLongEdges(tree, n = 2)
 
 \subsection{Function \code{drawSupportOnEdges}}
 
-The phylogenetic bootstrap is a method to assess the uncertainty of a
+The phylogenetic bootstrap assessed the uncertainty of a
 phylogenetic tree inferred from a method (parsimony, maximum likehood,
 neighbour-joining, \dots) If the inference method outputs an
 unrooted tree (e.g., ML, NJ), then the bootstrap values relate to the
@@ -790,7 +791,7 @@ splits). Following the review by Czech et al.\ \cite{Czech2017}, two
 modifications were done in \ape. First, the option \code{edgelabel}
 was added to the function \code{root} so that bootstrap values,
 normally attached to the nodes (see \code{?boot.phylo}) are considered
-as attached to the edges. Second, the function
+attached to the edges. Second, the function
 \code{drawSupportOnEdges}, derived from \code{edgelabels()}, was
 written so that bootstrap values are correctly printed on the internal
 branches of a tree.
@@ -840,7 +841,7 @@ box("outer")
 @
 
 \noindent It is, of course, also possible to changer the inner margins
-with \code{par(mar = ....}. Note that doing \code{plot(mytr,
+with \code{par(mar = ....)}. Note that doing \code{plot(mytr,
   no.margin = TRUE)} is identical to calling \code{par(mar = rep(0,
   4))} before doing \code{plot(mytr)}.
 
@@ -919,7 +920,7 @@ the plots on a multiple layout. For instance, after calling
 possible to add elements (points, arrows, \dots) to the first
 plot which limits the possibility of connecting these plots in a
 graphical way. However, the command \code{par(new = TRUE)} offers a way
-to do that as described below.
+to do that as described here.
 
 The idea is to keep track of the coordinates of the
 nodes (and other graphical elements if needed) on the whole graphical
@@ -958,12 +959,12 @@ options \code{type = "n", ann = FALSE, axes = FALSE} which results in a
 ``bare'' plot. The important options here are \code{[x|y]lim = 0:1}
 which set the scale on each axis, and \code{[x|y]axs = "i"} which set
 the axes to extend exactly to the data range or the specified limits.\footnote{By default,
-  these parameters are equal to \code{"r"} which adds 4\% on each side
+  \code{xaxs} and \code{yaxs} are equal to \code{"r"} which adds 4\% on each side
   of the data range or limits.}
 
 Unfortunately, in a vignette like the present document, each call to
 \code{plot} opens a new device so that it is not possible to execute
-the above steps one by one. Instead, the next block of commands
+the above steps interactively. Instead, the next bloc of commands
 includes some commentaries and prints some intermediate results. In
 this example, two random trees are plotted and an arrow connects the
 first tip of the first tree to the root of the second tree:
@@ -1030,7 +1031,7 @@ fancyarrows(xi1/di[1], yi1/di[2], xi2/di[1], yi2/di[2], 1,
 
 \noindent This code must be adapted to the exact layout in order to
 shift appropriately the coordinates in the $x$- and/or
-$y$-direction(s). The next bloc gives a function which uses the above
+$y$-direction(s). The next bloc defines a function which uses the above
 code to plot two trees and add an arrow from the tip specified with
 the argument \code{from} of the first tree to the root of the second
 tree:
