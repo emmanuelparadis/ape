@@ -42,7 +42,8 @@ as.phylo.formula <- function(x, data = parent.frame(), collapse = TRUE, ...)
         t <- character(length(levels))
         for (l in 1:length(levels)) {
             x <- f.rec(subtaxo[subtaxo[,u] == levels[l], ][1:(u - 1)])
-            t[l] <- paste0("(", paste(x, collapse=","), ")")
+            t[l] <- paste0("(", paste(x, collapse=","), ")", 
+                           as.character(levels[l]))
         }
         t
     }

@@ -31,8 +31,8 @@
 \value{
   an object of class \code{"phylo"}.
 }
-\author{Julien Dutheil \email{dutheil@evolbio.mpg.de} and Eric
-  Marcon}
+\author{Julien Dutheil \email{dutheil@evolbio.mpg.de}, Eric Marcon and
+  Klaus Schliep}
 \seealso{
   \code{\link{as.phylo}}, \code{\link{read.tree}} for a
   description of \code{"phylo"} objects, \code{\link{multi2di}}
@@ -40,8 +40,9 @@
 \examples{
 data(carnivora)
 frm <- ~SuperFamily/Family/Genus/Species
-tr <- as.phylo(frm, data = carnivora)
-plot(tr)
+tr <- as.phylo(frm, data = carnivora, collapse=FALSE)
+tr$edge.length <- rep(1, nrow(tr$edge))
+plot(tr, show.node.label=TRUE)
 Nnode(tr)
 ## compare with:
 Nnode(as.phylo(frm, data = carnivora, collapse = FALSE))
