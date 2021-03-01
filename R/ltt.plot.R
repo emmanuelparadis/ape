@@ -1,14 +1,15 @@
-## ltt.plot.R (2012-03-05)
+## ltt.plot.R (2021-03-01)
 
 ##    Lineages Through Time Plot
 
-## Copyright 2002-2012 Emmanuel Paradis
+## Copyright 2002-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
 ltt.plot.coords <- function(phy, backward = TRUE, tol = 1e-6)
 {
+    if (has.singles(phy)) phy <- collapse.singles(phy, root.edge = TRUE) # added 2021-03-01
     if (is.ultrametric(phy, tol)) {
         if (is.binary.phylo(phy)) {
             N <- numeric(phy$Nnode + 1)
