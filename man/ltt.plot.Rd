@@ -17,7 +17,7 @@ mltt.plot(phy, ..., dcol = TRUE, dlty = FALSE, legend = TRUE,
           xlab = "Time", ylab = "N", log = "", backward = TRUE,
           tol = 1e-6)
 ltt.coplot(phy, backward = TRUE, ...)
-ltt.plot.coords(phy, backward = TRUE, tol = 1e-6)
+ltt.plot.coords(phy, backward = TRUE, tol = 1e-6, type = "S")
 }
 \arguments{
   \item{phy}{an object of class \code{"phylo"}; this could be an object
@@ -44,6 +44,8 @@ ltt.plot.coords(phy, backward = TRUE, tol = 1e-6)
   \item{log}{a character string specifying which axis(es) to be
     log-transformed; must be one of the followings: \code{""},
     \code{"x"}, \code{"y"}, or \code{"xy"}.}
+  \item{type}{either \code{"S"} or \code{"s"}, the preferred type of step function, corresponding
+  to argument \code{type} of base function \code{plot()}. See section "Value" below.}
 }
 \details{
   \code{ltt.plot} does a simple lineages through time (LTT)
@@ -87,11 +89,10 @@ ltt.plot.coords(phy, backward = TRUE, tol = 1e-6)
 }
 \value{
   \code{ltt.plot.coords} returns a two-column matrix with the time
-  points and the number of lineages, respectively. The \eqn{i}th value
-  of the second column is the number of lineages for the interval
-  defined by the \eqn{(i - 1)}th and the \eqn{i}th values of the first
-  column. These are then plotted with the option \code{type = "S"} by
-  the other functions.
+  points and the number of lineages, respectively. 
+  \code{type = "S"} returns the number of lineages to the left of (or "up to") 
+  the corresponding point in time, while \code{type = "s"} returns the number of
+  lineages to the right of this point (i.e, between that time and the next).
 }
 \references{
   Harvey, P. H., May, R. M. and Nee, S. (1994) Phylogenies without
