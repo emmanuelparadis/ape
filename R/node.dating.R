@@ -1,4 +1,4 @@
-## node.dating.R (2018-02-07)
+## node.dating.R (2021-03-03)
 ## This file is part of the R-package `ape'.
 ## See the file COPYING in the package ape available at cran.r-project.org for licensing issues.
 
@@ -147,10 +147,12 @@ estimate.dates <- function(t, node.dates, mu = estimate.mu(t, node.dates), min.d
 	}
 	
 	opt.fun <- function(x, ch, p, ch.edge, p.edge, use.parent=T) {
+	  
+	  
 		sum(if (!use.parent || length(dates[p]) == 0 || is.na(dates[p])) {		
-				calc.Like(dates[ch], t$edge.length[ch.edge], x)
+				calc.Like(dates[ch], ch.edge, x)
 			} else {
-				calc.Like(c(dates[ch], x), c(t$edge.length[ch.edge], t$edge.length[p.edge]), c(rep(x, length(dates[ch])), dates[p]))
+				calc.Like(c(dates[ch], x), c(ch.edge, p.edge), c(rep(x, length(dates[ch])), dates[p]))
 			})
 	}
 	
@@ -265,7 +267,9 @@ estimate.dates <- function(t, node.dates, mu = estimate.mu(t, node.dates), min.d
 			}
 			
 		if (is.binary) {
-			if (length(dates[p]) == 0 || is.na(dates[p])) {
+			if (m + 2 * opt.tol >= min(dates[ch])) {
+				mean(c(m, min(dates[ch])))
+			} else if (length(dates[p]) == 0 || is.na(dates[p])) {
 				if (length(ch.edge) == 2)
 					solve.bin(c(m, min(dates[ch])), dates[ch], ch.edge)
 				else
@@ -276,8 +280,8 @@ estimate.dates <- function(t, node.dates, mu = estimate.mu(t, node.dates), min.d
 				else
 					solve.bin2(c(m, min(dates[ch])), dates[ch], ch.edge, dates[p], p.edge)
 			}
-		} else {				
-			res <- optimize(opt.fun, c(m, min(dates[ch])), ch, p, ch.edge, p.edge, maximum=T)
+		} else {		
+		  res <- suppressWarnings(optimize(opt.fun, c(m, min(dates[ch])), ch, p, ch.edge, p.edge, maximum=T))
 		
 			res$maximum
 		}

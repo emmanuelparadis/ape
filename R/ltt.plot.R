@@ -39,17 +39,17 @@ ltt.plot.coords <- function(phy, backward = TRUE, tol = 1e-6, type = "S")
         present <- max(time.event)
         event[1:n] <- -1
         event[ROOT:(n + m)] <- 1
-        
+
         ## delete the events that are too close to present:
         past.event <- present - time.event > tol
         event <- event[past.event]
         time.event <- time.event[past.event]
-        
+
         ## reorder wrt time:
         o <- order(time.event)
         time.event <- time.event[o]
         event <- event[o]
-        
+
         time <- c(time.event - present, 0)
         N <- c(1, event)
     }
@@ -70,9 +70,9 @@ ltt.plot <- function(phy, xlab = "Time", ylab = "N",
 {
     if (!inherits(phy, "phylo"))
         stop("object \"phy\" is not of class \"phylo\"")
-    
+
     xy <- ltt.plot.coords(phy, backward, tol, type = "S")
-    
+
     plot.default(xy, xlab = xlab, ylab = ylab, xaxs = "r",
                  yaxs = "r", type = "S", ...)
 }
@@ -119,7 +119,7 @@ mltt.plot <-
         range.each.tree <- sapply(TREES, function(x) range(x[, 1]))
         xl <- range(range.each.tree)
         yl <- c(1, max(sapply(TREES, function(x) max(x[, 2]))))
-        
+
         ## if backward is FALSE, we have to rescale the time scales of each tree:
         if (!backward) {
             for (i in seq_along(TREES)) {
@@ -128,16 +128,16 @@ mltt.plot <-
                 TREES[[i]] <- tmp
             }
         }
-        
+
         plot.default(NA, type = "n", xlim = xl, ylim = yl, xaxs = "r",
                      yaxs = "r", xlab = xlab, ylab = ylab, log = log)
-        
+
         lty <- if (!dlty) rep(1, n) else 1:n
         col <- if (!dcol) rep(1, n) else topo.colors(n)
-        
+
         for (i in 1:n)
             lines(TREES[[i]], col = col[i], lty = lty[i], type = "S")
-        
+
         if (legend)
             legend(xl[1], yl[2], legend = names(TREES),
                    lty = lty, col = col, bty = "n")
