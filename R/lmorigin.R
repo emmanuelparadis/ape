@@ -1,10 +1,10 @@
-'lmorigin' <- 
+'lmorigin' <-
 function(formula, data=NULL, origin=TRUE, nperm=999, method=NULL, silent=FALSE)
 #
-# This program computes a multiple linear regression and performs tests 
-# of significance of the equation parameters using permutations. 
-# 
-# origin=TRUE: the regression line can be forced through the origin. Testing 
+# This program computes a multiple linear regression and performs tests
+# of significance of the equation parameters using permutations.
+#
+# origin=TRUE: the regression line can be forced through the origin. Testing
 # the significance in that case requires a special permutation procedure.
 #
 # Permutation methods: raw data or residuals of full model
@@ -18,7 +18,7 @@ if(!is.null(method)) method <- match.arg(method, c("raw", "residuals"))
 if(is.null(method) & origin==TRUE) method <- "raw"
 if(is.null(method) & origin==FALSE) method <- "residuals"
 if(nperm < 0) stop("Incorrect value for 'nperm'")
-	
+
 ## From the formula, find the variables and the number of observations 'n'
 toto <- lm(formula, data)
 mf <- match.call(expand.dots = FALSE)
@@ -44,7 +44,7 @@ if(origin) {
 	reg <- lm(y ~ 0 + X)
 	} else {
 	if(!silent) cat("Multiple regression with estimation of intercept",'\n')
-	reg <- lm(y ~ X)	
+	reg <- lm(y ~ X)
 	mm <- mm+1
 	}
 
@@ -88,7 +88,7 @@ if(nperm > 0) {
 			y.perm <- sample(y,n)
 			reg.perm <- lm(y.perm ~ X)
 			}
-	
+
 		# Permutation test of the F-statistic
 		F.perm <- summary(reg.perm)$fstatistic[1]
 		if(F.perm >= F) nGT.F <- nGT.F+1
@@ -105,7 +105,7 @@ if(nperm > 0) {
 				}
 			}
 		}
-		
+
 	if(method == "residuals") {
 	# Permute residuals of full model
 		for(i in 1:nperm) {
@@ -117,7 +117,7 @@ if(nperm > 0) {
 				y.perm <- sample(y.res,n)
 				reg.perm <- lm(y.perm ~ X)
 				}
-	
+
 			# Permutation tests of the t-statistics: permute residuals
 			t.perm <- summary(reg.perm)$coefficients[,3]
 			if(nperm <= 5) cat(t.perm,'\n')

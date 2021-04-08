@@ -1,6 +1,6 @@
-/* ape.c    2020-09-06 */
+/* ape.c    2021-04-08 */
 
-/* Copyright 2011-2020 Emmanuel Paradis, and 2007 R Development Core Team */
+/* Copyright 2011-2021 Emmanuel Paradis, and 2007 R Development Core Team */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
@@ -36,9 +36,6 @@ void C_additive(double *dd, int* np, int* mp, double *ret);
 void C_bionj(double *X, int *N, int *edge1, int *edge2, double *el);
 void C_bionjs(double *D, int *N, int *edge1, int *edge2, double *edge_length, int* fsS);
 void delta_plot(double *D, int *size, int *nbins, int *counts, double *deltabar);
-/*void dist_dna(unsigned char *x, int *n, int *s, int *model, double *d,
-	      double *BF, int *pairdel, int *variance, double *var,
-	      int *gamma, double *alpha);*/
 void dist_nodes(int *n, int *m, int *e1, int *e2, double *el, int *N, double *D);
 void C_ewLasso(double *D, int *N, int *e1, int *e2);
 void mat_expo(double *P, int *nr);
@@ -49,7 +46,6 @@ void me_o(double *X, int *N, int *labels, int *nni,
 	  int *edge1, int *edge2, double *el);
 void C_mvr(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_length);
 void C_mvrs(double *D, double* v, int *N, int *edge1, int *edge2, double *edge_length, int* fsS);
-void neworder_phylo(int *n, int *e1, int *e2, int *N, int *neworder, int *order);
 void neworder_pruningwise(int *ntip, int *nnode, int *edge1,
 			  int *edge2, int *nedge, int *neworder);
 SEXP C_nj(SEXP DIST, SEXP N);
@@ -70,14 +66,9 @@ void C_treePop(int* splits, double* w,int* ncolp,int* np, int* ed1, int* ed2, do
 void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen);
 void C_triangMtds(double* d, int* np, int* ed1,int* ed2, double* edLen);
 void C_ultrametric(double *dd, int* np, int* mp, double *ret);
-/* void bitsplits_phylo(int *n, int *m, int *e, int *N, int *nr, unsigned char *mat); */
-/* void CountBipartitionsFromTrees(int *n, int *m, int *e, int *N, int *nr, int *nc, */
-/* 				unsigned char *mat, double *freq); */
 void DNAbin2indelblock(unsigned char *x, int *n, int *s, int *y);
 void trans_DNA2AA(unsigned char *x, int *s, unsigned char *res, int *code);
 
-//SEXP bipartition(SEXP edge, SEXP nbtip, SEXP nbnode);
-//SEXP prop_part(SEXP TREES, SEXP nbtree, SEXP keep_partitions);
 SEXP dist_dna(SEXP DNASEQ, SEXP MODEL, SEXP BASEFREQ, SEXP PAIRDEL, SEXP VARIANCE,
 	      SEXP GAMMA, SEXP ALPHA);
 SEXP GlobalDeletionDNA(SEXP DNASEQ);
@@ -105,18 +96,14 @@ static R_CMethodDef C_entries[] = {
     {"C_bionj", (DL_FUNC) &C_bionj, 5},
     {"C_bionjs", (DL_FUNC) &C_bionjs, 6},
     {"delta_plot", (DL_FUNC) &delta_plot, 5},
-//    {"dist_dna", (DL_FUNC) &dist_dna, 11},
     {"dist_nodes", (DL_FUNC) &dist_nodes, 7},
     {"C_ewLasso", (DL_FUNC) &C_ewLasso, 4},
-//    {"GlobalDeletionDNA", (DL_FUNC) &GlobalDeletionDNA, 4},
     {"mat_expo", (DL_FUNC) &mat_expo, 2},
     {"me_b", (DL_FUNC) &me_b, 9},
     {"me_o", (DL_FUNC) &me_o, 7},
     {"C_mvr", (DL_FUNC) &C_mvr, 6},
     {"C_mvrs", (DL_FUNC) &C_mvrs, 7},
-    {"neworder_phylo", (DL_FUNC) &neworder_phylo, 6},
     {"neworder_pruningwise", (DL_FUNC) &neworder_pruningwise, 6},
-//    {"C_nj", (DL_FUNC) &C_nj, 5},
     {"C_njs", (DL_FUNC) &C_njs, 6},
     {"node_depth", (DL_FUNC) &node_depth, 6},
     {"node_depth_edgelength", (DL_FUNC) &node_depth_edgelength, 5},
@@ -134,8 +121,6 @@ static R_CMethodDef C_entries[] = {
 };
 
 static R_CallMethodDef Call_entries[] = {
-//    {"bipartition", (DL_FUNC) &bipartition, 3},
-//    {"prop_part", (DL_FUNC) &prop_part, 3},
     {"dist_dna", (DL_FUNC) &dist_dna, 7},
     {"GlobalDeletionDNA", (DL_FUNC) &GlobalDeletionDNA, 1},
     {"rawStreamToDNAorAAbin", (DL_FUNC) &rawStreamToDNAorAAbin, 2},

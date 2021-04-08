@@ -106,7 +106,6 @@ void C_triangMtds(double* d, int* np, int* ed1,int* ed2, double* edLen)
        }
     }
  int numEdges=2*k-4;//0-based, so subtract 1
- //Rprintf("numEdge=%i",numEdges);
  int nv=(k-2)+n;
  while(k<n)
  {
@@ -157,10 +156,6 @@ void C_triangMtds(double* d, int* np, int* ed1,int* ed2, double* edLen)
          {error("could not build tree from given distance matrix");
          }
         int* ord=getPathBetween(x,y,n,ed1,ed2,numEdges);
-        /*for(i=1;i<=2*n-2;i++)
-         {Rprintf("ord[%i]=%i ",i,ord[i]);
-         }
-        Rprintf("\n");*/
         //look for the edge on the path x to y to subdivide
 
         int p=x;
@@ -171,12 +166,7 @@ void C_triangMtds(double* d, int* np, int* ed1,int* ed2, double* edLen)
         int subdiv=-1;//index of edge to subdivide
         //error("d[y,x]=%f,d[z,x]=%f,d[z,y]=%f\n",d[give_indexx(y,x,n)],d[give_indexx(z,x,n)],d[give_indexx(z,y,n)]);
         double lx=0.5*(d[give_indexx(y,x,n)]+d[give_indexx(z,x,n)]-d[give_indexx(z,y,n)]);//distance of attachment
-       // Rprintf("adding %i on the path between %i and %i at a distance from x of %f and a distance of %f from tree",z,x,y,lx,minDist);
-        //point from x
-        //Rprintf("Adding leaf %i, between %i and %i\n",z,x,y);
-       // Rprintf("%i situated at a distance of %d from tree",z,minDist);
         int sw=0;
-        //Rprintf("path between %i and %i\n",x,y);
         //int cc=0;
         while(p!=y && sum<lx)
           { //cc++;
@@ -208,8 +198,6 @@ void C_triangMtds(double* d, int* np, int* ed1,int* ed2, double* edLen)
                                                      //and updates accordingly
         //error("sum=%f, prevsum=%f\n",sum,prevSum);
         //error("lx-prevSum=%f, sum-lx=%f, minDist=%f",lx-prevSum,sum-lx,minDist);
-        //Rprintf("adding %i on path %i %i, at distance %f from %i, and %f from tree\n",z,x,y,lx,x,minDist);
-       // Rprintf("subdividing edge %i\n",subdiv);
         numEdges++;
         ed1[numEdges]=nv;
         ed2[numEdges]=edd;

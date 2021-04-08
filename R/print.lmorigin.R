@@ -16,7 +16,7 @@
 	rownames(res) <- names
 	colnames(res) <- c("Coefficient","Std_error","t-value","Pr(>|t|)")
 	printCoefmat(res, P.values=TRUE, signif.stars=TRUE)
-	
+
 	if(x$nperm > 0) {
 		cat("\nTwo-tailed tests of regression coefficients\n",'\n')
 		res2 <- as.data.frame(cbind(summary(x$reg)$coefficients[,1], x$p.param.t.2tail, x$p.perm.t.2tail))
@@ -49,7 +49,7 @@
 			cat("after",x$nperm,"permutations of",x$method,"data",'\n','\n')
 			} else {
 			cat("after",x$nperm,"permutations of",x$method,"of full model",'\n','\n')
-			}			
+			}
 		}
-    invisible(x) 
+    invisible(x)
 }

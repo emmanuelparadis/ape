@@ -371,17 +371,3 @@ void NNI(tree *T, double **avgDistArray, int *count, double **D, int numSpecies)
   free(location);
   free(edgeArray);
 }
-/*
-void NNIwithoutMatrix(tree *T, double **D, int *count)
-{
-  double **avgDistArray;
-  avgDistArray = buildAveragesTable(T,D);
-  NNI(T,avgDistArray,count);
-}
-
-void NNIWithPartialMatrix(tree *T,double **D,double **A,int *count)
-{
-  makeOLSAveragesTable(T,D,A);
-  NNI(T,A,count);
-}
-*/

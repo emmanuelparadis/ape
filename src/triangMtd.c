@@ -51,7 +51,6 @@ int* getPathBetween(int x, int y, int n, int* ed1, int* ed2, int numEdges)
         int *ord=(int*)malloc(sizeof(int)*(2*n-1));
         //starting from x, fill ord
 
-
         int p=x;
 
         while(ch[p]==1)
@@ -96,23 +95,6 @@ void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen)
 	 //error("%f ,giveindex= %f",d[ij],d[give_indexx(i,j,n)]);
        }
     }
-
-    /*double d[n*n];
-
-
-    for(i=0;i<n;i++)
-    {d[i*n+i]=0;
-     for(j=i;j<n;j++)
-       {d[i*n+j]=d[j*n+i];
-       }
-    }
-    for(i=0;i<n;i++)
-    {
-     for(j=0;j<n;j++)
-       {error("%f ",d[i*n+j]);
-       }
-     error("\n");
-    }*/
 
     double minW=0;
     int x=-1,y=-1,numEdges=0;
@@ -190,13 +172,6 @@ void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen)
     edLen[numEdges]=0.5*(d[give_indexx(x3,x,n)]+d[give_indexx(y,x3,n)]-d[give_indexx(y,x,n)]);
     w[x3]=1;
 
-        /*Rprintf("new tree\n");
-        for(i=0;i<2*n-3;i++)
-        {
-        Rprintf("%i->%i of length:%f \n",ed1[i],ed2[i],edLen[i]);
-        }
-        Rprintf("end new tree\n");*/
-
     //calculate distance of leaves not yet added to the star tree
     int s;
     for(s=1;s<=n;s++)
@@ -234,14 +209,9 @@ void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen)
 
 
         int* ord=getPathBetween(x,y,n,ed1,ed2,numEdges);
-       /* Rprintf("ord\n");
-        for(i=1;i<=2*n-2;i++)
-          {Rprintf("ord[%i]=%i ",i,ord[i]);
-          }
-        Rprintf("\n");*/
+
         //order the path from x to y, in an array ord, ord[i]=j means vertex i comes before j
         //first count number of edges on path (i.e count all i s.t ch[i]==1)
-
 
         //look for the edge on the path x to y to subdivide
         int p=x;
@@ -251,12 +221,7 @@ void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen)
         int subdiv=-1;//index of edge to subdivide
         //error("d[y,x]=%f,d[z,x]=%f,d[z,y]=%f\n",d[give_indexx(y,x,n)],d[give_indexx(z,x,n)],d[give_indexx(z,y,n)]);
         double lx=0.5*(d[give_indexx(y,x,n)]+d[give_indexx(z,x,n)]-d[give_indexx(z,y,n)]);//distance of attachment
-       // Rprintf("adding %i on the path between %i and %i at a distance from x of %f and a distance of %f from tree",z,x,y,lx,minDist);
-        //point from x
-        //Rprintf("Adding leaf %i, between %i and %i\n",z,x,y);
-       // Rprintf("%i situated at a distance of %d from tree",z,minDist);
         int sw=0;
-        //Rprintf("path between %i and %i\n",x,y);
 
         while(p!=y && sum<lx)
           {
@@ -299,32 +264,6 @@ void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen)
         wSize++;
         w[z]=1;
 
-        /*update distance matrix, only needed for incomplete distances
-        int ii;
-      for(ii=0;ii<n;ii++)
-      {if(!w[ii])continue;
-       error("path between %i and %i\n",ii,z);
-        int* ord=getPathBetween(ii,z,n,ed1,ed2,numEdges);
-
-        p=ii;
-        int newDist=0;
-        error("path");
-        for(i=0;i<2*n-2;i++)
-          {error("ord[%i]=%i ",i,ord[i]);
-          }
-       error("\n");
-       error("innn\n");
-        while(p!=z)
-          { //error("p=%i\n",p);
-            int aux=p;
-            p=ord[p];
-            newDist+=getLength(ii,z,ed1,ed2,numEdges,edLen);
-          }
-
-        error("outt\n");
-
-        d[ii][z]=d[z][ii]=newDist;
-       }*/
         //update l[s] for all s not yet added
         int s;
         for(s=1;s<=n;s++)
@@ -346,12 +285,5 @@ void C_triangMtd(double* d, int* np, int* ed1,int* ed2, double* edLen)
             }
          }
         free(ord);
-        /*Rprintf("new tree\n");
-        for(i=0;i<2*n-3;i++)
-        {
-        Rprintf("%i->%i of length:%f \n",ed1[i],ed2[i],edLen[i]);
-        }
-        Rprintf("end new tree\n");*/
       }
-   //for(i=0;i<=numEdges;i++){ed1[i]++;ed2[i]++;}
  }

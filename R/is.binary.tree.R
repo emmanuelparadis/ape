@@ -1,8 +1,8 @@
-## is.binary.tree.R (2016-11-03)
+## is.binary.tree.R (2021-04-08)
 
 ##    Test for Binary Tree
 
-## Copyright 2016 Emmanuel Paradis
+## Copyright 2016-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -14,7 +14,7 @@ is.binary.phylo <- function(phy)
 
 is.binary.tree <- function(phy)
 {
-    ##warning("is.binary.tree() is deprecated; using is.binary() instead.\n\nis.binary.tree() will be removed soon: see ?is.binary and update your code.")
+    message("is.binary.tree() is deprecated; using is.binary() instead.\n\nis.binary.tree() will be removed soon: see ?is.binary and update your code.")
     is.binary(phy)
 }
 

@@ -12,8 +12,6 @@
 \alias{reorderRcpp}
 \alias{polar2rect}
 \alias{rect2polar}
-\alias{neworder_phylo}
-\alias{neworder_pruningwise}
 \alias{node_depth}
 \alias{node_depth_edgelength}
 \alias{node_height}

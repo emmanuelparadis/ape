@@ -1,21 +1,21 @@
 `CADM.post` <-
 	function(Dmat, nmat, n, nperm=99, make.sym=TRUE, weights=NULL, mult="holm", mantel=FALSE, silent=FALSE)
 {
-### Function to carry out a posteriori tests of the contribution of individual 
+### Function to carry out a posteriori tests of the contribution of individual
 ### matrices to the congruence of a group of distance matrices.
 ###
 ### copyleft - Pierre Legendre, December 2008
 ###
 ### Reference -
-### Legendre, P. and F.-J. Lapointe. 2004. Assessing congruence among distance 
-### matrices: single malt Scotch whiskies revisited. Australian and New Zealand 
+### Legendre, P. and F.-J. Lapointe. 2004. Assessing congruence among distance
+### matrices: single malt Scotch whiskies revisited. Australian and New Zealand
 ### Journal of Statistics 46: 615-629.
 ###
 ### Parameters of the function --
 ###
 ### Dmat = A text file listing the distance matrices one after the other, with
 ###        or without blank lines.
-###        Each matrix is in the form of a square distance matrix with 0's 
+###        Each matrix is in the form of a square distance matrix with 0's
 ###        on the diagonal.
 ###
 ### nmat = number of distance matrices in file Dmat.
@@ -24,37 +24,37 @@
 ###
 ### nperm = number of permutations for the tests.
 ###
-### make.sym = TRUE: turn asymmetric matrices into symmetric matrices by 
+### make.sym = TRUE: turn asymmetric matrices into symmetric matrices by
 ###            averaging the two triangular portions.
 ###          = FALSE: analyse asymmetric matrices as they are.
 ###
-### weights = a vector of positive weights for the distance matrices. 
+### weights = a vector of positive weights for the distance matrices.
 ###           Example: weights = c(1,2,3)
 ###         = NULL (default): all matrices have same weight in calculation of W.
 ###
-### mult = method for correcting P-values due to multiple testing. The methods 
-###        are "holm" (default), "sidak", and "bonferroni". The Bonferroni 
-###        correction is overly conservative; it is not recommended. It is 
+### mult = method for correcting P-values due to multiple testing. The methods
+###        are "holm" (default), "sidak", and "bonferroni". The Bonferroni
+###        correction is overly conservative; it is not recommended. It is
 ###        included to allow comparisons with the other methods.
 ###
 ### mantel = TRUE: Mantel statistics are computed from ranked distances,
 ###          as well as permutational P-values.
 ###        = FALSE (default): Mantel statistics and tests are not computed.
 ###
-### silent = TRUE: informative messages will not be printed, except stopping 
+### silent = TRUE: informative messages will not be printed, except stopping
 ###          messages. Option useful for simulation work.
 ###        = FALSE: informative messages will be printed.
 ###
 ################################################################################
-	
+
 	mult <- match.arg(mult, c("sidak", "holm", "bonferroni"))
-	if(nmat < 2) 
+	if(nmat < 2)
 		stop("Analysis requested for a single D matrix: CADM is useless")
-	
+
 	a <- system.time({
 
     ## Check the input file
-    if(ncol(Dmat) != n) 
+    if(ncol(Dmat) != n)
     	stop("Error in the value of 'n' or in the D matrices themselves")
     nmat2 <- nrow(Dmat)/n
     if(nmat2 < nmat)  # OK if 'nmat' < number of matrices in the input file
@@ -64,14 +64,14 @@
     if(is.null(weights)) {
     	w <- rep(1,nmat)
     	} else {
-    	if(length(weights) != nmat) 
+    	if(length(weights) != nmat)
     		stop("Incorrect number of values in vector 'weights'")
-    	if(length(which(weights < 0)) > 0) 
+    	if(length(which(weights < 0)) > 0)
     		stop("Negative weights are not permitted")
     	w <- weights*nmat/sum(weights)
     	if(!silent) cat("Normalized weights =",w,'\n')
     	}
-    
+
     ## Are asymmetric D matrices present?
     asy <- rep(FALSE, nmat)
 	asymm <- FALSE
@@ -80,7 +80,7 @@
         begin <- end+1
         end <- end+n
         D.temp <- Dmat[begin:end,]
-        if(sum(abs(diag(as.matrix(D.temp)))) > 0) 
+        if(sum(abs(diag(as.matrix(D.temp)))) > 0)
         	stop("Diagonal not 0: matrix #",k," is not a distance matrix")
         vec1 <- as.vector(as.dist(D.temp))
         vec2 <- as.vector(as.dist(t(D.temp)))
@@ -103,7 +103,7 @@
     	if(!silent) cat("Analysis of symmetric matrices",'\n')
     	}
     Y <- rep(NA,nd)
-    
+
     ## String out the distance matrices (vec) and assemble them as columns into matrix 'Y'
     ## Construct also matrices of ranked distances D1[[k]] and D2[[k]] for permutation test
     end <- 0
@@ -114,7 +114,7 @@
         vec <- as.vector(as.dist(D.temp))
         if(asymm) {
         	if(!make.sym) {
-        		## Analysis carried out on asymmetric matrices: 
+        		## Analysis carried out on asymmetric matrices:
         		## The ranks are computed on the whole matrix except the diagonal values.
         		## The two halves are stored as symmetric matrices in D1[[k]] and D2[[k]]
         		vec <- c(vec, as.vector(as.dist(t(D.temp))))
@@ -146,7 +146,7 @@
         }
     Y <- as.matrix(Y[,-1])
     colnames(Y) <- colnames(Y,do.NULL = FALSE, prefix = "Dmat.")
-    
+
     ## Begin calculations: compute reference value of S
 
 		## Transform the distances to ranks, by column
@@ -176,12 +176,12 @@
 	for(k in 1:nmat) {
 		## Create a new Rmat table where the permuted column has been removed
 		Rmat.mod <- Rmat[,-k]
-				
+
 		## Permutation loop: string out permuted matrix 'k' only
 		for(j in 1:nperm) {
 			order <- sample(n)
 			if(asymm & !make.sym) {
-				## For asymmetric matrices: permute the values within each triangular 
+				## For asymmetric matrices: permute the values within each triangular
 				## portion, stored as square matrices in D1[[]] and D2[[]]
 				vec <- as.vector(as.dist(D1[[k]][order,order]))
 			    vec <- c(vec, as.vector(as.dist(D2[[k]][order,order])))
@@ -196,7 +196,7 @@
 
 	## Calculate P-values
 	counter <- counter/(nperm+1)
-	
+
 	## Correction to P-values for multiple testing
 		if(mult == "sidak") {
 			vec.corr = NA
@@ -212,7 +212,7 @@
 		table <- rbind(spear.mean, counter, vec.corr)
 		rownames(table) <- c("Mantel.mean", "Prob", "Corrected.prob")
 		colnames(table) <- colnames(table,do.NULL = FALSE, prefix = "Dmat.")
-	
+
 	## Mantel tests
 	if(mantel) {
 		diag(Mantel.cor) <- 1
@@ -221,13 +221,13 @@
 		Mantel.prob <- matrix(1,nmat,nmat)
 		rownames(Mantel.prob) <- colnames(table)
 		colnames(Mantel.prob) <- colnames(table)
-		
+
 		for(j in 1:nperm) {   # Each matrix is permuted independently
 	    	                  # There is no need to permute the last matrix
 			Rmat.perm <- rep(NA,nd)
 			##
 			if(asymm & !make.sym) {
-				## For asymmetric matrices: permute the values within each triangular 
+				## For asymmetric matrices: permute the values within each triangular
 				## portion, stored as square matrices in D1[[]] and D2[[]]
 				for(k in 1:(nmat-1)) {
 					order <- sample(n)
@@ -260,7 +260,7 @@
 		Mantel.prob <- as.matrix(as.dist(Mantel.prob/(nperm+1)))
 		diag(Mantel.prob) <- NA # Corrected 08feb13
 		}
-	
+
 	})
 	a[3] <- sprintf("%2f",a[3])
 	if(!silent) cat("Time to compute a posteriori tests (per matrix) =",a[3]," sec",'\n')

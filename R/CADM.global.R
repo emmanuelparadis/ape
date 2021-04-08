@@ -1,21 +1,21 @@
 `CADM.global` <-
 	function(Dmat, nmat, n, nperm=99, make.sym=TRUE, weights=NULL, silent=FALSE)
 {
-### Function to test the overall significance of the congruence among 
+### Function to test the overall significance of the congruence among
 ### a group of distance matrices using Kendall's coefficient of concordance W.
 ###
 ### copyleft - Pierre Legendre, December 2008
 ###
 ### Reference -
-### Legendre, P. and F.-J. Lapointe. 2004. Assessing congruence among distance 
-### matrices: single malt Scotch whiskies revisited. Australian and New Zealand 
+### Legendre, P. and F.-J. Lapointe. 2004. Assessing congruence among distance
+### matrices: single malt Scotch whiskies revisited. Australian and New Zealand
 ### Journal of Statistics 46: 615-629.
 ###
 ### Parameters of the function --
 ###
 ### Dmat = A text file listing the distance matrices one after the other, with
 ###        or without blank lines.
-###        Each matrix is in the form of a square distance matrix with 0's 
+###        Each matrix is in the form of a square distance matrix with 0's
 ###        on the diagonal.
 ###
 ### nmat = number of distance matrices in file Dmat.
@@ -24,27 +24,27 @@
 ###
 ### nperm = number of permutations for the tests.
 ###
-### make.sym = TRUE: turn asymmetric matrices into symmetric matrices by 
+### make.sym = TRUE: turn asymmetric matrices into symmetric matrices by
 ###            averaging the two triangular portions.
 ###          = FALSE: analyse asymmetric matrices as they are.
 ###
-### weights = a vector of positive weights for the distance matrices. 
+### weights = a vector of positive weights for the distance matrices.
 ###           Example: weights = c(1,2,3)
 ###         = NULL (default): all matrices have same weight in calculation of W.
 ###
-### silent = TRUE: informative messages will not be printed, except stopping 
+### silent = TRUE: informative messages will not be printed, except stopping
 ###          messages. Option useful for simulation work.
 ###        = FALSE: informative messages will be printed.
 ###
 ################################################################################
-	
-	if(nmat < 2) 
+
+	if(nmat < 2)
 		stop("Analysis requested for a single D matrix: CADM is useless")
-	
+
 	a <- system.time({
 
     ## Check the input file
-    if(ncol(Dmat) != n) 
+    if(ncol(Dmat) != n)
     	stop("Error in the value of 'n' or in the D matrices themselves")
     nmat2 <- nrow(Dmat)/n
     if(nmat2 < nmat)  # OK if 'nmat' < number of matrices in the input file
@@ -54,14 +54,14 @@
     if(is.null(weights)) {
     	w <- rep(1,nmat)
     	} else {
-    	if(length(weights) != nmat) 
+    	if(length(weights) != nmat)
     		stop("Incorrect number of values in vector 'weights'")
-    	if(length(which(weights < 0)) > 0) 
+    	if(length(which(weights < 0)) > 0)
     		stop("Negative weights are not permitted")
     	w <- weights*nmat/sum(weights)
     	if(!silent) cat("Normalized weights =",w,'\n')
     	}
-    
+
     ## Are asymmetric D matrices present?
     asy <- rep(FALSE, nmat)
 	asymm <- FALSE
@@ -70,7 +70,7 @@
         begin <- end+1
         end <- end+n
         D.temp <- Dmat[begin:end,]
-        if(sum(abs(diag(as.matrix(D.temp)))) > 0) 
+        if(sum(abs(diag(as.matrix(D.temp)))) > 0)
         	stop("Diagonal not 0: matrix #",k," is not a distance matrix")
         vec1 <- as.vector(as.dist(D.temp))
         vec2 <- as.vector(as.dist(t(D.temp)))
@@ -93,7 +93,7 @@
     	if(!silent) cat("Analysis of symmetric matrices",'\n')
     	}
     Y <- rep(NA,nd)
-    
+
     ## String out the distance matrices (vec) and assemble them as columns into matrix 'Y'
     ## Construct also matrices of ranked distances D1[[k]] and D2[[k]] for permutation test
     end <- 0
@@ -104,7 +104,7 @@
         vec <- as.vector(as.dist(D.temp))
         if(asymm) {
         	if(!make.sym) {
-        		## Analysis carried out on asymmetric matrices: 
+        		## Analysis carried out on asymmetric matrices:
         		## The ranks are computed on the whole matrix except the diagonal values.
         		## The two halves are stored as symmetric matrices in D1[[k]] and D2[[k]]
         		vec <- c(vec, as.vector(as.dist(t(D.temp))))
@@ -136,9 +136,9 @@
         }
     Y <- as.matrix(Y[,-1])
     colnames(Y) <- colnames(Y,do.NULL = FALSE, prefix = "Dmat.")
-    
+
     ## Begin calculations for global test
-    
+
     ## Compute the reference values of the statistics: W and Chi2
 	## Transform the distances to ranks, by column
 	Rmat <- apply(Y,2,rank)
@@ -147,18 +147,18 @@
 	t.ranks <- apply(Rmat, 2, function(x) summary(as.factor(x), maxsum=nd))
 	TT <- sum(unlist(lapply(t.ranks, function(x) sum((x^3)-x))))
 	# if(!silent) cat("TT = ",TT,'\n')
-	
+
 	## Compute the S = Sum-of-Squares of the row-marginal sums of ranks (eq. 1a)
 	## The ranks are weighted during the sum by the vector of matrix weights 'w'
 	## Eq. 1b cannot be used with weights; see formula for W below
 	sumRanks <- as.vector(Rmat%*%w)
 	S <- (nd-1)*var(sumRanks)
-	
+
 	## Compute Kendall's W (eq. 2a)
-	## Eq. 2b cannot be used with weights 
+	## Eq. 2b cannot be used with weights
 	## because the sum of all ranks is not equal to m*n*(n+1)/2 in that case
 	W <- (12*S)/(((nmat^2)*((nd^3)-nd))-(nmat*TT))
-		
+
 	## Calculate Friedman's Chi-square (Kendall W paper, 2005, eq. 3.4)
 	Chi2 <- nmat*(nd-1)*W
 
@@ -169,7 +169,7 @@
 		Rmat.perm <- rep(NA,nd)
 		##
 		if(asymm & !make.sym) {
-			## For asymmetric matrices: permute the values within each triangular 
+			## For asymmetric matrices: permute the values within each triangular
 			## portion, stored as square matrices in D1[[]] and D2[[]]
 			for(k in 1:(nmat-1)) {
 				order <- sample(n)
@@ -190,8 +190,8 @@
 				Rmat.perm <- cbind(Rmat.perm, vec)
 			}
 		# Remove the first column of Rmat.perm containing NA
-		# The test is based on the comparison of S and S.perm instead of the comparison of 
-		# Chi2 and Chi2.perm: it is faster that way. 
+		# The test is based on the comparison of S and S.perm instead of the comparison of
+		# Chi2 and Chi2.perm: it is faster that way.
 		# S, W, and Chi2 are equivalent statistics for permutation tests.
 		Rmat.perm <- as.matrix(Rmat.perm[,-1])
 		S.perm <- (nd-1)*var(as.vector(Rmat.perm%*%w))

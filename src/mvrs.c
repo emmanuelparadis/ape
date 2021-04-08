@@ -12,9 +12,6 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
 
         double *S,*R ,*new_v, Sdist, Ndist, *new_dist, A, B, smallest_S;
 	int n, i, j, k, ij, OTU1, OTU2, cur_nod, o_l, *otu_label;
-        /*for(i=0;i<n*(n-1)/2;i++)
-          {if(isNA(D[i])){D[i]=-1;}
-          }*/
         int *s;//s contains |Sxy|, which is all we need for agglomeration
         double *newR;
         int *newS;
@@ -63,38 +60,16 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
 		  if(i!=k)R[give_index(i,j,n)]+=D[give_index(i,k,n)];
 		  if(j!=k)R[give_index(i,j,n)]+=D[give_index(j,k,n)];
                   s[give_index(i,j,n)]++;
-                  //Rprintf("%i",s[give_index(i,j,n)]);
 
                   continue;
                }
               if(D[give_index(i,k,n)]==-1 || D[give_index(j,k,n)]==-1)continue;
-              //Rprintf("%i\n",k);
               s[give_index(i,j,n)]++;
               R[give_index(i,j,n)]+=D[give_index(i,k,n)];
               R[give_index(i,j,n)]+=D[give_index(j,k,n)];
-              //Rprintf("%i",s[give_index(i,j,n)]);
-              //Rprintf("%f",R[give_index(i,j,n)]);
-
            }
          }
 
-        /*for(i=1;i<n;i++)
-                  {
-                    for(j=i+1;j<=n;j++)
-                      {
-                        Rprintf("R[%i,%i]=%f ",i,j,R[give_index(i,j,n)]);
-                      }
-                    Rprintf("\n");
-                  }
-
-                for(i=1;i<n;i++)
-                  {
-                    for(j=i+1;j<=n;j++)
-                      {
-                        Rprintf("s[%i,%i]=%i ",i,j,s[give_index(i,j,n)]);
-                      }
-                    Rprintf("\n");
-                  }*/
         k=0;
         int sw=1;//if 1 then incomplete
 	while (n > 3) {
@@ -117,21 +92,16 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
                      {
                       choosePair(D,n,R,s,&sw,&OTU1,&OTU2,fS);
                      }
-                 else{ //Rprintf("distance matrix is now complete\n");
+                 else{
                         for (i=1;i<=n;i++)
                          for(j=1;j<=n;j++)
                            {if(i==j)continue;
-	      		   //Rprintf("give_index(%i,%i)=%i\n",i,j,give_index(i,j,n));
-			   //Rprintf("D[%i,%i]=%f\n",i,j,D[give_index(i,j,n)]);
                              S[i]+=D[give_index(i,j,n)];
                            }
                         B=n-2;
-                        //Rprintf("n=%i,B=%f",n,B);
 		        for (i = 1; i < n; i++) {
 			 for (j = i + 1; j <= n; j++) {
-				 //Rprintf("S[%i]=%f, S[%i]=%f, D[%i,%i]=%f, B=%f",i,S[i],j,S[j],i,j,D[give_index(i,j,n)],B);
                                 A=S[i]+S[j]-B*D[give_index(i,j,n)];
-                                //Rprintf("Q[%i,%i]=%f\n",i,j,A);
 				if (A > smallest_S) {
 					OTU1 = i;
 					OTU2 = j;
@@ -145,34 +115,6 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
                 if(s[give_index(OTU1,OTU2,n)]<=2)
                   {error("distance information insufficient to construct a tree, leaves %i and %i isolated from tree",OTU1,OTU2);
                   }
-                //Rprintf("agglomerating %i and %i, Q=%f \n",OTU1,OTU2,smallest_S);
-
-                /*for(i=1;i<n;i++)
-                  {
-                    for(j=i+1;j<=n;j++)
-                      {
-                        Rprintf("R[%i,%i]=%f ",i,j,R[give_index(i,j,n)]);
-                      }
-                    Rprintf("\n");
-                  }
-
-                for(i=1;i<n;i++)
-                  {
-                    for(j=i+1;j<=n;j++)
-                      {
-                        Rprintf("s[%i,%i]=%i ",i,j,s[give_index(i,j,n)]);
-                      }
-                    Rprintf("\n");
-                  }
-
-                for(i=1;i<n;i++)
-                  {
-                    for(j=i+1;j<=n;j++)
-                      {
-                        Rprintf("d[%i,%i]=%f ",i,j,D[give_index(i,j,n)]);
-                      }
-                    Rprintf("\n");
-                  }*/
 
                 //update R and S, only if matrix still incomplete
                 if(sw==1)
@@ -204,7 +146,6 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
                  {
                    if(i == OTU1 || i==OTU2)continue;
                    if(D[give_index(i,OTU1,n)]==-1 || D[give_index(i,OTU2,n)]==-1)continue;
-                   //Rprintf("index(%i,%i)=%i index(%i,%i)=%i",i,OTU1,give_index(i,OTU1,n),i,OTU2,give_index(i,OTU2,n));
                    miuSum+=(1/(v[give_index(i,OTU1,n)]+v[give_index(i,OTU2,n)]));
                  }
                 miuSum=1/miuSum;
@@ -271,13 +212,6 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
 			}
 		}
 
-                /*for(i=1;i<n-1;i++)
-                {
-                  for(j=i+1;j<=n-1;j++)
-                   {Rprintf("%f ",new_dist[give_index(i,j,n-1)]);
-                   }
-                  Rprintf("\n");
-                }*/
                 //compute Rui, only if distance matrix is still incomplete
                 ij=0;
                 if(sw==1)
@@ -328,8 +262,6 @@ void C_mvrs(double *D, double* v,int *N, int *edge1, int *edge2, double *edge_le
                   }
                 }
 		/* compute the branch lengths */
-
-
 
 		/* update before the next loop
 		   (we are sure that OTU1 < OTU2) */

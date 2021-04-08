@@ -1,4 +1,4 @@
-'biplot.pcoa' <- 
+'biplot.pcoa' <-
     function(x, Y=NULL, plot.axes=c(1,2), dir.axis1=1, dir.axis2=1,rn=NULL,main=NULL, ...)
 # x = output object from function pcoa.R
 # Y = optional sites-by-variables data table
@@ -26,10 +26,10 @@
 	pr.coo[,plot.axes] <- pr.coo[,plot.axes] %*% diag.dir
 
 	if(is.null(Y)) {
-		limits <- apply(pr.coo[,plot.axes], 2, range) 
+		limits <- apply(pr.coo[,plot.axes], 2, range)
 		ran.x <- limits[2,1] - limits[1,1]
 		ran.y <- limits[2,2] - limits[1,2]
-		xlim <- c((limits[1,1]-ran.x/10), (limits[2,1]+ran.x/5)) 
+		xlim <- c((limits[1,1]-ran.x/10), (limits[2,1]+ran.x/5))
 		ylim <- c((limits[1,2]-ran.y/10), (limits[2,2]+ran.y/10))
 
 		par(mai = c(1.0, 1.0, 1.0, 0.5))
@@ -40,7 +40,7 @@
    			} else {
    			title(main = main, family="serif", line=2)
    			}
-	
+
 		} else {
 		# Find positions of variables in biplot:
 		# construct U from covariance matrix between Y and standardized point vectors

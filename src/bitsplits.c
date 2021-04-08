@@ -46,86 +46,6 @@ void OneWiseBitsplits(unsigned char *mat, int nr, int nc, int rest)
     }
 }
 
-/* #define update_L(x)\ */
-/*     k = e[i] - *n - 1;\ */
-/*     L[k + *m * pos[k]] = x;\ */
-/*     pos[k]++ */
-
-/* void bitsplits_phylo(int *n, int *m, int *e, int *N, int *nr, unsigned char *mat) */
-/* /\* n: nb of tips, m: nb of nodes, N: nb of edges, */
-/*    nr: number of rows in mat *\/ */
-/* { */
-/*     int ii, i, j, k, d, y, *L, *pos, inod; */
-
-/*     L = (int*)R_alloc(*n * *m, sizeof(int)); */
-/*     pos = (int*)R_alloc(*m, sizeof(int)); */
-/*     memset(pos, 0, *m * sizeof(int)); */
-
-/*     ii = 0; */
-/*     for (i = 0; i < *N; i++) { */
-/* 	d = e[i + *N]; */
-/* /\* Rprintf("d = %d\n", d); *\/ */
-/* 	if (d <= *n) { /\* trivial split from a terminal branch *\/ */
-/* 	    update_L(d); /\* update L *\/ */
-/* 	} else { */
-/* 	    inod = d - *n - 1; */
-/* 	    for (j = 0; j < pos[inod]; j++) { */
-/* 		y = L[inod + *m * j]; */
-/* /\* Rprintf("\ty = %d\n", y); *\/ */
-/* /\* Rprintf("\t\ty / 9 + *nr * ii = %d\n", y / 9 + *nr * ii); *\/ */
-/* /\* Rprintf("\t\ty % 8 = %d\n", y % 8); *\/ */
-/* 		mat[(y -1) / 8 + *nr * ii] |= mask81[y % 8]; */
-/* 		update_L(y); /\* update L *\/ */
-/* 	    } */
-/* 	    ii++; */
-/* 	} */
-/*     } */
-/*     OneWiseBitsplits(mat, *nr, ii, *n % 8); */
-/* } */
-
-/* void CountBipartitionsFromTrees(int *n, int *m, int *e, int *N, int *nr, int *nc, unsigned char *mat, double *freq) */
-/* { */
-/*     int i, j, k, d, y, *L, *pos, inod; */
-/*     unsigned char *split; */
-
-/*     L = (int*)R_alloc(*n * *m, sizeof(int)); */
-/*     pos = (int*)R_alloc(*m, sizeof(int)); */
-/*     memset(pos, 0, *m * sizeof(int)); */
-/*     split = (unsigned char*)R_alloc(*nr, sizeof(unsigned char)); */
-
-/*     for (i = 0; i < *N; i++) { */
-/* 	memset(split, 0, *nr * sizeof(unsigned char)); */
-/* 	d = e[i + *N]; */
-/* 	if (d <= *n) { /\* trivial split from a terminal branch *\/ */
-/* 	    update_L(d); */
-/* 	} else { */
-/* 	    inod = d - *n - 1; */
-/* 	    for (j = 0; j < pos[inod]; j++) { */
-/* 		y = L[inod + *m * j]; */
-/* 		split[(y - 1) / 8] |= mask81[y % 8]; */
-/* 		update_L(y); */
-/* 	    } */
-/* 	} */
-/* 	OneWiseBitsplits(split, *nr, 1, *n % 8); */
-/* 	j = 0; /\* column of mat *\/ */
-/* 	k = 0; /\* row *\/ */
-/* 	y = 0; /\* number of columns of mat to shift *\/ */
-/* 	while (j < *nc) { */
-/* 	    if (split[k] != mat[k + y]) { /\* the two splits are different so move to the next col of mat *\/ */
-/* 		j++; */
-/* 		k = 0; */
-/* 		y += *nr; */
-/* 	    } else k++; */
-/* 	    if (k == *nr) { /\* the two splits are the same so stop here *\/ */
-/* 		freq[j]++; */
-/* 		break; */
-/* 	    } */
-/* 	} */
-/*     } */
-/* } */
-
-/* #undef update_L */
-
 static int iii;
 
 void bar_reorder2(int node, int n, int m, int Nedge, int *e, int *neworder, int *L, int *pos)
@@ -162,15 +82,12 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 
     Nc = (Ntip - 3) * Ntrees; /* the maximum number of splits that can be found */
 
-/* Rprintf("Nc = %d\n", Nc); */
-
     PROTECT(mat = allocVector(RAWSXP, Nr * Nc));
     PROTECT(freq = allocVector(INTSXP, Nc));
     rmat = RAW(mat);
     rfreq = INTEGER(freq);
 
     memset(rmat, 0, Nr * Nc * sizeof(unsigned char));
-    /* memset(rfreq, 0, Nc * sizeof(int)); */
 
     split = (unsigned char*)R_alloc(Nr, sizeof(unsigned char));
 
@@ -178,14 +95,10 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 
     for (itr = 0; itr < Ntrees; itr++) {
 
-/* Rprintf("itr = %d\n", itr); */
-
 	Nnode = *INTEGER(getListElement(VECTOR_ELT(x, itr), "Nnode"));
 	PROTECT(EDGE = getListElement(VECTOR_ELT(x, itr), "edge"));
 	e = INTEGER(EDGE);
 	Nedge = LENGTH(EDGE)/2;
-
-/* Rprintf("Nedge = %d\n", Nedge); */
 
 	/* see explanations in ape/src/reorder_phylo.c */
 	L = (int*)R_alloc(Nnode * (Nedge - Ntip + 1), sizeof(int));
@@ -224,7 +137,6 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 	    inod = d - Ntip - 1;
 	    for (j = 0; j < pos[inod]; j++) {
 		y = L[inod + Nnode * j];
-/* Rprintf("itr = %d\ty = %d\n", itr, y); */
 		split[(y - 1) / 8] |= mask81[y % 8];
 		update_L(y); /* update L */
 	    }
@@ -249,7 +161,6 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 		}
 	    }
 	    if (new_split) {
-/* Rprintf("ispl = %d\n", ispl); */
                 for (j = 0; j < Nr; j++) rmat[j + ispl * Nr] = split[j];
 		rfreq[ispl] = 1;
 		ispl++;
