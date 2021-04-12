@@ -4,6 +4,8 @@
 \description{
   This function writes in a file a list of data in the NEXUS format. The
   names of the vectors of the list are used as taxon names.
+
+  For the moment, only sequence data (DNA or protein) are supported.
 }
 \usage{
 write.nexus.data(x, file, format = "dna", datablock = TRUE,

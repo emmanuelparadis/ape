@@ -1,8 +1,8 @@
-## DNA.R (2020-08-19)
+## DNA.R (2021-04-09)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
-## Copyright 2002-2020 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
+## Copyright 2002-2021 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -415,7 +415,7 @@ dist.dna <- function(x, model = "K80", variance = FALSE, gamma = FALSE,
     }
     if (is.list(x)) x <- as.matrix(x)
     nms <- dimnames(x)[[1]]
-    n <- length(nms)
+    n <- dim(x)[1] # in case nms is NULL
 
     if (imod %in% c(4, 6:8)) {
         BF <- if (is.null(base.freq)) base.freq(x) else base.freq

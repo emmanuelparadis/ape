@@ -8,6 +8,8 @@
   \code{read.nexus.data} reads a file with sequences in the NEXUS
   format. \code{nexus2DNAbin} is a helper function to convert the output
   from the previous function into the class \code{"DNAbin"}.
+
+  For the moment, only sequence data (DNA or protein) are supported.
 }
 \usage{
 read.nexus.data(file)

@@ -1,9 +1,9 @@
-## dist.topo.R (2020-07-20)
+## dist.topo.R (2021-04-11)
 
 ##      Topological Distances, Tree Bipartitions,
 ##   Consensus Trees, and Bootstrapping Phylogenies
 
-## Copyright 2005-2020 Emmanuel Paradis, 2016-2017 Klaus Schliep
+## Copyright 2005-2021 Emmanuel Paradis, 2016-2017 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -243,6 +243,11 @@ boot.phylo <-
     y <- nc <- ncol(x)
     nr <- nrow(x)
 
+    if (nr < 4 && !trees) {
+        warning("not enough rows in 'x' to compute bootstrap values.\nSet 'trees = TRUE' if you want to get the bootstrap trees")
+        return(integer())
+    }
+
     if (block > 1) {
         a <- seq(1, nc - 1, block)
         b <- seq(block, nc, block)
@@ -274,6 +279,9 @@ boot.phylo <-
         if (!quiet) cat(" done.")
     }
 
+    if (nr < 4 && trees)
+        return(list(BP = integer(), trees = boot.tree))
+
     if (!quiet) cat("\nCalculating bootstrap values...")
 
     ## sort labels after mixed them up
@@ -290,7 +298,7 @@ boot.phylo <-
         phy <- reorder(phy, "postorder")
         ints <- phy$edge[, 2] > Ntip(phy)
         ans <- countBipartitions(phy, boot.tree)
-        ans <- c(B, ans[order(phy$edge[ints, 2])])
+        ans <- c(NA_integer_, ans[order(phy$edge[ints, 2])])
     }
 
     if (!quiet) cat(" done.\n")
