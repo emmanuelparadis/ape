@@ -217,7 +217,7 @@ prop.clades <- function(phy, ..., part = NULL, rooted = FALSE)
     bp <- prop.part(phy)
     if (!rooted) {
         ## avoid messing up the order and length if phy is rooted in some cases
-        bp <- ONEwise(bp)
+        bp <- SHORTwise(bp)
         part <- postprocess.prop.part(part)
     }
     pos <- match(bp, part)
@@ -319,7 +319,7 @@ postprocess.prop.part <- function(x)
     w <- attr(x, "number")
     labels <- attr(x, "labels")
 
-    x <- ONEwise(x)
+    x <- SHORTwise(x)
     drop <- duplicated(x)
 
     if (any(drop)) {
@@ -348,6 +348,31 @@ ONEwise <- function(x)
     }
     x
 }
+
+### This function changes an object of class "prop.part" so that they
+### all include the the shorter part of the partition. 
+### For instance if n = 5 tips, 1:3 is changed to 4:5. In case n is even, e.g. 
+### n = 6 similar to ONEwise.  
+SHORTwise <- function(x) {
+  # the ensures th next line should also work for splits objects from phangorn
+  nTips <- length(attr(x, "labels"))
+  v <- seq_len(nTips)
+  l <- lengths(x)
+  lv <- nTips / 2
+  for (i in seq_along(x)) {
+    if (l[i] > lv) {
+      y <- x[[i]]
+      x[[i]] <- v[-y]
+    }
+    if (l[i] == lv) {
+      y <- x[[i]]
+      if (y[1] != 1)
+        x[[i]] <- v[-y]
+    }
+  }
+  x
+}
+
 
 consensus <- function(..., p = 1, check.labels = TRUE)
 {
