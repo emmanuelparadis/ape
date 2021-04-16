@@ -9,7 +9,6 @@
 \alias{plotPhyloCoor}
 \alias{postprocess.prop.part}
 \alias{ONEwise}
-\alias{SHORTwise}
 \alias{reorderRcpp}
 \alias{polar2rect}
 \alias{rect2polar}

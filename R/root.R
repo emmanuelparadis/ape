@@ -1,8 +1,8 @@
-## root.R (2019-06-18)
+## root.R (2021-04-15)
 
 ##   Roots Phylogenetic Trees
 
-## Copyright 2004-2019 Emmanuel Paradis
+## Copyright 2004-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -134,6 +134,11 @@ root.phylo <- function(phy, outgroup, node = NULL, resolve.root = FALSE,
         node <- identify(phy)$nodes
         cat("You have set resolve.root =", resolve.root, "\n")
     }
+
+    ## added to solve some issues (2021-04-15):
+    if (!interactive && is.null(node) && length(outgroup) > 1 && resolve.root)
+        phy <- unroot(phy)
+    ## -> the condition check should insure compatibility
 
     e1 <- phy$edge[, 1L]
     e2 <- phy$edge[, 2L]

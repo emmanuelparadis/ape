@@ -3,7 +3,7 @@
 ##      Topological Distances, Tree Bipartitions,
 ##   Consensus Trees, and Bootstrapping Phylogenies
 
-## Copyright 2005-2021 Emmanuel Paradis, 2016-2017 Klaus Schliep
+## Copyright 2005-2021 Emmanuel Paradis, 2016-2021 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -350,9 +350,9 @@ ONEwise <- function(x)
 }
 
 ### This function changes an object of class "prop.part" so that they
-### all include the the shorter part of the partition. 
-### For instance if n = 5 tips, 1:3 is changed to 4:5. In case n is even, e.g. 
-### n = 6 similar to ONEwise.  
+### all include the the shorter part of the partition.
+### For instance if n = 5 tips, 1:3 is changed to 4:5. In case n is even, e.g.
+### n = 6 similar to ONEwise.
 SHORTwise <- function(x) {
   # the ensures th next line should also work for splits objects from phangorn
   nTips <- length(attr(x, "labels"))
