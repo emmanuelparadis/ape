@@ -341,12 +341,15 @@ postprocess.prop.part <- function(x)
 ### changed to 1:2.
 ONEwise <- function(x)
 {
-    v <- seq_along(x[[1L]])
-    for (i in 2:length(x)) {
-        y <- x[[i]]
-        if (y[1] != 1) x[[i]] <- v[-y]
-    }
-    x
+  nTips <- length(attr(x, "labels"))
+  v <- seq_len(nTips)
+  l <- which(lengths(x)==0)
+  if(any(l)) for(i in l)x[[i]] <- v
+  for (i in seq_along(x)) {
+    y <- x[[i]]
+    if (y[1] != 1) x[[i]] <- v[-y]
+  }
+  x
 }
 
 ### This function changes an object of class "prop.part" so that they
