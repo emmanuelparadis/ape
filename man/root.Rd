@@ -90,7 +90,7 @@ is.rooted(phy)
   Czech, L., Huerta-Cepas, J. and Stamatakis, A. (2017) A critical
   review on the use of support values in tree viewers and bioinformatics
   toolkits. \emph{Molecular Biology and Evolution}, \bold{34},
-  1535--1542. \url{https://doi.org/10.1093/molbev/msx055}
+  1535--1542. \doi{10.1093/molbev/msx055}
 }
 \author{Emmanuel Paradis}
 \seealso{

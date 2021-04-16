@@ -45,8 +45,7 @@ Ftab(x, y = NULL)
 }
 \author{Emmanuel Paradis}
 \seealso{
-  \code{\link{seg.sites}}, \code{\link[pegas]{nuc.div}},
-  \code{\link{DNAbin}}
+  \code{\link{seg.sites}}, \code{nuc.div} (in \pkg{pegas}), \code{\link{DNAbin}}
 }
 \examples{
 data(woodmouse)

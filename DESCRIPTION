@@ -1,5 +1,5 @@
 Package: ape
-Version: 5.4-4
+Version: 5.5
 Date: 2021-04-16
 Title: Analyses of Phylogenetics and Evolution
 Authors@R: c(person("Emmanuel", "Paradis", role = c("aut", "cre", "cph"), email = "Emmanuel.Paradis@ird.fr", comment = c(ORCID = "0000-0003-3092-2199")),

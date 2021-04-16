@@ -38,8 +38,7 @@ seg.sites(x, strict = FALSE, trailingGapsAsN = TRUE)
 }
 \author{Emmanuel Paradis}
 \seealso{
-  \code{\link{base.freq}}, \code{\link[pegas]{theta.s}},
-  \code{\link[pegas]{nuc.div}}
+  \code{\link{base.freq}}, \code{theta.s}, \code{nuc.div} (last two in \pkg{pegas})
 }
 \examples{
 data(woodmouse)

@@ -48,8 +48,7 @@ slowinskiguyer.test(x, detail = FALSE)
   \code{\link{balance}}, \code{\link{mcconwaysims.test}},
   \code{\link{diversity.contrast.test}},
   \code{\link{richness.yule.test}},
-  \code{\link[geiger]{rc}} in \pkg{geiger},
-  \code{\link[apTreeshape]{shift.test}} in \pkg{apTreeshape}
+  \code{rc} in \pkg{geiger}, \code{shift.test} in \pkg{apTreeshape}
 }
 \examples{
 ### from Table 1 in Slowinski and Guyer(1993):

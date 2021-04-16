@@ -40,8 +40,7 @@ mcconwaysims.test(x)
 \author{Emmanuel Paradis}
 \seealso{
   \code{\link{balance}}, \code{\link{slowinskiguyer.test}},
-  \code{\link[geiger]{rc}} in \pkg{geiger},
-  \code{\link[apTreeshape]{shift.test}} in \pkg{apTreeshape}
+  \code{rc} in \pkg{geiger}, \code{shift.test} in \pkg{apTreeshape}
 }
 \examples{
 ### simulate 10 clades with lambda = 0.1 and mu = 0.09:

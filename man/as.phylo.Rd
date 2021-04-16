@@ -13,7 +13,7 @@
   \code{as.phylo} is a generic function which converts an object into a
   tree of class \code{"phylo"}. There are currently two methods for
   objects of class \code{"hclust"} and of class \code{"phylog"}
-  (implemented in the package ade4).
+  (implemented in the package \pkg{ade4}).
 
   \code{as.hclust.phylo} is a method of the generic
   \code{\link[stats]{as.hclust}} which converts an object of class
@@ -63,8 +63,7 @@ new2old.phylo(phy)
 \author{Emmanuel Paradis}
 \seealso{
   \code{\link[stats]{hclust}}, \code{\link[stats]{as.hclust}},
-  \code{\link[stats]{dendrogram}}, \code{\link[ade4]{phylog}},
-  \code{\link{as.phylo.formula}}
+  \code{\link[stats]{dendrogram}}, \code{\link{as.phylo.formula}}
 }
 \examples{
 data(bird.orders)
