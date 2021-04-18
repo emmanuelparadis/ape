@@ -69,9 +69,16 @@ dist.topo(x, y = NULL, method = "PH85")
   \code{\link{cophenetic.phylo}}, \code{\link{prop.part}}
 }
 \examples{
-ta <- rtree(30)
-tb <- rtree(30)
+ta <- rtree(30, rooted = FALSE)
+tb <- rtree(30, rooted = FALSE)
 dist.topo(ta, ta) # 0
 dist.topo(ta, tb) # unlikely to be 0
+
+## rmtopology() simulated unrooted trees by default:
+TR <- rmtopology(100, 10)
+## these trees have 7 internal branches, so the maximum distance
+## between two of them is 14:
+DTR <- dist.topo(TR)
+table(DTR)
 }
 \keyword{manip}

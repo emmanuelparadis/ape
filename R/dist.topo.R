@@ -1,4 +1,4 @@
-## dist.topo.R (2021-04-11)
+## dist.topo.R (2021-04-18)
 
 ##      Topological Distances, Tree Bipartitions,
 ##   Consensus Trees, and Bootstrapping Phylogenies
@@ -35,7 +35,9 @@ dist.topo <- function(x, y = NULL, method = "PH85")
 
         foo <- function(phy, ntip) {
             phy <- reorder(phy, "postorder")
-            ans <- ONEwise(bipartition2(phy$edge, ntip))
+            pp <- bipartition2(phy$edge, ntip)
+            attr(pp, "labels") <- phy$tip.label
+            ans <- SHORTwise(pp)
             sapply(ans, paste, collapse = "\r")
         }
 
@@ -218,7 +220,7 @@ prop.clades <- function(phy, ..., part = NULL, rooted = FALSE)
     if (!rooted) {
         ## avoid messing up the order and length if phy is rooted in some cases
         bp <- SHORTwise(bp)
-        part <- postprocess.prop.part(part)
+        part <- postprocess.prop.part(part, "SHORTwise")
     }
     pos <- match(bp, part)
     tmp <- which(!is.na(pos))
@@ -308,18 +310,22 @@ boot.phylo <-
 }
 
 ### The next function transforms an object of class "prop.part" so
-### that the vectors which are identical in terms of split are aggregated.
+### that the vectors which are identical in terms of splits are aggregated.
 ### For instance if n = 5 tips, 1:2 and 3:5 actually represent the same
 ### split though they are different clades. The aggregation is done
-### arbitrarily. The call to ONEwise() insures that all splits include
-### the first tip.
+### arbitrarily.
+### The call to SHORTwise() insures that all splits are the shortest ones.
+### The call to ONEwise() insures that all splits include the first tip.
 ### (rewritten by Klaus)
-postprocess.prop.part <- function(x)
+postprocess.prop.part <- function(x, method = "ONEwise")
 {
     w <- attr(x, "number")
     labels <- attr(x, "labels")
 
-    x <- SHORTwise(x)
+    method <- match.arg(toupper(method), c("ONEWISE", "SHORTWISE"))
+    FUN <- switch(method, "ONEWISE" = ONEwise, "SHORTWISE" = SHORTwise)
+
+    x <- FUN(x)
     drop <- duplicated(x)
 
     if (any(drop)) {
@@ -341,41 +347,38 @@ postprocess.prop.part <- function(x)
 ### changed to 1:2.
 ONEwise <- function(x)
 {
-  nTips <- length(attr(x, "labels"))
-  v <- seq_len(nTips)
-  l <- which(lengths(x)==0)
-  if(any(l)) for(i in l)x[[i]] <- v
-  for (i in seq_along(x)) {
-    y <- x[[i]]
-    if (y[1] != 1) x[[i]] <- v[-y]
-  }
-  x
+    nTips <- length(attr(x, "labels"))
+    v <- seq_len(nTips)
+    l <- lengths(x) == 0
+    if (any(l)) x[l] <- list(v)
+    for (i in which(!l)) {
+        y <- x[[i]]
+        if (y[1] != 1) x[[i]] <- v[-y]
+    }
+    x
 }
 
 ### This function changes an object of class "prop.part" so that they
-### all include the the shorter part of the partition.
+### all include the shorter part of the partition.
 ### For instance if n = 5 tips, 1:3 is changed to 4:5. In case n is even, e.g.
 ### n = 6 similar to ONEwise.
 SHORTwise <- function(x) {
-  # the ensures th next line should also work for splits objects from phangorn
-  nTips <- length(attr(x, "labels"))
-  v <- seq_len(nTips)
-  l <- lengths(x)
-  lv <- nTips / 2
-  for (i in seq_along(x)) {
-    if (l[i] > lv) {
-      y <- x[[i]]
-      x[[i]] <- v[-y]
+    ## ensures the next line should also work for splits objects from phangorn
+    nTips <- length(attr(x, "labels"))
+    v <- seq_len(nTips)
+    l <- lengths(x)
+    lv <- nTips / 2
+    for (i in which(l >= lv)) {
+        y <- x[[i]]
+        if (l[i] > lv) {
+            x[[i]] <- v[-y]
+        } else { # (l[i] == lv) only possible alternative
+            if (y[1] != 1)
+                x[[i]] <- v[-y]
+        }
     }
-    if (l[i] == lv) {
-      y <- x[[i]]
-      if (y[1] != 1)
-        x[[i]] <- v[-y]
-    }
-  }
-  x
+    x
 }
-
 
 consensus <- function(..., p = 1, check.labels = TRUE)
 {
