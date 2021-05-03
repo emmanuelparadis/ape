@@ -1,8 +1,8 @@
-## as.bitsplits.R (2020-07-20)
+## as.bitsplits.R (2021-04-24)
 
 ##   Conversion Among Split Classes
 
-## Copyright 2011-2020 Emmanuel Paradis, 2019 Klaus Schliep
+## Copyright 2011-2021 Emmanuel Paradis, 2019 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -98,6 +98,8 @@ bitsplits <- function(x)
         if (!inherits(x, "multiPhylo"))
             stop('x is not of class "phylo" or "multiPhylo"')
     }
+    if (any(is.rooted(x)))
+        stop("bitsplits() accepts only unrooted trees")
     x <- .compressTipLabel(x)
     labs <- attr(x, "TipLabel")
     n <- length(labs)

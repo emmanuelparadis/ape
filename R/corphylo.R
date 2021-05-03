@@ -1,4 +1,4 @@
-## corphylo.R (2015-05-01)
+## corphylo.R (2021-04-24)
 
 ##   Ancestral Character Estimation
 
@@ -40,10 +40,12 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 		}
 
 		V <- C + diag(as.numeric(MM))
+		if (anyNA(V)) return(10^10)
 		if (is.nan(rcond(V)) || rcond(V) < 10^-10) 
 			return(10^10)
 		iV <- solve(V)
 		denom <- t(UU) %*% iV %*% UU
+		if (anyNA(denom)) return(10^10)
 		if (is.nan(rcond(denom)) || rcond(denom) < 10^-10) 
 			return(10^10)
 		num <- t(UU) %*% iV %*% XX

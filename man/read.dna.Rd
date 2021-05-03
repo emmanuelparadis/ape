@@ -185,10 +185,12 @@ unlink("exdna.fas.gz")
 
 ## read a FASTQ file from 1000 Genomes:
 \dontrun{
-a <- "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00096/sequence_read/"
+a <- "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00096/sequence_read/"
 b <- "SRR062641.filt.fastq.gz"
 URL <- paste0(a, b)
 download.file(URL, b)
+## If the above command doesn't work, you may copy/paste URL in
+## a Web browser instead.
 X <- read.fastq(b)
 X # 109,811 sequences
 ## get the qualities of the first sequence:

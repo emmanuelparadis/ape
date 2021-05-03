@@ -64,7 +64,7 @@ bstick.def <- function (n, tot.var = 1, ...)   # 'bstick.default' from vegan
 		k <- length(which(eig > epsilon))
 		rel.eig <- eig[1:k]/trace
 		cum.eig <- cumsum(rel.eig)
-		vectors <- sweep(D.eig$vectors[,1:k], 2, sqrt(eig[1:k]), FUN="*")
+		vectors <- sweep(D.eig$vectors[,1:k, drop = FALSE], 2, sqrt(eig[1:k]), FUN="*")
 		bs <- bstick.def(k)
 		cum.bs <- cumsum(bs)
 
@@ -90,7 +90,7 @@ bstick.def <- function (n, tot.var = 1, ...)   # 'bstick.default' from vegan
 		cum.eig.cor <- cumsum(rel.eig.cor)
 		k2 <- length(which(eig > epsilon))
 		k3 <- length(which(rel.eig.cor > epsilon))
-		vectors <- sweep(D.eig$vectors[,1:k2], 2, sqrt(eig[1:k2]), FUN="*")
+		vectors <- sweep(D.eig$vectors[, 1:k2, drop = FALSE], 2, sqrt(eig[1:k2]), FUN="*")
 		# Only the eigenvectors with positive eigenvalues are shown
 
 # Negative eigenvalues: three ways of handling the situation
@@ -129,7 +129,7 @@ bstick.def <- function (n, tot.var = 1, ...)   # 'bstick.default' from vegan
 		rel.eig.cor <- eig.cor[1:k]/trace.cor
 		cum.eig.cor <- cumsum(rel.eig.cor)
 		k2 <- length(which(eig.cor > epsilon))
-		vectors.cor <- sweep(toto.cor$vectors[,1:k2], 2, sqrt(eig.cor[1:k2]), FUN="*")
+		vectors.cor <- sweep(toto.cor$vectors[, 1:k2, drop = FALSE], 2, sqrt(eig.cor[1:k2]), FUN="*")
 		rownames(vectors.cor) <- names
 		colnames(vectors.cor) <- colnames(vectors.cor, do.NULL = FALSE, prefix = "Axis.")
 		# bs <- broken.stick(k2)[,2]

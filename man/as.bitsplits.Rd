@@ -10,10 +10,11 @@
 \title{Split Frequencies and Conversion Among Split Classes}
 \description{
   \code{bitsplits} returns the bipartitions (aka splits) for a single
-  tree or a list of trees.
+  tree or a list of trees. If at least one tree is rooted, an error is
+  returned.
 
   \code{countBipartitions} returns the frequencies of the bipartitions
-  from a reference tree (phy) observed in a list of trees (X).
+  from a reference tree (phy) observed in a list of trees (X), all unrooted.
 
   \code{as.bitsplits} and \code{as.prop.part} are generic functions for
   converting between the \code{"bitsplits"} and \code{"prop.part"}
@@ -41,9 +42,9 @@ as.prop.part(x, ...)
 }
 \details{
   These functions count bipartitions as defined by internal branches, so
-  they do not work with rooted trees (see examples). The structure of
-  the class \code{"bitsplits"} is described in a separate document
-  on ape's web site.
+  they not work only with unrooted trees. The structure of the class
+  \code{"bitsplits"} is described in a separate document on ape's web
+  site.
 }
 \value{
   \code{bitsplits}, \code{as.bitsplits}, and \code{sort} return an object
@@ -59,9 +60,7 @@ as.prop.part(x, ...)
 tr <- rtree(20)
 pp <- prop.part(tr)
 as.bitsplits(pp)
-## doesn't work for rooted trees...:
-countBipartitions(rtree(10), rmtree(100, 10))
-## ... but OK with unrooted trees:
+## works only with unrooted trees (ape 5.5):
 countBipartitions(rtree(10, rooted = FALSE), rmtree(100, 10, rooted = FALSE))
 }
 \keyword{manip}
