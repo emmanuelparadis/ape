@@ -29,7 +29,8 @@ new2old.phylo <- function(phy)
 
 as.phylo <- function (x, ...)
 {
-    if (identical(class(x), "phylo")) return(x)
+    ## if (identical(class(x), "phylo")) return(x)
+    if (inherits(x, "phylo")) return(x)
     UseMethod("as.phylo")
 }
 
