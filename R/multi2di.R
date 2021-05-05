@@ -12,8 +12,10 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
 .multi2di_ape <- function(phy, random, equiprob, n)
 {
     ## n: number of tips of phy
+    phy <- reorder(phy, "postorder")
     degree <- tabulate(phy$edge[, 1])
     target <- which(degree > 2)
+    pos <- match(target, phy$edge[,1])
     if (!length(target)) return(phy)
     nb.edge <- dim(phy$edge)[1]
     nextnode <- n + phy$Nnode + 1L
@@ -23,10 +25,11 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
         wbl <- TRUE
         new.edge.length <- NULL
     }
-
-    for (node in target) {
-        ind <- which(phy$edge[, 1] == node)
-        N <- length(ind)
+    
+    for (i in seq_along(target)) {
+        node <- target[i]
+        N <- degree[node]
+        ind <- pos[i] : (pos[i]+N-1L)
         desc <- phy$edge[ind, 2]
         if (random) {
           ## if we shuffle the descendants, we need to eventually
@@ -83,7 +86,7 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
         ## the root's label is not changed:
         phy$node.label <- phy$node.label[c(1, o)]
     }
-
+    
     ## executed from right to left, so newNb is modified before phy$edge:
     phy$edge[sndcol, 2] <- newNb[phy$edge[sndcol, 2] - n] <-
         n + 2:phy$Nnode
