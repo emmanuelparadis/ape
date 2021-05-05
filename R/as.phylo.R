@@ -1,8 +1,8 @@
-## as.phylo.R (2018-02-19)
+## as.phylo.R (2021-05-05)
 
 ##     Conversion Among Tree Objects
 
-## Copyright 2005-2018 Emmanuel Paradis
+## Copyright 2005-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -31,6 +31,12 @@ as.phylo <- function (x, ...)
 {
     if (identical(class(x), "phylo")) return(x)
     UseMethod("as.phylo")
+}
+
+as.phylo.default <- function(x, ...)
+{
+    if (inherits(x, "phylo")) return(x)
+    stop('object does not inherit the class "phylo": found no appropriate method to convert it')
 }
 
 as.phylo.hclust <- function(x, ...)

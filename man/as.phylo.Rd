@@ -1,5 +1,6 @@
 \name{as.phylo}
 \alias{as.phylo}
+\alias{as.phylo.default}
 \alias{as.phylo.hclust}
 \alias{as.phylo.phylog}
 \alias{as.hclust.phylo}
@@ -13,7 +14,8 @@
   \code{as.phylo} is a generic function which converts an object into a
   tree of class \code{"phylo"}. There are currently two methods for
   objects of class \code{"hclust"} and of class \code{"phylog"}
-  (implemented in the package \pkg{ade4}).
+  (implemented in the package \pkg{ade4}). The default method is for any
+  object inheriting the class \code{"phylo"} which is returned unchanged.
 
   \code{as.hclust.phylo} is a method of the generic
   \code{\link[stats]{as.hclust}} which converts an object of class
@@ -31,6 +33,7 @@
 }
 \usage{
 as.phylo(x, ...)
+\method{as.phylo}{default}(x, ...)
 \method{as.phylo}{hclust}(x, ...)
 \method{as.phylo}{phylog}(x, ...)
 \method{as.hclust}{phylo}(x, ...)

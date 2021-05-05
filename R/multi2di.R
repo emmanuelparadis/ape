@@ -1,8 +1,8 @@
-## multi2di.R (2020-12-15)
+## multi2di.R (2021-05-05)
 
 ##   Collapse or Resolve Multichotomies
 
-## Copyright 2005-2020 Emmanuel Paradis, 2018 Klaus Schliep
+## Copyright 2005-2021 Emmanuel Paradis, 2018-2021 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -25,7 +25,7 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
         wbl <- TRUE
         new.edge.length <- NULL
     }
-    
+
     for (i in seq_along(target)) {
         node <- target[i]
         N <- degree[node]
@@ -86,7 +86,7 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
         ## the root's label is not changed:
         phy$node.label <- phy$node.label[c(1, o)]
     }
-    
+
     ## executed from right to left, so newNb is modified before phy$edge:
     phy$edge[sndcol, 2] <- newNb[phy$edge[sndcol, 2] - n] <-
         n + 2:phy$Nnode
