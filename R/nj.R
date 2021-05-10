@@ -1,8 +1,8 @@
-## nj.R (2020-09-07)
+## nj.R (2021-05-10)
 
 ##   Neighbor-Joining Tree Estimation
 
-## Copyright 2004-2020 Emmanuel Paradis
+## Copyright 2004-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -18,7 +18,9 @@ nj <- function(X)
     if (N < 3) stop("cannot build an NJ tree with less than 3 observations")
     labels <- attr(X, "Labels")
     if (is.null(labels)) labels <- as.character(1:N)
-    obj <- .Call(C_nj, X, N)
+    DIST <- numeric(length(X))
+    DIST[] <- X[]
+    obj <- .Call(C_nj, DIST, N)
     names(obj) <- c("edge", "edge.length")
     dim(obj[[1]]) <- c(2L * N - 3L, 2L)
     obj$tip.label <- labels

@@ -120,7 +120,7 @@ examples).
 }
 \author{Emmanuel Paradis and RJ Ewing}
 \examples{
-## a small extract from data(woddmouse) in sequential format:
+## a small extract from data(woodmouse) in sequential format:
 cat("3 40",
 "No305     NTTCGAAAAACACACCCACTACTAAAANTTATCAGTCACT",
 "No304     ATTCGAAAAACACACCCACTACTAAAAATTATCAACCACT",
