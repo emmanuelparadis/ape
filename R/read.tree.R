@@ -1,4 +1,4 @@
-## read.tree.R (2021-05-04)
+## read.tree.R (2021-05-26)
 
 ##   Read Tree Files in Parenthetic Format
 
@@ -13,26 +13,30 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     if (!is.null(text)) {
         if (!is.character(text))
             stop("argument 'text' must be of mode character")
-        tree <- text
+        tree <- charToRaw(text)
     } else {
-        tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
-                     skip = skip, comment.char = comment.char, ...)
+        if (grepl("^(ht|f)tp(s|):", file)) {
+            url <- file
+            file <- tempfile()
+            download.file(url, file, quiet = TRUE)
+        }
+        tree <- readBin(file, "raw", file.size(file))
+###tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
+###             skip = skip, comment.char = comment.char, ...)
     }
+    ## 'tree' is of mode "raw" for the moment
 
     ## Suggestion from Eric Durand and Nicolas Bortolussi (added 2005-08-17):
-    if (identical(tree, character(0))) {
+###if (identical(tree, character(0))) {
+    if (!length(tree)) {
         warning("empty character string.")
         return(NULL)
     }
 
 #    tree <- gsub("'", "", tree) # fixed by GuangchuangYu (2021-01-04)
 
-    single_quotes <- function(x) {
-        single.quote <- as.raw(39)
-        x <- charToRaw(x)
-        z <- which(x == single.quote)
-        if (length(z) %% 2)
-            stop("wrong number of single quotes around labels")
+    single_quotes <- function(x, z) {
+        if (length(z) %% 2) stop("wrong number of single quotes around labels")
         l <- length(z) / 2
         opening <- z[c(TRUE, FALSE)]
         closing <- z[c(FALSE, TRUE)]
@@ -40,20 +44,29 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
         to <- c(opening - 1L, length(x))
         i <- mapply(":", from = from, to = to, SIMPLIFY = FALSE, USE.NAMES = FALSE)
         keep <- lapply(i, function(i) x[i])
-        tmp_label <- paste0("@_", 1:l, "_@")
+        tmp_label <- paste0("IMPROBABLEPREFIX", 1:l, "IMPROBABLESUFFIX")
         tmpLabsRaw <- lapply(tmp_label, charToRaw)
         n <- 2 * l + 1L
         res <- vector("list", n)
         res[seq(1, n, 2)] <- keep
         res[seq(2, n - 1, 2)] <- tmpLabsRaw
-        res <- rawToChar(unlist(res))
+        tree <<- unlist(res)
         i <- mapply(":", from = opening, to = closing, SIMPLIFY = FALSE, USE.NAMES = FALSE)
         orig_label <- lapply(i, function(i) x[i])
-        orig_label <- sapply(orig_label, rawToChar)
-        names(orig_label) <- tmp_label
-        list(res, orig_label)
+        sapply(orig_label, rawToChar)
     }
 
+    ## delete all line breaks
+    ## (both LF (10) and CR (13) are sought because the file is read as binary)
+    tree <- tree[tree != as.raw(10) & tree != as.raw(13)]
+
+    ## replace labels with single quotes (39)
+    z <- which(tree == as.raw(39))
+    SINGLE.QUOTES.FOUND <- as.logical(length(z))
+    if (SINGLE.QUOTES.FOUND) tmp_label <- single_quotes(tree, z)
+
+    ## raw -> character
+    tree <- rawToChar(tree)
     y <- unlist(gregexpr(";", tree))
 
     ## if one tree per line much faster
@@ -78,24 +91,9 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     }
 
     ## remove possible leading and trailing underscores
-    STRING <- gsub("^_+", "", STRING)
-    STRING <- gsub("_+$", "", STRING)
+    STRING <- gsub("^_+|_+$", "", STRING)
 
-    ## replace labels with single quotes (moved from above)
-    z <- grepl("'", STRING)
-    if (any(z)) {
-#        Ntree <- length(tree)
-        tmp_label <- vector("list", Ntree)
-        for (i in 1:Ntree) {
-            if (z[i]) {
-                TMP <- single_quotes(STRING[i])
-                STRING[i] <- TMP[[1]]
-                tmp_label[[i]] <- TMP[[2]]
-            }
-        }
-    }
-
-    tree <- gsub("[ \t]", "", tree) # moved from above: now spaces within (single) quoted labels are not deleted
+    tree <- gsub("[ \t]", "", tree) # spaces and TABs within quoted labels are not deleted
 
     getTreeName <- function(x) {
         res <- rep("", length(x))
@@ -120,33 +118,24 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
         obj[nocolon] <- lapply(STRING[nocolon], .cladoBuild)
     }
 
-    for (i in 1:Ntree) {
-        if (z[i]) {
-            #browser()
-            tmp_lab <- tmp_label[[i]]
-            tip.label <- obj[[i]]$tip.label
-            node.label <- obj[[i]]$node.label
-            ind <- match(tip.label, names(tmp_lab))
-            ind2 <- which(!is.na(ind))
-            if (length(ind2)) {
-                tip.label[ind2] <- tmp_lab[ind[ind2]]
-                #tmp_lab <- tmp_lab[-ind[ind2]]
+    if (SINGLE.QUOTES.FOUND) {
+        FOO <- function(x) {
+            i <- gsub("^IMPROBABLEPREFIX|IMPROBABLESUFFIX$", "", x)
+            tmp_label[as.integer(i)]
+        }
+        for (i in 1:Ntree) {
+            lab <- obj[[i]]$tip.label
+            k <- grep("IMPROBABLEPREFIX", lab)
+            if (length(k)) {
+                lab[k] <- FOO(lab[k])
+                obj[[i]]$tip.label <- lab
             }
-
-            ind <- match(node.label, names(tmp_lab))
-            ind2 <- which(!is.na(ind))
-            if (length(ind2)) {
-                node.label[ind2] <- tmp_lab[ind[ind2]]
-                #tmp_lab <- tmp_lab[-ind[ind2]]
+            lab <- obj[[i]]$node.label
+            k <- grep("IMPROBABLEPREFIX", lab)
+            if (length(k)) {
+                lab[k] <- FOO(lab[k])
+                obj[[i]]$node.label <- lab
             }
-            #if (length(tmp_lab)) {
-            #    for (j in 1:length(tmp_lab)) {
-            #        node.label <- gsub(names(tmp_lab)[j], tmp_lab[j], node.label)
-            #        tip.label <- gsub(names(tmp_lab)[j], tmp_lab[j], tip.label)
-            #    }
-            #}
-            obj[[i]]$tip.label <- tip.label
-            obj[[i]]$node.label <- node.label
         }
     }
     if (Ntree == 1 && !keep.multi) obj <- obj[[1]] else {
