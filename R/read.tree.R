@@ -13,29 +13,24 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     if (!is.null(text)) {
         if (!is.character(text))
             stop("argument 'text' must be of mode character")
-        tree <- charToRaw(text)
+        tree <- text
     } else {
-        if (grepl("^(ht|f)tp(s|):", file)) {
-            url <- file
-            file <- tempfile()
-            download.file(url, file, quiet = TRUE)
-        }
-        tree <- readBin(file, "raw", file.size(file))
-###tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
-###             skip = skip, comment.char = comment.char, ...)
+        tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
+                     skip = skip, comment.char = comment.char, ...)
     }
-    ## 'tree' is of mode "raw" for the moment
 
     ## Suggestion from Eric Durand and Nicolas Bortolussi (added 2005-08-17):
-###if (identical(tree, character(0))) {
-    if (!length(tree)) {
+    if (identical(tree, character(0))) {
         warning("empty character string.")
         return(NULL)
     }
 
-#    tree <- gsub("'", "", tree) # fixed by GuangchuangYu (2021-01-04)
+    ## make a single string
+    if (length(tree) > 1) tree <- paste(tree, collapse = "")
 
     single_quotes <- function(x, z) {
+        x <- charToRaw(x)
+        z <- which(x == as.raw(39))
         if (length(z) %% 2) stop("wrong number of single quotes around labels")
         l <- length(z) / 2
         opening <- z[c(TRUE, FALSE)]
@@ -50,23 +45,16 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
         res <- vector("list", n)
         res[seq(1, n, 2)] <- keep
         res[seq(2, n - 1, 2)] <- tmpLabsRaw
-        tree <<- unlist(res)
+        tree <<- rawToChar(unlist(res))
         i <- mapply(":", from = opening, to = closing, SIMPLIFY = FALSE, USE.NAMES = FALSE)
         orig_label <- lapply(i, function(i) x[i])
         sapply(orig_label, rawToChar)
     }
 
-    ## delete all line breaks
-    ## (both LF (10) and CR (13) are sought because the file is read as binary)
-    tree <- tree[tree != as.raw(10) & tree != as.raw(13)]
+    ## replace labels with single quotes (if needed)
+    SINGLE.QUOTES.FOUND <- grepl("'", tree)
+    if (SINGLE.QUOTES.FOUND) tmp_label <- single_quotes(tree)
 
-    ## replace labels with single quotes (39)
-    z <- which(tree == as.raw(39))
-    SINGLE.QUOTES.FOUND <- as.logical(length(z))
-    if (SINGLE.QUOTES.FOUND) tmp_label <- single_quotes(tree, z)
-
-    ## raw -> character
-    tree <- rawToChar(tree)
     y <- unlist(gregexpr(";", tree))
 
     ## if one tree per line much faster
