@@ -1,4 +1,4 @@
-## read.tree.R (2021-05-26)
+## read.tree.R (2021-05-28)
 
 ##   Read Tree Files in Parenthetic Format
 
@@ -80,8 +80,7 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
 
     ## remove possible leading and trailing underscores
     STRING <- gsub("^_+|_+$", "", STRING)
-
-    tree <- gsub("[ \t]", "", tree) # spaces and TABs within quoted labels are not deleted
+    STRING <- gsub("[ \t]", "", STRING) # spaces and TABs within quoted labels are not deleted
 
     getTreeName <- function(x) {
         res <- rep("", length(x))
