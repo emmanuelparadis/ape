@@ -10,12 +10,12 @@
 plot.phylo <-
     function(x, type = "phylogram", use.edge.length = TRUE,
              node.pos = NULL, show.tip.label = TRUE,
-             show.node.label = FALSE, edge.color = "black",
+             show.node.label = FALSE, edge.color = par("fg"),
              edge.width = 1, edge.lty = 1, font = 3, cex = par("cex"),
              adj = NULL, srt = 0, no.margin = FALSE, root.edge = FALSE,
              label.offset = 0, underscore = FALSE, x.lim = NULL,
              y.lim = NULL, direction = "rightwards", lab4ut = NULL,
-             tip.color = "black", plot = TRUE, rotate.tree = 0,
+             tip.color = par("col"), plot = TRUE, rotate.tree = 0,
              open.angle = 0, node.depth = 1, align.tip.label = FALSE, ...)
 {
     Ntip <- length(x$tip.label)
@@ -359,9 +359,9 @@ if (plot) {
         cladogram.plot(x$edge, xx, yy, edge.color, edge.width, edge.lty)
     }
     if (root.edge) {
-        rootcol <- if (length(edge.color) == 1) edge.color else "black"
-        rootw <- if (length(edge.width) == 1) edge.width else 1
-        rootlty <- if (length(edge.lty) == 1) edge.lty else 1
+        rootcol <- if (length(edge.color) == 1) edge.color else par("fg")
+        rootw <- if (length(edge.width) == 1) edge.width else par("lwd")
+        rootlty <- if (length(edge.lty) == 1) edge.lty else par("lty")
         if (type == "fan") {
             tmp <- polar2rect(x$root.edge, theta[ROOT])
             segments(0, 0, tmp$x, tmp$y, col = rootcol, lwd = rootw, lty = rootlty)
@@ -525,9 +525,9 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
         edge.width <- rep(edge.width, length.out = Nedge)
         edge.lty <- rep(edge.lty, length.out = Nedge)
         DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-        color.v <- rep("black", Nnode)
-        width.v <- rep(1, Nnode)
-        lty.v <- rep(1, Nnode)
+        color.v <- rep(par("fg"), Nnode)
+        width.v <- rep(par("lwd"), Nnode)
+        lty.v <- rep(par("lty"), Nnode)
         for (i in 1:Nnode) {
             br <- NodeInEdge1[[i]]
             if (length(br) == 1) {
@@ -619,9 +619,9 @@ circular.plot <- function(edge, Ntip, Nnode, xx, yy, theta,
         feat.arc
     }
     nodedegree <- tabulate(edge[, 1L])[-seq_len(Ntip)]
-    co <- foo(edge.color, "black")
-    lw <- foo(edge.width, 1)
-    ly <- foo(edge.lty, 1)
+    co <- foo(edge.color, par("fg"))
+    lw <- foo(edge.width, par("lwd"))
+    ly <- foo(edge.lty, par("lty"))
 
     for (k in 1:Nnode) {
         i <- start[k]
