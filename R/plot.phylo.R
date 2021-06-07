@@ -509,7 +509,8 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     Nedge <- length(e1)
 
     ## store the index of each node in the 1st column of edge:
-    edgeChildren <- lapply(Ntip + seq_len(Nnode), function (j) e2[e1 == j])
+    NodeInEdge1 <- lapply(Ntip + seq_len(Nnode), function (j) which(e1 == j))
+    edgeChildren <- lapply(NodeInEdge1, function (nie) e2[nie])
     yv <- vapply(edgeChildren, function (i) range(yy[i]), double(2))
     y0v <- yv[1, ]
     y1v <- yv[2, ]
@@ -598,7 +599,7 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     lty.v <- ltys$v
 
     for (i in seq_len(Nnode)) {
-        br <- edgeChildren[[i]]
+        br <- NodeInEdge1[[i]]
         if (length(br) == 1) {
             A <- br[1]
             color.v[i] <- edge.color[A]
