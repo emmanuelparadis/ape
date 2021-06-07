@@ -589,13 +589,13 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     widths <- .style(edge.width, node.width, 'lwd')
     ltys <- .style(edge.lty, node.lty, 'lty')
 
-    DF <- data.frame(colors$h, widths$h, ltys$h, stringsAsFactors = FALSE)
+    edge.color <- colors$h
+    edge.width <- widths$h
+    edge.lty <- ltys$h
+    DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
     color.v <- colors$v
     width.v <- widths$v
     lty.v <- ltys$v
-    edge.color <- colors$h
-    edge.width <- widths$h
-    edge.lth <- ltys$h
 
     for (i in seq_len(Nnode)) {
         br <- edgeChildren[[i]]
