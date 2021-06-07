@@ -21,7 +21,7 @@ plot.phylo <-
 {
     Ntip <- length(x$tip.label)
     if (Ntip < 2) {
-        warning("found less than 2 tips in the tree")
+        warning("found fewer than 2 tips in the tree")
         return(NULL)
     }
 #    if (any(tabulate(x$edge[, 1]) == 1))
