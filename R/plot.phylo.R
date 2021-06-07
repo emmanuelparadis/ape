@@ -9,9 +9,10 @@
 
 plot.phylo <-
     function(x, type = "phylogram", use.edge.length = TRUE,
-             node.pos = NULL, show.tip.label = TRUE,
-             show.node.label = FALSE, edge.color = par("fg"),
-             edge.width = 1, edge.lty = 1, font = 3, cex = par("cex"),
+             node.pos = NULL, show.tip.label = TRUE, show.node.label = FALSE,
+             edge.color = NULL, edge.width = NULL, edge.lty = NULL,
+             node.color = NULL, node.width = NULL, node.lty = NULL,
+             font = 3, cex = par("cex"),
              adj = NULL, srt = 0, no.margin = FALSE, root.edge = FALSE,
              label.offset = 0, underscore = FALSE, x.lim = NULL,
              y.lim = NULL, direction = "rightwards", lab4ut = NULL,
@@ -336,21 +337,32 @@ if (plot) {
         }
     }
     if (type == "phylogram") {
-        phylogram.plot(x$edge, Ntip, Nnode, xx, yy,
-                       horizontal, edge.color, edge.width, edge.lty)
+        phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal,
+                       edge.color, edge.width, edge.lty,
+                       node.color, node.width, node.lty)
     } else {
+        if (is.null(edge.color)) {
+            edge.color <- par('fg')
+        }
+        if (is.null(edge.width)) {
+            edge.width <- par('lwd')
+        }
+        if (is.null(edge.lty)) {
+            edge.lty <- par('lty')
+        }
+
         if (type == "fan") {
             ereorder <- match(z$edge[, 2], x$edge[, 2])
             if (length(edge.color) > 1) {
-                edge.color <- rep(edge.color, length.out = Nedge)
+                edge.color <- rep_len(edge.color, Nedge)
                 edge.color <- edge.color[ereorder]
             }
             if (length(edge.width) > 1) {
-                edge.width <- rep(edge.width, length.out = Nedge)
+                edge.width <- rep_len(edge.width, Nedge)
                 edge.width <- edge.width[ereorder]
             }
             if (length(edge.lty) > 1) {
-                edge.lty <- rep(edge.lty, length.out = Nedge)
+                edge.lty <- rep_len(edge.lty, Nedge)
                 edge.lty <- edge.lty[ereorder]
             }
             circular.plot(z$edge, Ntip, Nnode, xx, yy, theta,
@@ -479,9 +491,10 @@ if (plot) {
 }
 
 phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
-                           edge.color, edge.width, edge.lty)
+                           edge.color, edge.width, edge.lty,
+                           node.color, node.width, node.lty)
 {
-    nodes <- (Ntip + 1):(Ntip + Nnode)
+    nodes <- Ntip + seq_len(Nnode)
     if (!horizontal) {
         tmp <- yy
         yy <- xx
@@ -491,88 +504,145 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     x0v <- xx[nodes]
     y0v <- y1v <- numeric(Nnode)
 
-    ## store the index of each node in the 1st column of edge:
-    NodeInEdge1 <- vector("list", Nnode)
     e1 <- edge[, 1]
-    for (i in seq_along(e1)) {
-        j <- e1[i] - Ntip
-        NodeInEdge1[[j]] <- c(NodeInEdge1[[j]], i)
-    }
+    e2 <- edge[, 2]
+    Nedge <- length(e1)
 
-    for (i in 1:Nnode) {
-        j <- NodeInEdge1[[i]]
-        tmp <- range(yy[edge[j, 2]])
-        y0v[i] <- tmp[1]
-        y1v[i] <- tmp[2]
-    }
+    ## store the index of each node in the 1st column of edge:
+    edgeChildren <- lapply(Ntip + seq_len(Nnode), function (j) e2[e1 == j])
+    yv <- vapply(edgeChildren, function (i) range(yy[i]), double(2))
+    y0v <- yv[1, ]
+    y1v <- yv[2, ]
+
     ## ... et un trait horizontal partant de chaque tip et chaque noeud
     ##  vers la racine
-    x0h <- xx[edge[, 1]]
-    x1h <- xx[edge[, 2]]
-    y0h <- yy[edge[, 2]]
+    x0h <- xx[e1]
+    x1h <- xx[e2]
+    y0h <- yy[e2]
 
-    nc <- length(edge.color)
-    nw <- length(edge.width)
-    nl <- length(edge.lty)
+    # Node and edge styling
 
-    if (nc + nw + nl == 3) {
-        color.v <- edge.color
-        width.v <- edge.width
-        lty.v <- edge.lty
-    } else {
-        Nedge <- dim(edge)[1]
-        edge.color <- rep(edge.color, length.out = Nedge)
-        edge.width <- rep(edge.width, length.out = Nedge)
-        edge.lty <- rep(edge.lty, length.out = Nedge)
-        DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-        color.v <- rep(par("fg"), Nnode)
-        width.v <- rep(par("lwd"), Nnode)
-        lty.v <- rep(par("lty"), Nnode)
-        for (i in 1:Nnode) {
-            br <- NodeInEdge1[[i]]
-            if (length(br) == 1) {
-                A <- br[1]
+    .one.style <- function (style) list(h = style, v = style)
+
+    .edge.style <- function (edge.style, node.style) {
+        # node.style is fixed
+        node.style <- rep_len(node.style, Ntip + Nnode)
+        edge.style <- rep_len(edge.style, Nedge)
+
+        sapply(seq_len(Nedge), function (e) {
+            prnt <- e1[e]
+            chld <- e2[e]
+            if (node.style[prnt] == node.style[chld]) {
+                node.style[prnt]
+            } else {
+                edge.style[e]
+            }
+        })
+    }
+
+    .node.style <- function (edge.style, node.style) {
+        # edge.style is fixed
+        edge.style <- rep_len(edge.style, Nedge)
+        node.style <- rep_len(node.style, Ntip + Nnode)
+
+        c(node.style[seq_len(Ntip)],
+          sapply(Ntip + seq_len(Nnode), function (n) {
+              pendant.styles <- edge.style[e1 == n]
+              if (length(unique(pendant.styles)) == 1L) {
+                  pendant.styles[1]
+              } else {
+                  node.style[n]
+              }
+          })
+          )
+    }
+
+    .style <- function (edge.style, node.style, stylePar) {
+        if (is.null(edge.style)) {
+            if (is.null(node.style)) {
+                return(.one.style(par(stylePar)))
+            } else {
+                if (length(node.style) == 1L) {
+                    return(.one.style(node.style))
+                } else {
+                    return(list(h = .edge.style(par(stylePar), node.style),
+                                v = node.style))
+                }
+            }
+        } else if (is.null(node.style)) {
+            if (length(edge.style) == 1L) {
+                return(.one.style(edge.style))
+            } else {
+                return(list(h = edge.style,
+                            v = .node.style(edge.style, par(stylePar))))
+            }
+        }
+        edge.style <- .edge.style(edge.style, node.style)
+        node.style <- .node.style(edge.style, node.style)
+        return(list(h = edge.style, v = node.style))
+    }
+
+
+    colors <- .style(edge.color, node.color, 'fg')
+    widths <- .style(edge.width, node.width, 'lwd')
+    ltys <- .style(edge.lty, node.lty, 'lty')
+
+    DF <- data.frame(colors$h, widths$h, ltys$h, stringsAsFactors = FALSE)
+    color.v <- colors$v
+    width.v <- widths$v
+    lty.v <- ltys$v
+    for (i in seq_len(Nnode)) {
+        br <- edgeChildren[[i]]
+        if (length(br) == 1) {
+            A <- br[1]
+            color.v[i] <- edge.color[A]
+            width.v[i] <- edge.width[A]
+            lty.v[i] <- edge.lty[A]
+        } else if (length(br) > 2) {
+            #x <- unique(DF[br, 1])
+            #if (length(x) == 1) color.v[i] <- x
+            #x <- unique(DF[br, 2])
+            #if (length(x) == 1) width.v[i] <- x
+            #x <- unique(DF[br, 3])
+            #if (length(x) == 1) lty.v[i] <- x
+        } else { # length(br) == 2
+            A <- br[1]
+            B <- br[2]
+            if (any(DF[A, ] != DF[B, ])) {
+                color.v[i] <- edge.color[B]
+                width.v[i] <- edge.width[B]
+                lty.v[i] <- edge.lty[B]
+                ## add a new line:
+                y0v <- c(y0v, y0v[i])
+                y1v <- c(y1v, yy[i + Ntip])
+                x0v <- c(x0v, x0v[i])
+                color.v <- c(color.v, edge.color[A])
+                width.v <- c(width.v, edge.width[A])
+                lty.v <- c(lty.v, edge.lty[A])
+                ## shorten the line:
+                y0v[i] <- yy[i + Ntip]
+            } else {
                 color.v[i] <- edge.color[A]
                 width.v[i] <- edge.width[A]
                 lty.v[i] <- edge.lty[A]
-            } else if (length(br) > 2) {
-                x <- unique(DF[br, 1])
-                if (length(x) == 1) color.v[i] <- x
-                x <- unique(DF[br, 2])
-                if (length(x) == 1) width.v[i] <- x
-                x <- unique(DF[br, 3])
-                if (length(x) == 1) lty.v[i] <- x
-            } else { # length(br) == 2
-                A <- br[1]
-                B <- br[2]
-                if (any(DF[A, ] != DF[B, ])) {
-                    color.v[i] <- edge.color[B]
-                    width.v[i] <- edge.width[B]
-                    lty.v[i] <- edge.lty[B]
-                    ## add a new line:
-                    y0v <- c(y0v, y0v[i])
-                    y1v <- c(y1v, yy[i + Ntip])
-                    x0v <- c(x0v, x0v[i])
-                    color.v <- c(color.v, edge.color[A])
-                    width.v <- c(width.v, edge.width[A])
-                    lty.v <- c(lty.v, edge.lty[A])
-                    ## shorten the line:
-                    y0v[i] <- yy[i + Ntip]
-                } else {
-                    color.v[i] <- edge.color[A]
-                    width.v[i] <- edge.width[A]
-                    lty.v[i] <- edge.lty[A]
-                }
             }
         }
     }
 
     if (horizontal) {
-        segments(x0h, y0h, x1h, y0h, col = edge.color, lwd = edge.width, lty = edge.lty) # draws horizontal lines
-        segments(x0v, y0v, x0v, y1v, col = color.v, lwd = width.v, lty = lty.v) # draws vertical lines
+        # draw horizontal lines
+        segments(x0h, y0h, x1h, y0h,
+                 col = colors$h, lwd = widths$h, lty = ltys$h)
+        # draw vertical lines
+        segments(x0v, y0v, x0v, y1v,
+                 col = color.v, lwd = width.v, lty = lty.v)
     } else {
-        segments(y0h, x0h, y0h, x1h, col = edge.color, lwd = edge.width, lty = edge.lty) # draws vertical lines
-        segments(y0v, x0v, y1v, x0v, col = color.v, lwd = width.v, lty = lty.v) # draws horizontal lines
+        # draws vertical lines
+        segments(y0h, x0h, y0h, x1h,
+                 col = colors$h, lwd = widths$h, lty = ltys$h)
+        # draws horizontal lines
+        segments(y0v, x0v, y1v, x0v,
+                 col = color.v, lwd = width.v, lty = lty.v)
     }
 }
 
