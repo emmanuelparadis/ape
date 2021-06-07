@@ -522,7 +522,9 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
 
     # Node and edge styling
 
-    .one.style <- function (style) list(h = style, v = style)
+    .one.style <- function (style) {
+        list(h = rep_len(style, Nedge), v = rep_len(style, Ntip + Nnode))
+    }
 
     .edge.style <- function (edge.style, node.style) {
         # node.style is fixed
@@ -591,6 +593,10 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     color.v <- colors$v
     width.v <- widths$v
     lty.v <- ltys$v
+    edge.color <- colors$h
+    edge.width <- widths$h
+    edge.lth <- ltys$h
+
     for (i in seq_len(Nnode)) {
         br <- edgeChildren[[i]]
         if (length(br) == 1) {
@@ -632,14 +638,14 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     if (horizontal) {
         # draw horizontal lines
         segments(x0h, y0h, x1h, y0h,
-                 col = colors$h, lwd = widths$h, lty = ltys$h)
+                 col = edge.color, lwd = edge.width, lty = edge.lty)
         # draw vertical lines
         segments(x0v, y0v, x0v, y1v,
                  col = color.v, lwd = width.v, lty = lty.v)
     } else {
         # draws vertical lines
         segments(y0h, x0h, y0h, x1h,
-                 col = colors$h, lwd = widths$h, lty = ltys$h)
+                 col = edge.color, lwd = edge.width, lty = edge.lty)
         # draws horizontal lines
         segments(y0v, x0v, y1v, x0v,
                  col = color.v, lwd = width.v, lty = lty.v)
