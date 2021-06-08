@@ -530,17 +530,11 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     .edge.style <- function (edge.style, node.style) {
         # node.style is fixed
         node.style <- rep_len(node.style, Ntip + Nnode)
-        edge.style <- rep_len(edge.style, Nedge)
-
-        sapply(seq_len(Nedge), function (e) {
-            prnt <- e1[e]
-            chld <- e2[e]
-            if (node.style[prnt] == node.style[chld]) {
-                node.style[prnt]
-            } else {
-                edge.style[e]
-            }
-        })
+        if (is.null(edge.style)) {
+            sapply(seq_len(Nedge), function (e) node.style[e2[e]])
+        } else {
+            rep_len(edge.style, Nedge)
+        }
     }
 
     .node.style <- function (edge.style, node.style) {
