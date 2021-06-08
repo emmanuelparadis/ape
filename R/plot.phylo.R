@@ -583,7 +583,8 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     width.v <- widths$v[-seq_len(Ntip)]
     lty.v <- ltys$v[-seq_len(Ntip)]
     DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-    DF <- DF[, c(is.null(node.color), is.null(edge.width), is.null(edge.lty))]
+    DF <- DF[, c(is.null(node.color), is.null(node.width), is.null(node.lty)),
+             drop = FALSE]
 
     for (i in seq_len(Nnode)) {
         br <- NodeInEdge1[[i]]
