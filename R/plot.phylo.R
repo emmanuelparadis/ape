@@ -568,7 +568,7 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
                 if (length(node.style) == 1L) {
                     return(.one.style(node.style))
                 } else {
-                    return(list(h = .edge.style(par(stylePar), node.style),
+                    return(list(h = .edge.style(NULL, node.style),
                                 v = node.style))
                 }
             }
@@ -594,9 +594,9 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     edge.width <- widths$h
     edge.lty <- ltys$h
     DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-    color.v <- colors$v
-    width.v <- widths$v
-    lty.v <- ltys$v
+    color.v <- colors$v[-seq_len(Ntip)]
+    width.v <- widths$v[-seq_len(Ntip)]
+    lty.v <- ltys$v[-seq_len(Ntip)]
 
     for (i in seq_len(Nnode)) {
         br <- NodeInEdge1[[i]]
