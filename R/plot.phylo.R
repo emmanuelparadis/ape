@@ -527,31 +527,22 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
         list(h = rep_len(style, Nedge), v = rep_len(style, Ntip + Nnode))
     }
 
-    .edge.style <- function (edge.style, node.style) {
-        # node.style is fixed
+    .edge.style <- function (node.style) {
         node.style <- rep_len(node.style, Ntip + Nnode)
-        if (is.null(edge.style)) {
-            sapply(seq_len(Nedge), function (e) node.style[e2[e]])
-        } else {
-            rep_len(edge.style, Nedge)
-        }
+        sapply(seq_len(Nedge), function (e) node.style[e2[e]])
     }
 
-    .node.style <- function (edge.style, node.style) {
-        # edge.style is fixed
+    .node.style <- function (edge.style, fallback) {
         edge.style <- rep_len(edge.style, Nedge)
-        node.style <- rep_len(node.style, Ntip + Nnode)
-
-        c(node.style[seq_len(Ntip)],
+        c(character(Ntip),
           sapply(Ntip + seq_len(Nnode), function (n) {
               pendant.styles <- edge.style[e1 == n]
               if (length(unique(pendant.styles)) == 1L) {
                   pendant.styles[1]
               } else {
-                  node.style[n]
+                  fallback
               }
-          })
-          )
+          }))
     }
 
     .style <- function (edge.style, node.style, stylePar) {
@@ -562,7 +553,7 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
                 if (length(node.style) == 1L) {
                     return(.one.style(node.style))
                 } else {
-                    return(list(h = .edge.style(NULL, node.style),
+                    return(list(h = .edge.style(node.style),
                                 v = node.style))
                 }
             }
@@ -573,10 +564,11 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
                 return(list(h = edge.style,
                             v = .node.style(edge.style, par(stylePar))))
             }
+        } else {
+
+            return(list(h = rep_len(edge.style, Nedge),
+                        v = rep_len(node.style, Ntip + Nnode)))
         }
-        edge.style <- .edge.style(edge.style, node.style)
-        node.style <- .node.style(edge.style, node.style)
-        return(list(h = edge.style, v = node.style))
     }
 
 
@@ -594,38 +586,37 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
 
     for (i in seq_len(Nnode)) {
         br <- NodeInEdge1[[i]]
-        if (length(br) == 1) {
-            A <- br[1]
-            color.v[i] <- edge.color[A]
-            width.v[i] <- edge.width[A]
-            lty.v[i] <- edge.lty[A]
-        } else if (length(br) > 2) {
-            #x <- unique(DF[br, 1])
-            #if (length(x) == 1) color.v[i] <- x
-            #x <- unique(DF[br, 2])
-            #if (length(x) == 1) width.v[i] <- x
-            #x <- unique(DF[br, 3])
-            #if (length(x) == 1) lty.v[i] <- x
-        } else { # length(br) == 2
+        if (length(br) == 2) {
             A <- br[1]
             B <- br[2]
             if (any(DF[A, ] != DF[B, ])) {
-                color.v[i] <- edge.color[B]
-                width.v[i] <- edge.width[B]
-                lty.v[i] <- edge.lty[B]
                 ## add a new line:
                 y0v <- c(y0v, y0v[i])
                 y1v <- c(y1v, yy[i + Ntip])
                 x0v <- c(x0v, x0v[i])
-                color.v <- c(color.v, edge.color[A])
-                width.v <- c(width.v, edge.width[A])
-                lty.v <- c(lty.v, edge.lty[A])
-                ## shorten the line:
+                ## shorten the old line:
                 y0v[i] <- yy[i + Ntip]
-            } else {
-                color.v[i] <- edge.color[A]
-                width.v[i] <- edge.width[A]
-                lty.v[i] <- edge.lty[A]
+
+                if (is.null(node.color)) {
+                    # Half-lines may have different colours
+                    color.v[i] <- edge.color[B]
+                    color.v <- c(color.v, edge.color[A])
+                } else {
+                    # Use node colour for both half-lines
+                    color.v <- c(color.v, color.v[i])
+                }
+                if (is.null(node.width)) {
+                    width.v[i] <- edge.width[B]
+                    width.v <- c(width.v, edge.width[A])
+                } else {
+                    width.v <- c(width.v, width.v[i])
+                }
+                if (is.null(node.lty)) {
+                    lty.v[i] <- edge.lty[B]
+                    lty.v <- c(lty.v, edge.lty[A])
+                } else {
+                    lty.v <- c(lty.v, lty.v[i])
+                }
             }
         }
     }
