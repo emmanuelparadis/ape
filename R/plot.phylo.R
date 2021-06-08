@@ -554,14 +554,14 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
                     return(.one.style(node.style))
                 } else {
                     return(list(h = .edge.style(node.style),
-                                v = node.style))
+                                v = rep_len(node.style, Ntip + Nnode)))
                 }
             }
         } else if (is.null(node.style)) {
             if (length(edge.style) == 1L) {
                 return(.one.style(edge.style))
             } else {
-                return(list(h = edge.style,
+                return(list(h = rep_len(edge.style, Nedge),
                             v = .node.style(edge.style, par(stylePar))))
             }
         } else {
@@ -579,16 +579,20 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     edge.color <- colors$h
     edge.width <- widths$h
     edge.lty <- ltys$h
-    DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
     color.v <- colors$v[-seq_len(Ntip)]
     width.v <- widths$v[-seq_len(Ntip)]
     lty.v <- ltys$v[-seq_len(Ntip)]
+    DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
+    DF <- DF[, c(is.null(node.color), is.null(edge.width), is.null(edge.lty))]
 
     for (i in seq_len(Nnode)) {
         br <- NodeInEdge1[[i]]
         if (length(br) == 2) {
             A <- br[1]
             B <- br[2]
+
+            # We should draw a single line if at all possible, for the
+            # appearance of dotted / dashed line styles.
             if (any(DF[A, ] != DF[B, ])) {
                 ## add a new line:
                 y0v <- c(y0v, y0v[i])
