@@ -9,8 +9,9 @@
 \usage{
 \method{plot}{phylo}(x, type = "phylogram", use.edge.length = TRUE,
     node.pos = NULL, show.tip.label = TRUE, show.node.label = FALSE,
-    edge.color = "black", edge.width = 1, edge.lty = 1, font = 3,
-    cex = par("cex"), adj = NULL, srt = 0, no.margin = FALSE,
+    edge.color = par("fg"), edge.width = par("lwd"),
+    edge.lty = par("lty"), font = 3, cex = par("cex"),
+    adj = NULL, srt = 0, no.margin = FALSE,
     root.edge = FALSE, label.offset = 0, underscore = FALSE,
     x.lim = NULL, y.lim = NULL, direction = "rightwards",
     lab4ut = NULL, tip.color = "black", plot = TRUE,
