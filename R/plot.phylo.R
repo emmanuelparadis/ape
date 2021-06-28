@@ -526,6 +526,8 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
         color.v <- rep(par("fg"), Nnode)
         width.v <- rep(par("lwd"), Nnode)
         lty.v <- rep(par("lty"), Nnode)
+        lty_str <- c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
+        if(is.numeric(edge.lty)) edge.lty <- lty_str[edge.lty + 1]
         for (i in 1:Nnode) {
             br <- NodeInEdge1[[i]]
             if (length(br) == 1) {
