@@ -579,6 +579,9 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     edge.color <- colors$h
     edge.width <- widths$h
     edge.lty <- ltys$h
+    lty_str <- c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
+    if(is.numeric(edge.lty)) edge.lty <- lty_str[edge.lty + 1]
+
     color.v <- colors$v[-seq_len(Ntip)]
     width.v <- widths$v[-seq_len(Ntip)]
     lty.v <- ltys$v[-seq_len(Ntip)]
