@@ -1,8 +1,8 @@
-## chronos.R (2020-05-08)
+## chronos.R (2020-07-01)
 
 ##   Molecular Dating With Penalized and Maximum Likelihood
 
-## Copyright 2013-2017 Emmanuel Paradis, 2018-2020 Santiago Claramunt, 2020 Guillaume Louvel
+## Copyright 2013-2021 Emmanuel Paradis, 2018-2020 Santiago Claramunt, 2020 Guillaume Louvel
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -213,8 +213,10 @@ maybe you need to adjust the calibration dates")
         if (Nb.rates == 1) {
             ini.rate <- sum(minmax)/2
         } else {
-            inc <- diff(minmax)/Nb.rates
-            ini.rate <- seq(minmax[1] + inc/2, minmax[2] - inc/2, inc)
+            ##inc <- diff(minmax)/Nb.rates
+            ##ini.rate <- seq(minmax[1] + inc/2, minmax[2] - inc/2, inc)
+            ini.rate <- quantile(ini.rate, seq(1/(2 * Nb.rates), by = 1/Nb.rates, length.out = Nb.rates))
+            names(ini.rate) <- NULL
             ini.freq <- rep(1/Nb.rates, Nb.rates - 1)
             lower.freq <- rep(0, Nb.rates - 1)
             upper.freq <- rep(1, Nb.rates - 1)
