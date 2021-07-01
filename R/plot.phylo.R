@@ -155,7 +155,8 @@ if (phyloORclado) {
             r <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
         } else {
             r <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
-            r <- 1/r
+            max_r <- max(r)
+            r <- (max_r - r + 1) / max_r
         }
         theta <- theta + rotate.tree
         if (root.edge) r <- r + x$root.edge
