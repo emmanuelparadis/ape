@@ -2,7 +2,7 @@
 \alias{consensus}
 \title{Concensus Trees}
 \usage{
-consensus(..., p = 1, check.labels = TRUE)
+consensus(..., p = 1, check.labels = TRUE, rooted = FALSE)
 }
 \arguments{
   \item{\dots}{either (i) a single object of class \code{"phylo"}, (ii) a
@@ -14,6 +14,8 @@ consensus(..., p = 1, check.labels = TRUE)
     of each tree. If \code{FALSE} (the default), it is assumed that all
     trees have the same tip labels, and that they are in the same order
     (see details).}
+  \item{rooted}{a logical specifying whether the trees should be treated as 
+    rooted or not.}  
 }
 \description{
   Given a series of trees, this function returns the consensus tree. By
