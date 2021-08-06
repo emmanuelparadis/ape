@@ -1,4 +1,4 @@
-## plot.phylo.R (2019-07-30)
+## plot.phylo.R (2021-06-09)
 
 ##   Plot Phylogenies
 
@@ -24,9 +24,6 @@ plot.phylo <-
         warning("found fewer than 2 tips in the tree")
         return(NULL)
     }
-#    if (any(tabulate(x$edge[, 1]) == 1))
-#      stop("there are single (non-splitting) nodes in your tree; you may need to use collapse.singles()")
-
     .nodeHeight <- function(edge, Nedge, yy)
         .C(node_height, as.integer(edge[, 1]), as.integer(edge[, 2]),
            as.integer(Nedge), as.double(yy))[[4]]

@@ -1,4 +1,4 @@
-## multi2di.R (2021-05-05)
+## multi2di.R (2021-07-07)
 
 ##   Collapse or Resolve Multichotomies
 
@@ -26,6 +26,19 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
         new.edge.length <- NULL
     }
 
+    if (random) {
+        if (equiprob) {
+            FUN <- function(N) {
+                x <- rtopology(N, rooted = TRUE)$edge
+                desc <- x[, 2L]
+                x[desc <= N, 2L] <- seq_len(N)
+                x
+            }
+        } else {
+            FUN <- function(N) rtree(N)$edge
+        }
+    }
+
     for (i in seq_along(target)) {
         node <- target[i]
         N <- degree[node]
@@ -37,7 +50,7 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
           ## so we store the result of sample()
             tmp <- sample(length(desc))
             desc <- desc[tmp]
-            res <- if (equiprob) rtopology(N, rooted = TRUE)$edge else rtree(N)$edge
+            res <- FUN(N)
         } else {
             res <- matrix(0L, 2*N - 2, 2)
             res[, 1] <- N + rep(1:(N - 1), each = 2)

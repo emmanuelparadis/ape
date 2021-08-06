@@ -19,6 +19,9 @@ centre <- function(D,n)
 {	One <- matrix(1,n,n)
 	mat <- diag(n) - One/n
 	mat.cen <- mat %*% D %*% mat
+        lowtri <- lower.tri(mat.cen)
+	mat.cen[lowtri] <- t(mat.cen)[lowtri]
+	mat.cen
 }
 
 bstick.def <- function (n, tot.var = 1, ...)   # 'bstick.default' from vegan

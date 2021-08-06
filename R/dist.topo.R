@@ -380,7 +380,7 @@ SHORTwise <- function(x) {
     x
 }
 
-consensus <- function(..., p = 1, check.labels = TRUE)
+consensus <- function(..., p = 1, check.labels = TRUE, rooted = FALSE)
 {
     foo <- function(ic, node) {
         ## ic: index of 'pp'
@@ -411,19 +411,24 @@ consensus <- function(..., p = 1, check.labels = TRUE)
 
     if (!is.null(attr(obj, "TipLabel")))
         labels <- attr(obj, "TipLabel")
-    else {
+    else { 
         labels <- obj[[1]]$tip.label
         if (check.labels) obj <- .compressTipLabel(obj)
     }
+    if(!rooted) obj <- root(obj, 1)
+    
     ntree <- length(obj)
     ## Get all observed partitions and their frequencies:
     pp <- prop.part(obj, check.labels = FALSE)
     ## Drop the partitions whose frequency is less than 'p':
     if (p == 0.5) p <- 0.5000001 # avoid incompatible splits
-    pp <- pp[attr(pp, "number") >= p * ntree]
+    bs <- attr(pp, "number")
+    pp <- pp[bs >= p * ntree] 
+    bs <- bs[bs >= p * ntree]
     ## Get the order of the remaining partitions by decreasing size:
     ind <- order(lengths(pp), decreasing = TRUE)
     pp <- pp[ind]
+    bs <- bs[ind]
     n <- length(labels)
     m <- length(pp)
     edge <- matrix(0L, n + m - 1, 2)
@@ -435,6 +440,6 @@ consensus <- function(..., p = 1, check.labels = TRUE)
         pos <- 1L
         foo(1, nextnode)
     }
-    structure(list(edge = edge, tip.label = labels,
+    structure(list(edge = edge, tip.label = labels, node.label = bs/ntree,
               Nnode = m), class = "phylo")
 }

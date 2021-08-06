@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // bipartition2
 std::vector< std::vector<int> > bipartition2(IntegerMatrix orig, int nTips);
 RcppExport SEXP _ape_bipartition2(SEXP origSEXP, SEXP nTipsSEXP) {

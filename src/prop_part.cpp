@@ -31,17 +31,6 @@ std::vector< std::vector<int> > bipartition2(IntegerMatrix orig, int nTips) {
     return out;
 }
 
-// call-by-reference is important here
-int SameClade(const std::vector<int>& clade1, const std::vector<int>& clade2)
-{
-    unsigned int n = clade1.size();
-    if (n != clade2.size()) return 0;
-//    c1 = INTEGER(clade1);
-//    c2 = INTEGER(clade2);
-    for (unsigned int i = 0; i < n; i++)
-        if (clade1[i] != clade2[i]) return 0;
-    return 1;
-}
 
 // [[Rcpp::export]]
 List prop_part2(SEXP trees, int nTips){
@@ -57,11 +46,10 @@ List prop_part2(SEXP trees, int nTips){
         List tmpTree = tr(k);
         IntegerMatrix tmpE = tmpTree["edge"];
         std::vector< std::vector<int> > bp = bipartition2(tmpE, nTips);
-
         for (unsigned int i = 1; i < bp.size(); i++) {
             unsigned int j = 1;
             next_j:
-                if (SameClade(bp[i], ans[j])) {
+                if (bp[i] == ans[j]) {
                     no[j]++;
                     continue;
                 }
@@ -76,7 +64,5 @@ List prop_part2(SEXP trees, int nTips){
     List output = wrap(ans);
     output.attr("number") = no;
     output.attr("class") = "prop.part";
-//    return Rcpp::List::create(Rcpp::Named("splits") = ans,
-//                              Rcpp::Named("number") = no);
     return output;
 }
