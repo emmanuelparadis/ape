@@ -488,8 +488,10 @@ plot.phylo <-
 }
 
 phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
-                           edge.color, edge.width, edge.lty,
-                           node.color, node.width, node.lty)
+                           edge.color = NULL, edge.width = NULL,
+                           edge.lty = NULL,
+                           node.color = NULL, node.width = NULL,
+                           node.lty = NULL)
 {
     nodes <- Ntip + seq_len(Nnode)
     if (!horizontal) {
@@ -573,21 +575,25 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     widths <- .style(edge.width, node.width, 'lwd')
     ltys <- .style(edge.lty, node.lty, 'lty')
 
+    .LtyToStr <- function (x) {
+        lty_str <- c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
+        if (is.numeric(x)) {
+            lty_str[x + 1L]
+        } else {
+            x
+        }
+    }
+
     edge.color <- colors$h
     edge.width <- widths$h
-    edge.lty <- ltys$h
-    lty_str <- c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
-    if(is.numeric(edge.lty)) edge.lty <- lty_str[edge.lty + 1]
+    edge.lty <- .LtyToStr(ltys$h)
 
     color.v <- colors$v[-seq_len(Ntip)]
     width.v <- widths$v[-seq_len(Ntip)]
-    lty.v <- ltys$v[-seq_len(Ntip)]
-    if(is.numeric(lty.v)) lty.v <- lty_str[lty.v + 1]
+    lty.v <- .LtyToStr(ltys$v[-seq_len(Ntip)])
 
     DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-    DF <- DF[, c(missing(node.color) || is.null(node.color),
-                 missing(node.width) || is.null(node.width),
-                 missing(node.lty) || is.null(node.lty)),
+    DF <- DF[, c(is.null(node.color), is.null(node.width), is.null(node.lty)),
              drop = FALSE]
 
     for (i in seq_len(Nnode)) {
