@@ -543,8 +543,8 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     }
 
     .style <- function (edge.style, node.style, stylePar) {
-        if (is.null(edge.style)) {
-            if (is.null(node.style)) {
+        if (missing(edge.style) || is.null(edge.style)) {
+            if (missing(node.style) || is.null(node.style)) {
                 return(.one.style(par(stylePar)))
             } else {
                 if (length(node.style) == 1L) {
@@ -554,7 +554,7 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
                                 v = rep_len(node.style, Ntip + Nnode)))
                 }
             }
-        } else if (is.null(node.style)) {
+        } else if (missing(node.style) || is.null(node.style)) {
             if (length(edge.style) == 1L) {
                 return(.one.style(edge.style))
             } else {
