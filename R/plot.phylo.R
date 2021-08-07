@@ -570,27 +570,26 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
         }
     }
 
-
-    colors <- .style(edge.color, node.color, 'fg')
-    widths <- .style(edge.width, node.width, 'lwd')
-    ltys <- .style(edge.lty, node.lty, 'lty')
-
     .LtyToStr <- function (x) {
-        lty_str <- c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
         if (is.numeric(x)) {
-            lty_str[x + 1L]
+            c("blank", "solid", "dashed", "dotted", "dotdash", "longdash",
+              "twodash")[x + 1L]
         } else {
             x
         }
     }
 
+    colors <- .style(edge.color, node.color, 'fg')
+    widths <- .style(edge.width, node.width, 'lwd')
+    ltys <- .style(.LtyToStr(edge.lty), .LtyToStr(node.lty), 'lty')
+
     edge.color <- colors$h
     edge.width <- widths$h
-    edge.lty <- .LtyToStr(ltys$h)
+    edge.lty <- ltys$h
 
     color.v <- colors$v[-seq_len(Ntip)]
     width.v <- widths$v[-seq_len(Ntip)]
-    lty.v <- .LtyToStr(ltys$v[-seq_len(Ntip)])
+    lty.v <- ltys$v[-seq_len(Ntip)]
 
     DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
     DF <- DF[, c(is.null(node.color), is.null(node.width), is.null(node.lty)),
