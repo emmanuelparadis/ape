@@ -583,7 +583,9 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     width.v <- widths$v[-seq_len(Ntip)]
     lty.v <- ltys$v[-seq_len(Ntip)]
     DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-    DF <- DF[, c(is.null(node.color), is.null(node.width), is.null(node.lty)),
+    DF <- DF[, c(missing(node.color) || is.null(node.color),
+                 missing(node.width) || is.null(node.width),
+                 missing(node.lty) || is.null(node.lty)),
              drop = FALSE]
 
     for (i in seq_len(Nnode)) {
