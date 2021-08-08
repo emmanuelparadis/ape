@@ -4,6 +4,7 @@
 
 # Session Data files
 .RData
+*.Rproj
 
 # User-specific files
 .Ruserdata
@@ -37,6 +38,10 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Compiled files
+*.dll
+*.o
 
 # back-up files created by Emacs
 *.R~

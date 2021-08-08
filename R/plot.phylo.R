@@ -9,11 +9,11 @@
 
 plot.phylo <-
     function(x, type = "phylogram", use.edge.length = TRUE,
-             node.pos = NULL, show.tip.label = TRUE,
-             show.node.label = FALSE, edge.color = par("fg"),
-             edge.width = par("lwd"), edge.lty = par("lty"),
-             font = 3, cex = par("cex"), adj = NULL,
-             srt = 0, no.margin = FALSE, root.edge = FALSE,
+             node.pos = NULL, show.tip.label = TRUE, show.node.label = FALSE,
+             edge.color = NULL, edge.width = NULL, edge.lty = NULL,
+             node.color = NULL, node.width = NULL, node.lty = NULL,
+             font = 3, cex = par("cex"),
+             adj = NULL, srt = 0, no.margin = FALSE, root.edge = FALSE,
              label.offset = 0, underscore = FALSE, x.lim = NULL,
              y.lim = NULL, direction = "rightwards", lab4ut = NULL,
              tip.color = par("col"), plot = TRUE, rotate.tree = 0,
@@ -21,7 +21,7 @@ plot.phylo <-
 {
     Ntip <- length(x$tip.label)
     if (Ntip < 2) {
-        warning("found less than 2 tips in the tree")
+        warning("found fewer than 2 tips in the tree")
         return(NULL)
     }
     .nodeHeight <- function(edge, Nedge, yy)
@@ -111,14 +111,14 @@ plot.phylo <-
     ## 'z' is the tree in postorder order used in calls to .C
     z <- reorder(x, order = "postorder")
 
-if (phyloORclado) {
+    if (phyloORclado) {
         if (is.null(node.pos))
             node.pos <-
                 if (type == "cladogram" && !use.edge.length) 2 else 1
 
-        if (node.pos == 1)
+        if (node.pos == 1) {
             yy <- .nodeHeight(z$edge, Nedge, yy)
-        else {
+        } else {
           ## node_height_clado requires the number of descendants
           ## for each node, so we compute `xx' at the same time
           ans <- .C(node_height_clado, as.integer(Ntip),
@@ -133,53 +133,52 @@ if (phyloORclado) {
         } else  {
             xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
         }
-} else {
-    twopi <- 2 * pi
-    rotate.tree <- twopi * rotate.tree/360
+    } else {
+        twopi <- 2 * pi
+        rotate.tree <- twopi * rotate.tree/360
 
-    if (type != "unrooted") { # for "fan" and "radial" trees (open.angle)
-        ## if the tips are not in the same order in tip.label
-        ## and in edge[, 2], we must reorder the angles: we
-        ## use `xx' to store temporarily the angles
-        TIPS <- x$edge[which(x$edge[, 2] <= Ntip), 2]
-        xx <- seq(0, twopi * (1 - 1/Ntip) - twopi * open.angle/360,
-                  length.out = Ntip)
-        theta <- double(Ntip)
-        theta[TIPS] <- xx
-        theta <- c(theta, numeric(Nnode))
-    }
-
-    switch(type, "fan" = {
-        theta <- .nodeHeight(z$edge, Nedge, theta)
-        if (use.edge.length) {
-            r <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
-        } else {
-            r <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
-            max_r <- max(r)
-            r <- (max_r - r + 1) / max_r
+        if (type != "unrooted") { # for "fan" and "radial" trees (open.angle)
+            ## if the tips are not in the same order in tip.label
+            ## and in edge[, 2], we must reorder the angles: we
+            ## use `xx' to store temporarily the angles
+            TIPS <- x$edge[which(x$edge[, 2] <= Ntip), 2]
+            xx <- seq(0, twopi * (1 - 1/Ntip) - twopi * open.angle/360,
+                      length.out = Ntip)
+            theta <- double(Ntip)
+            theta[TIPS] <- xx
+            theta <- c(theta, numeric(Nnode))
         }
-        theta <- theta + rotate.tree
-        if (root.edge) r <- r + x$root.edge
-        xx <- r * cos(theta)
-        yy <- r * sin(theta)
-    }, "unrooted" = {
-        nb.sp <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
-        XY <- if (use.edge.length)
-            unrooted.xy(Ntip, Nnode, z$edge, z$edge.length, nb.sp, rotate.tree)
-        else
-            unrooted.xy(Ntip, Nnode, z$edge, rep(1, Nedge), nb.sp, rotate.tree)
-        ## rescale so that we have only positive values
-        xx <- XY$M[, 1] - min(XY$M[, 1])
-        yy <- XY$M[, 2] - min(XY$M[, 2])
-    }, "radial" = {
-        r <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
-        r[r == 1] <- 0
-        r <- 1 - r/Ntip
-        theta <- .nodeHeight(z$edge, Nedge, theta) + rotate.tree
-        xx <- r * cos(theta)
-        yy <- r * sin(theta)
-    })
-}
+
+        switch(type, "fan" = {
+            theta <- .nodeHeight(z$edge, Nedge, theta)
+            if (use.edge.length) {
+                r <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
+            } else {
+                r <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
+                r <- 1/r
+            }
+            theta <- theta + rotate.tree
+            if (root.edge) r <- r + x$root.edge
+            xx <- r * cos(theta)
+            yy <- r * sin(theta)
+        }, "unrooted" = {
+            nb.sp <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
+            XY <- if (use.edge.length)
+                unrooted.xy(Ntip, Nnode, z$edge, z$edge.length, nb.sp, rotate.tree)
+            else
+                unrooted.xy(Ntip, Nnode, z$edge, rep(1, Nedge), nb.sp, rotate.tree)
+            ## rescale so that we have only positive values
+            xx <- XY$M[, 1] - min(XY$M[, 1])
+            yy <- XY$M[, 2] - min(XY$M[, 2])
+        }, "radial" = {
+            r <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
+            r[r == 1] <- 0
+            r <- 1 - r/Ntip
+            theta <- .nodeHeight(z$edge, Nedge, theta) + rotate.tree
+            xx <- r * cos(theta)
+            yy <- r * sin(theta)
+        })
+    }
 
     if (phyloORclado) {
         if (!horizontal) {
@@ -308,161 +307,172 @@ if (phyloORclado) {
     plot.default(0, type = "n", xlim = x.lim, ylim = y.lim, xlab = "",
                  ylab = "", axes = FALSE, asp = asp, ...)
 
-if (plot) {
-    if (is.null(adj))
-        adj <- if (phyloORclado && direction == "leftwards") 1 else 0
-    if (phyloORclado && show.tip.label) {
-        MAXSTRING <- max(strwidth(x$tip.label, cex = cex))
-        loy <- 0
-        if (direction == "rightwards") {
-            lox <- label.offset + MAXSTRING * 1.05 * adj
-        }
-        if (direction == "leftwards") {
-            lox <- -label.offset - MAXSTRING * 1.05 * (1 - adj)
-            ##xx <- xx + MAXSTRING
-        }
-        if (!horizontal) {
-            psr <- par("usr")
-            MAXSTRING <- MAXSTRING * 1.09 * (psr[4] - psr[3])/(psr[2] - psr[1])
-            loy <- label.offset + MAXSTRING * 1.05 * adj
-            lox <- 0
-            srt <- 90 + srt
-            if (direction == "downwards") {
-                loy <- -loy
-                ##yy <- yy + MAXSTRING
-                srt <- 180 + srt
+    if (plot) {
+        if (is.null(adj))
+            adj <- if (phyloORclado && direction == "leftwards") 1 else 0
+        if (phyloORclado && show.tip.label) {
+            MAXSTRING <- max(strwidth(x$tip.label, cex = cex))
+            loy <- 0
+            if (direction == "rightwards") {
+                lox <- label.offset + MAXSTRING * 1.05 * adj
+            }
+            if (direction == "leftwards") {
+                lox <- -label.offset - MAXSTRING * 1.05 * (1 - adj)
+                ##xx <- xx + MAXSTRING
+            }
+            if (!horizontal) {
+                psr <- par("usr")
+                MAXSTRING <- MAXSTRING * 1.09 * (psr[4] - psr[3])/(psr[2] - psr[1])
+                loy <- label.offset + MAXSTRING * 1.05 * adj
+                lox <- 0
+                srt <- 90 + srt
+                if (direction == "downwards") {
+                    loy <- -loy
+                    ##yy <- yy + MAXSTRING
+                    srt <- 180 + srt
+                }
             }
         }
-    }
-    if (type == "phylogram") {
-        phylogram.plot(x$edge, Ntip, Nnode, xx, yy,
-                       horizontal, edge.color, edge.width, edge.lty)
-    } else {
-        if (type == "fan") {
-            ereorder <- match(z$edge[, 2], x$edge[, 2])
-            if (length(edge.color) > 1) {
-                edge.color <- rep(edge.color, length.out = Nedge)
-                edge.color <- edge.color[ereorder]
-            }
-            if (length(edge.width) > 1) {
-                edge.width <- rep(edge.width, length.out = Nedge)
-                edge.width <- edge.width[ereorder]
-            }
-            if (length(edge.lty) > 1) {
-                edge.lty <- rep(edge.lty, length.out = Nedge)
-                edge.lty <- edge.lty[ereorder]
-            }
-            circular.plot(z$edge, Ntip, Nnode, xx, yy, theta,
-                          r, edge.color, edge.width, edge.lty)
-        } else
-        cladogram.plot(x$edge, xx, yy, edge.color, edge.width, edge.lty)
-    }
-    if (root.edge) {
-        rootcol <- if (length(edge.color) == 1) edge.color else par("fg")
-        rootw <- if (length(edge.width) == 1) edge.width else par("lwd")
-        rootlty <- if (length(edge.lty) == 1) edge.lty else par("lty")
-        if (type == "fan") {
-            tmp <- polar2rect(x$root.edge, theta[ROOT])
-            segments(0, 0, tmp$x, tmp$y, col = rootcol, lwd = rootw, lty = rootlty)
+        if (type == "phylogram") {
+            phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal,
+                           edge.color, edge.width, edge.lty,
+                           node.color, node.width, node.lty)
         } else {
-            switch(direction,
-                   "rightwards" = segments(0, yy[ROOT], x$root.edge, yy[ROOT],
-                                           col = rootcol, lwd = rootw, lty = rootlty),
-                   "leftwards" = segments(xx[ROOT], yy[ROOT], xx[ROOT] + x$root.edge, yy[ROOT],
-                                          col = rootcol, lwd = rootw, lty = rootlty),
-                   "upwards" = segments(xx[ROOT], 0, xx[ROOT], x$root.edge,
-                                        col = rootcol, lwd = rootw, lty = rootlty),
-                   "downwards" = segments(xx[ROOT], yy[ROOT], xx[ROOT], yy[ROOT] + x$root.edge,
-                                          col = rootcol, lwd = rootw, lty = rootlty))
-        }
-    }
-    if (show.tip.label) {
-        if (is.expression(x$tip.label)) underscore <- TRUE
-        if (!underscore) x$tip.label <- gsub("_", " ", x$tip.label)
+            if (is.null(edge.color)) {
+                edge.color <- par('fg')
+            }
+            if (is.null(edge.width)) {
+                edge.width <- par('lwd')
+            }
+            if (is.null(edge.lty)) {
+                edge.lty <- par('lty')
+            }
 
-        if (phyloORclado) {
-            if (align.tip.label) {
-                xx.tmp <- switch(direction,
-                                 "rightwards" = max(xx[1:Ntip]),
-                                 "leftwards" = min(xx[1:Ntip]),
-                                 "upwards" = xx[1:Ntip],
-                                 "downwards" = xx[1:Ntip])
-                yy.tmp <- switch(direction,
-                                 "rightwards" = yy[1:Ntip],
-                                 "leftwards" = yy[1:Ntip],
-                                 "upwards" = max(yy[1:Ntip]),
-                                 "downwards" = min(yy[1:Ntip]))
-                segments(xx[1:Ntip], yy[1:Ntip], xx.tmp, yy.tmp, lty = align.tip.label.lty)
+            if (type == "fan") {
+                ereorder <- match(z$edge[, 2], x$edge[, 2])
+                if (length(edge.color) > 1) {
+                    edge.color <- rep_len(edge.color, Nedge)
+                    edge.color <- edge.color[ereorder]
+                }
+                if (length(edge.width) > 1) {
+                    edge.width <- rep_len(edge.width, Nedge)
+                    edge.width <- edge.width[ereorder]
+                }
+                if (length(edge.lty) > 1) {
+                    edge.lty <- rep_len(edge.lty, Nedge)
+                    edge.lty <- edge.lty[ereorder]
+                }
+                circular.plot(z$edge, Ntip, Nnode, xx, yy, theta,
+                              r, edge.color, edge.width, edge.lty)
+            } else
+            cladogram.plot(x$edge, xx, yy, edge.color, edge.width, edge.lty)
+        }
+        if (root.edge) {
+            rootcol <- if (length(edge.color) == 1) edge.color else par("fg")
+            rootw <- if (length(edge.width) == 1) edge.width else par("lwd")
+            rootlty <- if (length(edge.lty) == 1) edge.lty else par("lty")
+            if (type == "fan") {
+                tmp <- polar2rect(x$root.edge, theta[ROOT])
+                segments(0, 0, tmp$x, tmp$y, col = rootcol, lwd = rootw, lty = rootlty)
             } else {
-                xx.tmp <- xx[1:Ntip]
-                yy.tmp <- yy[1:Ntip]
-            }
-            text(xx.tmp + lox, yy.tmp + loy, x$tip.label, adj = adj,
-                 font = font, srt = srt, cex = cex, col = tip.color)
-        } else {
-            angle <- if (type == "unrooted") XY$axe else atan2(yy[1:Ntip], xx[1:Ntip]) # in radians
-
-            lab4ut <-
-                if (is.null(lab4ut)) {
-                    if (type == "unrooted") "horizontal" else "axial"
-                } else match.arg(lab4ut, c("horizontal", "axial"))
-
-            xx.tips <- xx[1:Ntip]
-            yy.tips <- yy[1:Ntip]
-            if (label.offset) {
-                xx.tips <- xx.tips + label.offset * cos(angle)
-                yy.tips <- yy.tips + label.offset * sin(angle)
-            }
-
-            if (lab4ut == "horizontal") {
-                y.adj <- x.adj <- numeric(Ntip)
-                sel <- abs(angle) > 0.75 * pi
-                x.adj[sel] <- -strwidth(x$tip.label)[sel] * 1.05
-                sel <- abs(angle) > pi/4 & abs(angle) < 0.75 * pi
-                x.adj[sel] <- -strwidth(x$tip.label)[sel] * (2 * abs(angle)[sel] / pi - 0.5)
-                sel <- angle > pi / 4 & angle < 0.75 * pi
-                y.adj[sel] <- strheight(x$tip.label)[sel] / 2
-                sel <- angle < -pi / 4 & angle > -0.75 * pi
-                y.adj[sel] <- -strheight(x$tip.label)[sel] * 0.75
-                text(xx.tips + x.adj * cex, yy.tips + y.adj * cex,
-                     x$tip.label, adj = c(adj, 0), font = font,
-                     srt = srt, cex = cex, col = tip.color)
-            } else { # if lab4ut == "axial"
-                if (align.tip.label) {
-                    POL <- rect2polar(xx.tips, yy.tips)
-                    POL$r[] <- max(POL$r)
-                    REC <- polar2rect(POL$r, POL$angle)
-                    xx.tips <- REC$x
-                    yy.tips <- REC$y
-                    segments(xx[1:Ntip], yy[1:Ntip], xx.tips, yy.tips, lty = align.tip.label.lty)
-                }
-                if (type == "unrooted") {
-                    adj <- abs(angle) > pi/2
-                    angle <- angle * 180/pi # switch to degrees
-                    angle[adj] <- angle[adj] - 180
-                    adj <- as.numeric(adj)
-                } else {
-                    s <- xx.tips < 0
-                    angle <- angle * 180/pi
-                    angle[s] <- angle[s] + 180
-                    adj <- as.numeric(s)
-                }
-                ## `srt' takes only a single value, so can't vectorize this:
-                ## (and need to 'elongate' these vectors:)
-                font <- rep(font, length.out = Ntip)
-                tip.color <- rep(tip.color, length.out = Ntip)
-                cex <- rep(cex, length.out = Ntip)
-                for (i in 1:Ntip)
-                    text(xx.tips[i], yy.tips[i], x$tip.label[i], font = font[i],
-                         cex = cex[i], srt = angle[i], adj = adj[i],
-                         col = tip.color[i])
+                switch(direction,
+                       "rightwards" = segments(0, yy[ROOT], x$root.edge, yy[ROOT],
+                                               col = rootcol, lwd = rootw, lty = rootlty),
+                       "leftwards" = segments(xx[ROOT], yy[ROOT], xx[ROOT] + x$root.edge, yy[ROOT],
+                                              col = rootcol, lwd = rootw, lty = rootlty),
+                       "upwards" = segments(xx[ROOT], 0, xx[ROOT], x$root.edge,
+                                            col = rootcol, lwd = rootw, lty = rootlty),
+                       "downwards" = segments(xx[ROOT], yy[ROOT], xx[ROOT], yy[ROOT] + x$root.edge,
+                                              col = rootcol, lwd = rootw, lty = rootlty))
             }
         }
+        if (show.tip.label) {
+            if (is.expression(x$tip.label)) underscore <- TRUE
+            if (!underscore) x$tip.label <- gsub("_", " ", x$tip.label)
+
+            if (phyloORclado) {
+                if (align.tip.label) {
+                    xx.tmp <- switch(direction,
+                                     "rightwards" = max(xx[1:Ntip]),
+                                     "leftwards" = min(xx[1:Ntip]),
+                                     "upwards" = xx[1:Ntip],
+                                     "downwards" = xx[1:Ntip])
+                    yy.tmp <- switch(direction,
+                                     "rightwards" = yy[1:Ntip],
+                                     "leftwards" = yy[1:Ntip],
+                                     "upwards" = max(yy[1:Ntip]),
+                                     "downwards" = min(yy[1:Ntip]))
+                    segments(xx[1:Ntip], yy[1:Ntip], xx.tmp, yy.tmp, lty = align.tip.label.lty)
+                } else {
+                    xx.tmp <- xx[1:Ntip]
+                    yy.tmp <- yy[1:Ntip]
+                }
+                text(xx.tmp + lox, yy.tmp + loy, x$tip.label, adj = adj,
+                     font = font, srt = srt, cex = cex, col = tip.color)
+            } else {
+                angle <- if (type == "unrooted") XY$axe else atan2(yy[1:Ntip], xx[1:Ntip]) # in radians
+
+                lab4ut <-
+                    if (is.null(lab4ut)) {
+                        if (type == "unrooted") "horizontal" else "axial"
+                    } else match.arg(lab4ut, c("horizontal", "axial"))
+
+                xx.tips <- xx[1:Ntip]
+                yy.tips <- yy[1:Ntip]
+                if (label.offset) {
+                    xx.tips <- xx.tips + label.offset * cos(angle)
+                    yy.tips <- yy.tips + label.offset * sin(angle)
+                }
+
+                if (lab4ut == "horizontal") {
+                    y.adj <- x.adj <- numeric(Ntip)
+                    sel <- abs(angle) > 0.75 * pi
+                    x.adj[sel] <- -strwidth(x$tip.label)[sel] * 1.05
+                    sel <- abs(angle) > pi/4 & abs(angle) < 0.75 * pi
+                    x.adj[sel] <- -strwidth(x$tip.label)[sel] * (2 * abs(angle)[sel] / pi - 0.5)
+                    sel <- angle > pi / 4 & angle < 0.75 * pi
+                    y.adj[sel] <- strheight(x$tip.label)[sel] / 2
+                    sel <- angle < -pi / 4 & angle > -0.75 * pi
+                    y.adj[sel] <- -strheight(x$tip.label)[sel] * 0.75
+                    text(xx.tips + x.adj * cex, yy.tips + y.adj * cex,
+                         x$tip.label, adj = c(adj, 0), font = font,
+                         srt = srt, cex = cex, col = tip.color)
+                } else { # if lab4ut == "axial"
+                    if (align.tip.label) {
+                        POL <- rect2polar(xx.tips, yy.tips)
+                        POL$r[] <- max(POL$r)
+                        REC <- polar2rect(POL$r, POL$angle)
+                        xx.tips <- REC$x
+                        yy.tips <- REC$y
+                        segments(xx[1:Ntip], yy[1:Ntip], xx.tips, yy.tips, lty = align.tip.label.lty)
+                    }
+                    if (type == "unrooted") {
+                        adj <- abs(angle) > pi/2
+                        angle <- angle * 180/pi # switch to degrees
+                        angle[adj] <- angle[adj] - 180
+                        adj <- as.numeric(adj)
+                    } else {
+                        s <- xx.tips < 0
+                        angle <- angle * 180/pi
+                        angle[s] <- angle[s] + 180
+                        adj <- as.numeric(s)
+                    }
+                    ## `srt' takes only a single value, so can't vectorize this:
+                    ## (and need to 'elongate' these vectors:)
+                    font <- rep(font, length.out = Ntip)
+                    tip.color <- rep(tip.color, length.out = Ntip)
+                    cex <- rep(cex, length.out = Ntip)
+                    for (i in 1:Ntip)
+                        text(xx.tips[i], yy.tips[i], x$tip.label[i], font = font[i],
+                             cex = cex[i], srt = angle[i], adj = adj[i],
+                             col = tip.color[i])
+                }
+            }
+        }
+        if (show.node.label)
+            text(xx[ROOT:length(xx)] + label.offset, yy[ROOT:length(yy)],
+                 x$node.label, adj = adj, font = font, srt = srt, cex = cex)
     }
-    if (show.node.label)
-        text(xx[ROOT:length(xx)] + label.offset, yy[ROOT:length(yy)],
-             x$node.label, adj = adj, font = font, srt = srt, cex = cex)
-}
     L <- list(type = type, use.edge.length = use.edge.length,
               node.pos = node.pos, node.depth = node.depth,
               show.tip.label = show.tip.label,
@@ -478,9 +488,12 @@ if (plot) {
 }
 
 phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
-                           edge.color, edge.width, edge.lty)
+                           edge.color = NULL, edge.width = NULL,
+                           edge.lty = NULL,
+                           node.color = NULL, node.width = NULL,
+                           node.lty = NULL)
 {
-    nodes <- (Ntip + 1):(Ntip + Nnode)
+    nodes <- Ntip + seq_len(Nnode)
     if (!horizontal) {
         tmp <- yy
         yy <- xx
@@ -490,90 +503,152 @@ phylogram.plot <- function(edge, Ntip, Nnode, xx, yy, horizontal,
     x0v <- xx[nodes]
     y0v <- y1v <- numeric(Nnode)
 
-    ## store the index of each node in the 1st column of edge:
-    NodeInEdge1 <- vector("list", Nnode)
     e1 <- edge[, 1]
-    for (i in seq_along(e1)) {
-        j <- e1[i] - Ntip
-        NodeInEdge1[[j]] <- c(NodeInEdge1[[j]], i)
-    }
+    e2 <- edge[, 2]
+    Nedge <- length(e1)
 
-    for (i in 1:Nnode) {
-        j <- NodeInEdge1[[i]]
-        tmp <- range(yy[edge[j, 2]])
-        y0v[i] <- tmp[1]
-        y1v[i] <- tmp[2]
-    }
+    ## store the index of each node in the 1st column of edge:
+    NodeInEdge1 <- lapply(Ntip + seq_len(Nnode), function (j) which(e1 == j))
+    edgeChildren <- lapply(NodeInEdge1, function (nie) e2[nie])
+    yv <- vapply(edgeChildren, function (i) range(yy[i]), double(2))
+    y0v <- yv[1, ]
+    y1v <- yv[2, ]
+
     ## ... et un trait horizontal partant de chaque tip et chaque noeud
     ##  vers la racine
-    x0h <- xx[edge[, 1]]
-    x1h <- xx[edge[, 2]]
-    y0h <- yy[edge[, 2]]
+    x0h <- xx[e1]
+    x1h <- xx[e2]
+    y0h <- yy[e2]
 
-    nc <- length(edge.color)
-    nw <- length(edge.width)
-    nl <- length(edge.lty)
+    # Node and edge styling
 
-    if (nc + nw + nl == 3) {
-        color.v <- edge.color
-        width.v <- edge.width
-        lty.v <- edge.lty
-    } else {
-        Nedge <- dim(edge)[1]
-        edge.color <- rep(edge.color, length.out = Nedge)
-        edge.width <- rep(edge.width, length.out = Nedge)
-        edge.lty <- rep(edge.lty, length.out = Nedge)
-        DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
-        color.v <- rep(par("fg"), Nnode)
-        width.v <- rep(par("lwd"), Nnode)
-        lty.v <- rep(par("lty"), Nnode)
-        lty_str <- c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
-        if(is.numeric(edge.lty)) edge.lty <- lty_str[edge.lty + 1]
-        for (i in 1:Nnode) {
-            br <- NodeInEdge1[[i]]
-            if (length(br) == 1) {
-                A <- br[1]
-                color.v[i] <- edge.color[A]
-                width.v[i] <- edge.width[A]
-                lty.v[i] <- edge.lty[A]
-            } else if (length(br) > 2) {
-                x <- unique(DF[br, 1])
-                if (length(x) == 1) color.v[i] <- x
-                x <- unique(DF[br, 2])
-                if (length(x) == 1) width.v[i] <- x
-                x <- unique(DF[br, 3])
-                if (length(x) == 1) lty.v[i] <- x
-            } else { # length(br) == 2
-                A <- br[1]
-                B <- br[2]
-                if (any(DF[A, ] != DF[B, ])) {
-                    color.v[i] <- edge.color[B]
-                    width.v[i] <- edge.width[B]
-                    lty.v[i] <- edge.lty[B]
-                    ## add a new line:
-                    y0v <- c(y0v, y0v[i])
-                    y1v <- c(y1v, yy[i + Ntip])
-                    x0v <- c(x0v, x0v[i])
-                    color.v <- c(color.v, edge.color[A])
-                    width.v <- c(width.v, edge.width[A])
-                    lty.v <- c(lty.v, edge.lty[A])
-                    ## shorten the line:
-                    y0v[i] <- yy[i + Ntip]
+    .one.style <- function (style) {
+        list(h = rep_len(style, Nedge), v = rep_len(style, Ntip + Nnode))
+    }
+
+    .edge.style <- function (node.style) {
+        node.style <- rep_len(node.style, Ntip + Nnode)
+        sapply(seq_len(Nedge), function (e) node.style[e2[e]])
+    }
+
+    .node.style <- function (edge.style, fallback) {
+        edge.style <- rep_len(edge.style, Nedge)
+        c(character(Ntip),
+          sapply(Ntip + seq_len(Nnode), function (n) {
+              pendant.styles <- edge.style[e1 == n]
+              if (length(unique(pendant.styles)) == 1L) {
+                  pendant.styles[1]
+              } else {
+                  fallback
+              }
+          }))
+    }
+
+    .style <- function (edge.style, node.style, stylePar) {
+        if (missing(edge.style) || is.null(edge.style)) {
+            if (missing(node.style) || is.null(node.style)) {
+                return(.one.style(par(stylePar)))
+            } else {
+                if (length(node.style) == 1L) {
+                    return(.one.style(node.style))
                 } else {
-                    color.v[i] <- edge.color[A]
-                    width.v[i] <- edge.width[A]
-                    lty.v[i] <- edge.lty[A]
+                    return(list(h = .edge.style(node.style),
+                                v = rep_len(node.style, Ntip + Nnode)))
+                }
+            }
+        } else if (missing(node.style) || is.null(node.style)) {
+            if (length(edge.style) == 1L) {
+                return(.one.style(edge.style))
+            } else {
+                return(list(h = rep_len(edge.style, Nedge),
+                            v = .node.style(edge.style, par(stylePar))))
+            }
+        } else {
+
+            return(list(h = rep_len(edge.style, Nedge),
+                        v = rep_len(node.style, Ntip + Nnode)))
+        }
+    }
+
+    .LtyToStr <- function (x) {
+        if (is.numeric(x)) {
+            c("blank", "solid", "dashed", "dotted", "dotdash", "longdash",
+              "twodash")[x + 1L]
+        } else {
+            x
+        }
+    }
+
+    colors <- .style(edge.color, node.color, 'fg')
+    widths <- .style(edge.width, node.width, 'lwd')
+    ltys <- .style(.LtyToStr(edge.lty), .LtyToStr(node.lty), 'lty')
+
+    edge.color <- colors$h
+    edge.width <- widths$h
+    edge.lty <- ltys$h
+
+    color.v <- colors$v[-seq_len(Ntip)]
+    width.v <- widths$v[-seq_len(Ntip)]
+    lty.v <- ltys$v[-seq_len(Ntip)]
+
+    DF <- data.frame(edge.color, edge.width, edge.lty, stringsAsFactors = FALSE)
+    DF <- DF[, c(is.null(node.color), is.null(node.width), is.null(node.lty)),
+             drop = FALSE]
+
+    for (i in seq_len(Nnode)) {
+        br <- NodeInEdge1[[i]]
+        if (length(br) == 2) {
+            A <- br[1]
+            B <- br[2]
+
+            # We should draw a single line if at all possible, for the
+            # appearance of dotted / dashed line styles.
+            if (any(DF[A, ] != DF[B, ])) {
+                ## add a new line:
+                y0v <- c(y0v, y0v[i])
+                y1v <- c(y1v, yy[i + Ntip])
+                x0v <- c(x0v, x0v[i])
+                ## shorten the old line:
+                y0v[i] <- yy[i + Ntip]
+
+                if (is.null(node.color)) {
+                    # Half-lines may have different colours
+                    color.v[i] <- edge.color[B]
+                    color.v <- c(color.v, edge.color[A])
+                } else {
+                    # Use node colour for both half-lines
+                    color.v <- c(color.v, color.v[i])
+                }
+                if (is.null(node.width)) {
+                    width.v[i] <- edge.width[B]
+                    width.v <- c(width.v, edge.width[A])
+                } else {
+                    width.v <- c(width.v, width.v[i])
+                }
+                if (is.null(node.lty)) {
+                    lty.v[i] <- edge.lty[B]
+                    lty.v <- c(lty.v, edge.lty[A])
+                } else {
+                    lty.v <- c(lty.v, lty.v[i])
                 }
             }
         }
     }
 
     if (horizontal) {
-        segments(x0h, y0h, x1h, y0h, col = edge.color, lwd = edge.width, lty = edge.lty) # draws horizontal lines
-        segments(x0v, y0v, x0v, y1v, col = color.v, lwd = width.v, lty = lty.v) # draws vertical lines
+        # draw horizontal lines
+        segments(x0h, y0h, x1h, y0h,
+                 col = edge.color, lwd = edge.width, lty = edge.lty)
+        # draw vertical lines
+        segments(x0v, y0v, x0v, y1v,
+                 col = color.v, lwd = width.v, lty = lty.v)
     } else {
-        segments(y0h, x0h, y0h, x1h, col = edge.color, lwd = edge.width, lty = edge.lty) # draws vertical lines
-        segments(y0v, x0v, y1v, x0v, col = color.v, lwd = width.v, lty = lty.v) # draws horizontal lines
+        # draws vertical lines
+        segments(y0h, x0h, y0h, x1h,
+                 col = edge.color, lwd = edge.width, lty = edge.lty)
+        # draws horizontal lines
+        segments(y0v, x0v, y1v, x0v,
+                 col = color.v, lwd = width.v, lty = lty.v)
     }
 }
 
