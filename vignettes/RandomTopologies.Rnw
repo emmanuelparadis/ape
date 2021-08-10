@@ -153,7 +153,7 @@ sampling?  We have seen above that the probability to draw a specific
 topology is the inverse of the possible number of topologies, so the
 number of times any topology is drawn out of $K$ draws follows a
 binomial distribution with parameters $K$ and $1/N_n$.  The
-probability to have at least this topology is one minus the
+probability to have at least twice this topology is one minus the
 probability to have it zero time and minus the probability to have it
 once. Let's calculate this for $n=50$ and $K=100$:
 
