@@ -1,0 +1,80 @@
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+name: revdep-check
+
+jobs:
+  mem-check:
+    runs-on: macOS-latest
+
+    name: revdepcheck ${{ matrix.config.deps }}, macOS, R release
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {deps: 'Depends'}
+          - {deps: 'Suggests'}
+          - {deps: 'Imports'}
+
+    env:
+      _R_CHECK_CRAN_INCOMING_: true # Seemingly not set by --as-cran
+      _R_CHECK_FORCE_SUGGESTS_: false # CRAN settings
+      R_COMPILE_AND_INSTALL_PACKAGES: 'never'
+      _R_CHECK_THINGS_IN_CHECK_DIR_: false
+      R_REMOTES_STANDALONE: true
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      _R_CHECK_CRAN_INCOMING_USE_ASPELL_: false # Set to true when can figure how to install aspell on Windows
+      RSPM: ${{ matrix.config.rspm }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: release
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = 'soft'), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install dependencies
+        run: |
+          remotes::install_github("r-lib/revdepcheck")
+          remotes::install_deps(dependencies = 'soft')
+        shell: Rscript {0}
+
+      - name: Check reverse dependencies (${{ matrix.config.deps }})
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          revdepcheck::revdep_check(timeout = 60 * 15, num_workers = 3,
+                                    dependencies = "${{ matrix.config.deps }}")
+          problems <- readLines('revdep/problems.md', warn = FALSE)
+          if (length(problems) > 1) stop(paste0(problems, collapse= "\n"))
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: revdep-${{ matrix.config.deps }}-results
+          path: revdep/*.md
