@@ -2,13 +2,14 @@
 \alias{where}
 \title{Find Patterns in DNA Sequences}
 \description{
-  This function finds patterns in a single or a set of DNA sequences.
+  This function finds patterns in a single or a set of DNA or AA sequences.
 }
 \usage{
 where(x, pattern)
 }
 \arguments{
-  \item{x}{an object of class \code{"DNAbin"}.}
+  \item{x}{an object inheriting the class either \code{"DNAbin"} or
+    \code{"AAbin"}.}
   \item{pattern}{a character string to be searched in \code{x}.}
 }
 \details{
@@ -25,10 +26,13 @@ where(x, pattern)
 }
 \author{Emmanuel Paradis}
 \seealso{
-  \code{\link{DNAbin}}, \code{\link{image.DNAbin}}
+  \code{\link{DNAbin}}, \code{\link{image.DNAbin}}, \code{\link{AAbin}}
 }
 \examples{
 data(woodmouse)
 where(woodmouse, "tata")
+## with AA sequences:
+x <- trans(woodmouse, 2)
+where(x, "irk")
 }
 \keyword{manip}
