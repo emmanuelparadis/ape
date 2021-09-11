@@ -215,7 +215,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         # remove the , ; symbol
         x <- gsub("[,;]", "", x)
         # split with the first space 
-        x <- unlist(regmatches(x, regexpr("\\s", x), invert=TRUE))
+        x <- unlist(regmatches(x, regexpr("\\s+", x), invert=TRUE))
         ###############################################
         x <- x[nzchar(x)]
         TRANS <- matrix(x, ncol = 2, byrow = TRUE)
