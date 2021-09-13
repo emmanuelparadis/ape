@@ -204,7 +204,19 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     if (translation) {
         end <- semico[semico > i2][1]
         x <- X[(i2 + 1):end] # assumes there's a 'new line' after "TRANSLATE"
-        x <- unlist(strsplit(x, "[,; \t]"))
+        #x <- unlist(strsplit(x, "[,; \t]"))
+        ################################################
+        # when the label of translation contains space #
+        # 1 "tip 1 a",                                 #
+        # 2 "tip 2"                                    #
+        ################################################
+        # remove the space and tab before the string
+        x <- gsub("^\\s+", "", x)
+        # remove the , ; symbol
+        x <- gsub("[,;]", "", x)
+        # split with the first space 
+        x <- unlist(regmatches(x, regexpr("\\s+", x), invert=TRUE))
+        ###############################################
         x <- x[nzchar(x)]
         TRANS <- matrix(x, ncol = 2, byrow = TRUE)
         TRANS[, 2] <- gsub("['\"]", "", TRANS[, 2])
