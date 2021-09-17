@@ -18,7 +18,7 @@ keep.tip <- function(phy, tip)
         ## stop on bad tip names
         ## alternative is to warn but proceed. not sure what stance is
         if (anyNA(idx)) {
-            um <- c("umatched tip labels:\n", paste(tip[is.na(idx)], collapse = " "))
+            um <- c("unmatched tip labels:\n", paste(tip[is.na(idx)], collapse = " "))
             stop(um)
         }
         tip <- idx
