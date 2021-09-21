@@ -1,4 +1,4 @@
-## DNA.R (2021-04-09)
+## DNA.R (2021-08-30)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
@@ -558,12 +558,23 @@ alview <- function(x, file = "", uppercase = TRUE, showpos = TRUE)
 
 where <- function(x, pattern)
 {
-    pat <- as.DNAbin(strsplit(pattern, NULL)[[1]])
+    pat <- strsplit(pattern, NULL)[[1]]
+    if (inherits(x, "DNAbin")) {
+        pat <- as.DNAbin(pat)
+    } else {
+        if (inherits(x, "AAbin")) {
+            pat <- as.AAbin(toupper(pat))
+        } else {
+            stop("'x' should inherit class \"DNAbin\" or \"AAbin\"")
+        }
+    }
     p <- length(pat)
 
     f <- function(x, pat, p) {
-        s <- length(x)
-        if (s < p) stop("sequence shorter than the pattern")
+        if (length(x) < p) {
+            warning("sequence shorter than the pattern: returning NULL")
+            return(NULL)
+        }
         .Call(C_where, x, pat)
     }
 

@@ -1,8 +1,8 @@
-## ace.R (2018-06-25)
+## ace.R (2021-08-25)
 
 ##   Ancestral Character Estimation
 
-## Copyright 2005-2018 Emmanuel Paradis and Ben Bolker
+## Copyright 2005-2021 Emmanuel Paradis and Ben Bolker
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -293,6 +293,7 @@ ace <-
                     lik.anc <- lik.anc / rowSums(lik.anc)
                 }
             }
+            rownames(lik.anc) <- nb.tip + 1:nb.node
             colnames(lik.anc) <- lvls
             obj$lik.anc <- lik.anc
         }

@@ -1,8 +1,8 @@
-## plot.phylo.R (2021-06-09)
+## plot.phylo.R (2021-09-17)
 
 ##   Plot Phylogenies
 
-## Copyright 2002-2019 Emmanuel Paradis
+## Copyright 2002-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -155,7 +155,8 @@ plot.phylo <-
                 r <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
             } else {
                 r <- .nodeDepth(Ntip, Nnode, z$edge, Nedge, node.depth)
-                r <- 1/r
+                max_r <- max(r)
+                r <- (max_r - r + 1) / max_r
             }
             theta <- theta + rotate.tree
             if (root.edge) r <- r + x$root.edge
