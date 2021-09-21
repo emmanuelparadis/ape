@@ -27,8 +27,9 @@ checkLabel <- function(x)
 write.tree <-
     function(phy, file = "", append = FALSE, digits = 10, tree.names = FALSE)
 {
-    if (!(inherits(phy, c("phylo", "multiPhylo"))))
-        stop("object \"phy\" has no trees")
+    if (!(inherits(phy, c("phylo", "multiPhylo"))) &&
+        !all(vapply(phy, inherits, logical(1), 'phylo')))
+        stop("object \"phy\" must contain trees")
 
     if (inherits(phy, "phylo")) phy <- c(phy)
     N <- length(phy)
