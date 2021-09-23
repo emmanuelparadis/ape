@@ -1,4 +1,4 @@
-## ace.R (2021-08-25)
+## ace.R (2021-09-23)
 
 ##   Ancestral Character Estimation
 
@@ -155,8 +155,7 @@ ace <-
     } else { # type == "discrete"
         if (method != "ML")
             stop("only ML estimation is possible for discrete characters.")
-        if (any(phy$edge.length <= 0))
-            stop("some branches have length zero or negative")
+        if (any(phy$edge.length < 0)) stop("some branches have negative length")
         if (!is.factor(x)) x <- factor(x)
         nl <- nlevels(x)
         lvls <- levels(x)
@@ -223,7 +222,7 @@ ace <-
                     comp[anc] <- sum(v)
                     liks[anc, ] <- v/comp[anc]
                 }
-                if (output.liks) return(liks[-TIPS, ])
+                if (output.liks) return(liks[-TIPS, , drop = FALSE])
                 dev <- -2 * sum(log(comp[-TIPS]))
                 if (is.na(dev)) Inf else dev
             }
@@ -250,7 +249,7 @@ ace <-
                     comp[anc] <- sum(v)
                     liks[anc, ] <- v/comp[anc]
                 }
-                if (output.liks) return(liks[-TIPS, ])
+                if (output.liks) return(liks[-TIPS, , drop = FALSE])
                 dev <- -2 * sum(log(comp[-TIPS]))
                 if (is.na(dev)) Inf else dev
             }
