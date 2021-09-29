@@ -29,8 +29,8 @@ chronos.control(...)
   \item{lambda}{value of the smoothing parameter.}
   \item{model}{a character string specifying the model of substitution
     rate variation among branches. The possible choices are:
-    ``correlated'', ``relaxed'', ``discrete'', or an unambiguous
-    abbreviation of these.}
+    ``correlated'', ``relaxed'', ``discrete'', ``clock'', or an
+    unambiguous abbreviation of these.}
   \item{quiet}{a logical value; by default the calculation progress are
     displayed.}
   \item{calibration}{a data frame (see details).}
@@ -84,6 +84,10 @@ chronos.control(...)
     \item{epsilon = 1e-6: }{the convergence diagnostic criterion.}
   }
 
+  Using \code{model = "clock"} is actually a short-cut to \code{model =
+  "discrete"} and setting \code{nb.rate.cat = 1} in the list passed to
+  \code{control}.
+
   The command \code{chronos.control()} returns a list with the default
   values of these parameters. They may be modified by passing them to
   this function, or directly in the list.
@@ -116,6 +120,7 @@ chronos.control(...)
 \author{Emmanuel Paradis, Santiago Claramunt, Guillaume Louvel}
 \seealso{\code{\link{chronoMPL}}}
 \examples{
+library(ape)
 tr <- rtree(10)
 ### the default is the correlated rate model:
 chr <- chronos(tr)

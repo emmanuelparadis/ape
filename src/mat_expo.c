@@ -1,12 +1,16 @@
-/* matexpo.c       2011-06-23 */
+/* matexpo.c       2021-09-27 */
 
-/* Copyright 2007-2011 Emmanuel Paradis */
+/* Copyright 2007-2021 Emmanuel Paradis */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
 
+#define USE_FC_LEN_T
 #include <R.h>
 #include <R_ext/Lapack.h>
+#ifndef FCONE
+# define FCONE
+#endif
 
 void mat_expo(double *P, int *nr)
 /* This function computes the exponential of a nr x nr matrix */
@@ -28,7 +32,7 @@ void mat_expo(double *P, int *nr)
    We take the real part of the eigenvalues -> WR
    and the right eigenvectors (vr) -> U */
 	F77_CALL(dgeev)(&no, &yes, &n, P, &n, WR, WI, vl, &n,
-			U, &n, work, &lw, &info);
+			U, &n, work, &lw, &info FCONE FCONE);
 
 /* It is not necessary to sort the eigenvalues...
    Copy U -> P */

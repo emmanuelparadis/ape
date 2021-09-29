@@ -1,8 +1,8 @@
-## drop.tip.R (2019-11-07)
+## drop.tip.R (2021-09-29)
 
 ##   Remove Tips in a Phylogenetic Tree
 
-## Copyright 2003-2019 Emmanuel Paradis, 2017-2018 Klaus Schliep, 2018 Joseph Brown
+## Copyright 2003-2021 Emmanuel Paradis, 2017-2018 Klaus Schliep, 2018 Joseph Brown
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -115,9 +115,12 @@ drop.tip <-
         return(res)
     }
 
-    if (!rooted && subtree) {
-        phy <- root(phy, (1:Ntip)[-tip][1])
-        root.edge <- 0
+    if (!rooted) {
+        phy$root.edge <- NULL # moved from below (2021-09-29)
+        if (subtree) {
+            phy <- root(phy, (1:Ntip)[-tip][1])
+            root.edge <- 0
+        }
     }
 
     phy <- reorder(phy)
@@ -176,7 +179,7 @@ drop.tip <-
         }
     }
 
-    if (!root.edge) phy$root.edge <- NULL
+    ##if (!root.edge) phy$root.edge <- NULL # moved above (2021-09-29)
 
     ## drop the edges
     phy$edge <- phy$edge[keep, ]

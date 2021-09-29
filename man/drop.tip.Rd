@@ -32,7 +32,8 @@ extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
     \code{trim.internal = FALSE}.}
   \item{rooted}{a logical indicating whether the tree must be treated as
     rooted or not. This allows to force the tree to be considered as
-    unrooted (see examples).}
+    unrooted (see examples). See details about a possible root.edge
+    element in the tree.}
   \item{collapse.singles}{a logical specifying whether to delete the
     internal nodes of degree 2.}
   \item{node}{a node number or label.}
@@ -62,15 +63,12 @@ extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
   Note that \code{subtree = TRUE} implies \code{trim.internal = TRUE}.
 
   To undestand how the option \code{root.edge} works, see the examples
-  below.
+  below. If \item{rooted = FALSE} and the tree has a root edge, the
+  latter is removed in the output.
 }
-\value{
-  an object of class \code{"phylo"}.
-}
+\value{an object of class \code{"phylo"}.}
 \author{Emmanuel Paradis, Klaus Schliep, Joseph Brown}
-\seealso{
-  \code{\link{bind.tree}}, \code{\link{root}}
-}
+\seealso{\code{\link{bind.tree}}, \code{\link{root}}}
 \examples{
 data(bird.families)
 tip <- c(
