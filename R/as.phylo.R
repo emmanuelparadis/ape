@@ -97,6 +97,8 @@ as.hclust.phylo <- function(x, ...)
     if (!is.rooted(x)) stop("the tree is not rooted")
     n <- length(x$tip.label)
     if (n == 1) stop("needs n >= 2 observations for a classification")
+    is_tip <- x$edge[,2] <= n
+    order <- x$edge[is_tip, 2]
     if (n == 2) {
         m <- matrix(c(-1L, -2L), 1, 2)
         bt <- x$edge.length[1]
@@ -121,7 +123,7 @@ as.hclust.phylo <- function(x, ...)
         m[match(oldnodes, m)] <- 1:(N - 1)
         names(bt) <- NULL
     }
-    obj <- list(merge = m, height = 2*bt, order = 1:n, labels = x$tip.label,
+    obj <- list(merge = m, height = 2*bt, order = order, labels = x$tip.label,
                 call = match.call(), method = "unknown")
     class(obj) <- "hclust"
     obj

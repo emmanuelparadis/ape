@@ -63,7 +63,7 @@ extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
   Note that \code{subtree = TRUE} implies \code{trim.internal = TRUE}.
 
   To undestand how the option \code{root.edge} works, see the examples
-  below. If \item{rooted = FALSE} and the tree has a root edge, the
+  below. If \code{rooted = FALSE} and the tree has a root edge, the
   latter is removed in the output.
 }
 \value{an object of class \code{"phylo"}.}
