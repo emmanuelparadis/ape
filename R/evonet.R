@@ -185,6 +185,7 @@ as.evonet.phylo <- function(x, ...)
             reticulation[reticulation > i] <- reticulation[reticulation > i] - 1L
         }
         x$Nnode <- nn
+        x$node.label <- NULL
         x$tip.label <- c(x$tip.label , rep("", ne))
     }
     x$edge <- edge
