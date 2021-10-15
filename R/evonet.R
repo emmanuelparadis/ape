@@ -164,10 +164,33 @@ as.evonet.phylo <- function(x, ...)
         edge[edge > i ] <- edge[edge > i] - 1L
         reticulation[reticulation > i] <- reticulation[reticulation > i] - 1L
     }
+    x$tip.label <- x$tip.label[-pos]
+    nTips <- as.integer(length(x$tip.label))
+    nn <- length(unique(edge[,1]))
+    if(nn < x$Nnode){
+        ne <- as.integer( x$Nnode - nn )
+        edge[edge > nTips] <- edge[edge > nTips] + ne
+        reticulation[reticulation > nTips] <- reticulation[reticulation > nTips] +ne
+        z <- logical(max(edge))
+        z[edge[, 2]] <- TRUE
+        z[seq_len(nTips)] <- FALSE
+        z[edge[, 1]] <- FALSE
+        pos2 <- which(z)
+        k <- 1
+        for (i in sort(pos2, TRUE)) {
+            nTips <- as.integer( nTips + 1L )
+            edge[edge==i] <- nTips
+            reticulation[reticulation == i] <- nTips
+            edge[edge > i] <- edge[edge > i] - 1L
+            reticulation[reticulation > i] <- reticulation[reticulation > i] - 1L
+        }
+        x$Nnode <- nn
+        x$node.label <- NULL
+        x$tip.label <- c(x$tip.label , rep("", ne))
+    }
     x$edge <- edge
     x$reticulation <- reticulation
     if (!is.null(x$edge.length)) x$edge.length <- x$edge.length[-ind]
-    x$tip.label <- x$tip.label[-pos]
     class(x) <- c("evonet", "phylo")
     x
 }
