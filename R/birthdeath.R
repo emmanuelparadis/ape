@@ -1,4 +1,4 @@
-## birthdeath.R (2012-04-20)
+## birthdeath.R (2021-10-23)
 
 ##   Estimation of Speciation and Extinction Rates
 ##             with Birth-Death Models
@@ -6,7 +6,7 @@
 ## birthdeath: standard model
 ## bd.ext: extended version
 
-## Copyright 2002-2012 Emmanuel Paradis
+## Copyright 2002-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -28,7 +28,7 @@ birthdeath <- function(phy)
     if (out$estimate[1] < 0) {
         out <- nlm(function(p) dev(0, p), 0.2, hessian = TRUE)
         para <- c(0, out$estimate)
-        inv.hessian <- try(solve(out$hessian))
+        inv.hessian <- try(solve(out$hessian), silent = TRUE)
         se <-
             if (class(inv.hessian) == "try-error") NA
             else sqrt(diag(inv.hessian))
@@ -36,7 +36,7 @@ birthdeath <- function(phy)
     }
     else {
         para <- out$estimate
-        inv.hessian <- try(solve(out$hessian))
+        inv.hessian <- try(solve(out$hessian), silent = TRUE)
         se <-
             if (class(inv.hessian) == "try-error") c(NA, NA)
             else sqrt(diag(inv.hessian))
