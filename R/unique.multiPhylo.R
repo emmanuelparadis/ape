@@ -13,6 +13,11 @@ unique.multiPhylo <-
              use.tip.label = TRUE, ...)
 {
     n <- length(x)
+    if (n == 0L) {
+        return(x)
+    } else if (n == 1L) {
+        return(structure(x, old.index = 1L))
+    }
     keep <- 1L
     old.index <- seq_len(n)
     for (i in 2:n) {
