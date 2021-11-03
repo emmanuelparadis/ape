@@ -1,8 +1,8 @@
-## unique.multiPhylo.R (2014-01-15)
+## unique.multiPhylo.R (2021-10-26)
 
 ##   Revomes Duplicate Trees from a List
 
-## Copyright 2007-2014 Emmanuel Paradis
+## Copyright 2007-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -13,11 +13,9 @@ unique.multiPhylo <-
              use.tip.label = TRUE, ...)
 {
     n <- length(x)
-    if (n == 0L) {
-        return(x)
-    } else if (n == 1L) {
-        return(structure(x, old.index = 1L))
-    }
+    ## fixed by Martin:
+    if (n == 0L) return(x)
+    if (n == 1L) return(structure(x, old.index = 1L))
     keep <- 1L
     old.index <- seq_len(n)
     for (i in 2:n) {

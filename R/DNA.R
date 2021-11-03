@@ -1,4 +1,4 @@
-## DNA.R (2021-08-30)
+## DNA.R (2021-11-02)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
@@ -684,7 +684,15 @@ trans <- function(x, code = 1, codonstart = 1)
             if (rest == 2) msg <- paste0(msg, "s")
             warning(paste(msg, "dropped"))
         }
-        res <- if (is.matrix(x)) t(apply(x, 1, f, s = s, code = code)) else f(x, s, code)
+        if (is.matrix(x)) {
+            res <- t(apply(x, 1, f, s = s, code = code))
+            if (s == 3) {
+                res <- t(res)
+                rownames(res) <- rownames(x)
+            }
+        } else {
+            res <- f(x, s, code)
+        }
     }
     class(res) <- "AAbin"
     res
@@ -731,10 +739,15 @@ print.AAbin <- function(x, ...)
 
 as.character.AAbin <- function(x, ...)
 {
-    f <- function(x) strsplit(rawToChar(x), "")[[1]]
-    if (is.list(x)) return(lapply(x, f))
-    if (is.matrix(x)) return(t(apply(x, 1, f)))
-    f(x)
+    f <- function(xx) {
+        ans <- strsplit(rawToChar(xx), "")[[1]]
+        if (is.matrix(xx)) {
+            dim(ans) <- dim(xx)
+            dimnames(ans) <- dimnames(xx)
+        }
+        ans
+    }
+    if (is.list(x)) lapply(x, f) else f(x)
 }
 
 as.AAbin <- function(x, ...) UseMethod("as.AAbin")
