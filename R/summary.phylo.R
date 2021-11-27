@@ -1,6 +1,6 @@
-## summary.phylo.R (2021-10-23)
+## summary.phylo.R (2021-11-27)
 
-##   Print Summary of a Phylogeny and "multiPhylo" operators
+##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
 ## Copyright 2003-2021 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
 
@@ -281,4 +281,26 @@ c.multiPhylo <- function(..., recursive = TRUE)
 {
     x[[..1]] <- value
     x
+}
+
+degree <- function(x, ...) UseMethod("degree")
+
+degree.phylo <- function(x, details = FALSE, ...)
+{
+    N <- length(x$tip.label) + x$Nnode
+    res <- tabulate(x$edge, N)
+    if (details) return(res)
+    tab <- tabulate(res)
+    DF <- data.frame(Degree = seq_along(tab), Number = tab)
+    DF[tab > 0, ]
+}
+
+degree.evonet <- function(x, details = FALSE, ...)
+{
+    N <- length(x$tip.label) + x$Nnode
+    res <- tabulate(x$edge, N) + tabulate(x$reticulation, N)
+    if (details) return(res)
+    tab <- tabulate(res)
+    DF <- data.frame(Degree = seq_along(tab), Number = tab)
+    DF[tab > 0, ]
 }

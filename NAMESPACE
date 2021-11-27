@@ -25,7 +25,7 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        compute.brlen, compute.brtime, consensus, cophenetic.phylo,
        cophyloplot, corBlomberg, corBrownian, corGrafen, corMartins,
        corPagel, corphylo, correlogram.formula, countBipartitions,
-       dbd, dbdTime, def, del.colgapsonly, del.gaps, del.rowgapsonly,
+       dbd, dbdTime, def, degree, del.colgapsonly, del.gaps, del.rowgapsonly,
        delta.plot, deviance.ace, di2multi, di2multi.multiPhylo,
        di2multi.phylo, dist.aa, dist.dna, dist.gene, dist.nodes,
        dist.topo, diversi.gof, diversi.time, diversity.contrast.test,
@@ -152,6 +152,7 @@ S3method(rbind, DNAbin)
 S3method(updateLabel, DNAbin)
 
 S3method(as.phylo, evonet)
+S3method(degree, evonet)
 S3method(Nedge, evonet)
 S3method(plot, evonet)
 S3method(print, evonet)
@@ -189,6 +190,7 @@ S3method(as.matching, phylo)
 S3method(coalescent.intervals, phylo)
 S3method(c, phylo)
 S3method(cophenetic, phylo)
+S3method(degree, phylo)
 S3method(di2multi, phylo)
 S3method(identify, phylo)
 S3method(is.binary, phylo)

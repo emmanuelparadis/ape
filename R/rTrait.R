@@ -1,8 +1,8 @@
-## rTrait.R (2014-03-06)
+## rTrait.R (2021-11-27)
 
 ##   Trait Evolution
 
-## Copyright 2010-2014 Emmanuel Paradis
+## Copyright 2010-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -54,6 +54,15 @@ rTraitDisc <-
     des <- phy$edge[, 2]
     el <- phy$edge.length
 
+    if (!is.function(model)) {
+        if (require(expm, quietly = TRUE)) {
+            FOO <- expm::expm
+        } else {
+            warning("package expm not available, using ape::matexpo instead")
+            FOO <- ape::matexpo
+        }
+    }
+
     if (is.function(model)) {
         environment(model) <- environment() # to find 'k'
         for (i in N:1) x[des[i]] <- model(x[anc[i]], el[i], ...)
@@ -63,7 +72,7 @@ rTraitDisc <-
         diag(Q) <- 0
         diag(Q) <- -rowSums(Q)
         for (i in N:1) {
-            p <- matexpo(Q * el[i])[x[anc[i]], ]
+            p <- FOO(Q * el[i])[x[anc[i]], ]
             x[des[i]] <- sample.int(k, size = 1, FALSE, prob = p)
         }
     }
