@@ -6,7 +6,7 @@
 \description{
   These functions read DNA sequences in a file, and returns a matrix or a
   list of DNA sequences with the names of the taxa read in the file as
-  rownames or names, respectively. By default, the sequences are stored
+  rownames or names, respectively. By default, the sequences are returned
   in binary format, otherwise (if \code{as.character = TRUE}) in
   lowercase.
 }
@@ -22,7 +22,8 @@ read.fastq(file, offset = -33)
     or a double-quoted string. Can also be a \link{connection} (which
     will be opened for reading if necessary, and if so
     \code{\link{close}}d (and hence destroyed) at the end of the
-    function call).}
+    function call). Files compressed with GZIP can be read (providing
+    the name ends with .gz), as well as remote files.}
   \item{format}{a character string specifying the format of the DNA
     sequences. Four choices are possible: \code{"interleaved"},
     \code{"sequential"}, \code{"clustal"}, or \code{"fasta"}, or any

@@ -1,8 +1,8 @@
-## read.dna.R (2018-05-15)
+## read.dna.R (2021-11-29)
 
 ##   Read DNA Sequences in a File
 
-## Copyright 2003-2018 Emmanuel Paradis, 2017 RJ Ewing
+## Copyright 2003-2021 Emmanuel Paradis, 2017 RJ Ewing
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -13,6 +13,7 @@ read.FASTA <- function(file, type = "DNA")
     itype <- pmatch(toupper(type), TYPES)
     if (is.na(itype))
         stop(paste("'type' should be", paste(dQuote(TYPES), collapse = " or ")))
+    GZ <- grepl("\\.gz$", file, ignore.case = TRUE)
     if (length(grep("^(ht|f)tp(s|):", file))) {
         url <- file
         file <- tempfile()
@@ -25,11 +26,22 @@ read.FASTA <- function(file, type = "DNA")
         }
         x <- scan(file, what = character(), sep = "\n", quiet = TRUE)
         x <- charToRaw(paste(x, collapse = "\n"))
-        sz <- length(x)
     } else {
-        sz <- file.size(file)
-        x <- readBin(file, "raw", sz)
+        if (GZ) {
+            file <- gzcon(gzfile(file))
+            open(file)
+            x <- raw()
+            repeat {
+                y <- readBin(file, "raw", 1e9)
+                if (!length(y)) break
+                x <- c(x, y)
+            }
+            close(file)
+        } else {
+            x <- readBin(file, "raw", file.size(file))
+        }
     }
+    sz <- length(x)
     ## if the file is larger than 1 Gb we assume that it is
     ## UNIX-encoded and skip the search-replace of carriage returns
     if (sz < 1e9) {
