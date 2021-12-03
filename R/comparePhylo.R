@@ -8,7 +8,7 @@
 ## See the file ../COPYING for licensing issues.
 
 comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
-                         use.edge.length = FALSE)
+                         use.edge.length = FALSE, location="bottomleft", ...)
 {
     tree1 <- deparse(substitute(x))
     tree2 <- deparse(substitute(y))
@@ -76,18 +76,18 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
         }
         if (plot) {
             layout(matrix(1:2, 1, 2))
-            plot(x, use.edge.length = use.edge.length, main = tree1)
+            plot(x, use.edge.length = use.edge.length, main = tree1, ...)
             nodelabels(node = which(tmp) + n1, pch = 19, col = "blue", cex = 2)
-            legend("topleft", legend = paste("Clade absent in", tree2), pch = 19, col = "blue")
+            legend(location, legend = paste("Clade absent in", tree2), pch = 19, col = "blue")
         }
         if (any(tmp <- is.na(mk21))) {
             nk <- sum(tmp)
             msg <- c(msg, paste(nk, if (nk == 1) "clade" else "clades", "in", tree2, "not in", tree1))
         }
         if (plot) {
-            plot(y, use.edge.length = use.edge.length, main = tree2)
+            plot(y, use.edge.length = use.edge.length, main = tree2, ...)
             nodelabels(node = which(tmp) + n2, pch = 19, col = "red", cex = 2)
-            legend("topleft", legend = paste("Clade absent in", tree1), pch = 19, col = "red")
+            legend(location, legend = paste("Clade absent in", tree1), pch = 19, col = "red")
         }
         nodes1 <- which(!is.na(mk12))
         nodes2 <- mk12[!is.na(mk12)]
@@ -152,11 +152,11 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
                 }
             }
             plot(TR[[1]], "u", use.edge.length = use.edge.length,
-                 edge.color = edgecol1, edge.width = edgew1, main = tree1, cex = 1.3, font =1)
-            legend("bottomright", legend = "Split present in both trees",
+                 edge.color = edgecol1, edge.width = edgew1, main = tree1, cex = 1.3, font =1, ...)
+            legend(location, legend = "Split present in both trees",
                    lty = 1, col = "black", lwd = 5)
             plot(TR[[2]], "u", use.edge.length = use.edge.length,
-                 edge.color = edgecol2, edge.width = edgew2, main = tree2, cex = 1.3, font =1)
+                 edge.color = edgecol2, edge.width = edgew2, main = tree2, cex = 1.3, font =1, ...)
         }
     }
     res$messages <- paste0(msg, ".")
