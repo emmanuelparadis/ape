@@ -8,7 +8,7 @@
 }
 \usage{
 comparePhylo(x, y, plot = FALSE, force.rooted = FALSE,
-             use.edge.length = FALSE, ...)
+             use.edge.length = FALSE, location = "bottomleft", ...)
 \method{print}{comparePhylo}(x, ...)
 }
 \arguments{
@@ -19,7 +19,7 @@ comparePhylo(x, y, plot = FALSE, force.rooted = FALSE,
     considered rooted even if \code{is.rooted} returns \code{FALSE}.}
   \item{use.edge.length}{a logical value passed to
     \code{\link{plot.phylo}} (see below).}
-  \item{location}{location of where to position the \code{\link{legend}}.}  
+  \item{location}{location of where to position the \code{\link{legend}}.}
   \item{\dots}{further parameters used by \code{\link{plot.phylo}}, in function
   \code{print.comparePhylo} unused.}
 }
@@ -43,7 +43,7 @@ comparePhylo(x, y, plot = FALSE, force.rooted = FALSE,
   an object of class \code{"comparePhylo"} which is a list with messages
   from the comparison and, optionally, tables comparing branching times.
 }
-\author{Emmanuel Paradis}
+\author{Emmanuel Paradis, Klaus Schliep}
 \seealso{\code{\link{all.equal.phylo}}}
 \examples{
 ## two unrooted trees but force comparison as rooted:

@@ -1,14 +1,14 @@
-## comparePhylo.R (2018-03-13)
+## comparePhylo.R (2021-12-05)
 
 ##   Compare Two "phylo" Objects
 
-## Copyright 2018 Emmanuel Paradis
+## Copyright 2018 Emmanuel Paradis, 2021 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
 comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
-                         use.edge.length = FALSE, location="bottomleft", ...)
+                         use.edge.length = FALSE, location = "bottomleft", ...)
 {
     tree1 <- deparse(substitute(x))
     tree2 <- deparse(substitute(y))
