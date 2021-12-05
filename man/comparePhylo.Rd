@@ -8,7 +8,7 @@
 }
 \usage{
 comparePhylo(x, y, plot = FALSE, force.rooted = FALSE,
-             use.edge.length = FALSE)
+             use.edge.length = FALSE, ...)
 \method{print}{comparePhylo}(x, ...)
 }
 \arguments{
@@ -19,7 +19,9 @@ comparePhylo(x, y, plot = FALSE, force.rooted = FALSE,
     considered rooted even if \code{is.rooted} returns \code{FALSE}.}
   \item{use.edge.length}{a logical value passed to
     \code{\link{plot.phylo}} (see below).}
-  \item{\dots}{unused.}
+  \item{location}{location of where to position the \code{\link{legend}}.}  
+  \item{\dots}{further parameters used by \code{\link{plot.phylo}}, in function
+  \code{print.comparePhylo} unused.}
 }
 \details{
   In all cases, the numbers of tips and of nodes and the tip labels are
