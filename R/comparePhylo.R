@@ -1,14 +1,15 @@
-## comparePhylo.R (2021-12-05)
+## comparePhylo.R (2021-12-12)
 
 ##   Compare Two "phylo" Objects
 
-## Copyright 2018 Emmanuel Paradis, 2021 Klaus Schliep
+## Copyright 2018-2021 Emmanuel Paradis, 2021 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
 comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
-                         use.edge.length = FALSE, location = "bottomleft", ...)
+                         use.edge.length = FALSE, commons = TRUE,
+                         location = "bottomleft", ...)
 {
     tree1 <- deparse(substitute(x))
     tree2 <- deparse(substitute(y))
@@ -130,17 +131,22 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
             if (ncs) {
                 pp1 <- SHORTwise(prop.part(TR[[1]]))
                 pp2 <- SHORTwise(prop.part(TR[[2]]))
-                k1 <- which(!is.na(match(pp1, pp2)) & lengths(pp1) > 1) 
-                k2 <- which(!is.na(match(pp2, pp1)) & lengths(pp2) > 1) 
+                if (commons) {
+                    k1 <- which(!is.na(match(pp1, pp2)) & lengths(pp1) > 1)
+                    k2 <- which(!is.na(match(pp2, pp1)) & lengths(pp2) > 1)
+                } else {
+                    k1 <- which(is.na(match(pp1, pp2)) & lengths(pp1) > 1)
+                    k2 <- which(is.na(match(pp2, pp1)) & lengths(pp2) > 1)
+                }
                 e1 <- match(k1 + n1, TR[[1]]$edge[, 2])
                 e2 <- match(k2 + n2, TR[[2]]$edge[, 2])
                 edgecol1[e1] <- edgecol2[e2] <- co
                 edgew1[e1] <- edgew2[e2] <- 5
             }
+            text4leg <- if (commons) "Split present in both trees" else "Split specific to each tree"
             plot(TR[[1]], "u", use.edge.length = use.edge.length,
                  edge.color = edgecol1, edge.width = edgew1, main = tree1, ...)
-            legend(location, legend = "Split present in both trees",
-                   lty = 1, col = "black", lwd = 5)
+            legend(location, legend = text4leg, lty = 1, col = "black", lwd = 5, xpd = NA)
             plot(TR[[2]], "u", use.edge.length = use.edge.length,
                  edge.color = edgecol2, edge.width = edgew2, main = tree2, ...)
         }
