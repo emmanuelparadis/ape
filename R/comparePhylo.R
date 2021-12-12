@@ -110,9 +110,9 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
 (node number in parentheses)")
         }
     }
-    if (!force.rooted && !rooted1 && !rooted2 && sameTips && m1 == m2) {
+    if (sameTips) {
         TR <- .compressTipLabel(c(x, y))
-        bs <- bitsplits(TR)
+        bs <- bitsplits(unroot(TR))
         common.splits <- which(bs$freq == 2L)
         ncs <- length(common.splits)
         tmp <-
@@ -128,35 +128,21 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
             edgecol2 <- rep("black", Nedge(y))
             edgew2 <- rep(1, Nedge(y))
             if (ncs) {
-                f <- function(x)
-                    unlist(lapply(ONEwise(x), paste, collapse = "\r"))
-                ##pp <-  f(as.prop.part(bs, include.trivial = TRUE))
-                pp <-  as.prop.part(bs)
-                pp1 <- f(prop.part(TR[[1]]))
-                pp2 <- f(prop.part(TR[[2]]))
-                one2n <- 1:n1
-                for (i in common.splits) {
-                    p <- pp[[i]]
-                    split <- paste(p, collapse = "\r")
-                    k1 <- match(split, pp1)
-                    k2 <- match(split, pp2)
-                    if (!length(k1)) {
-                        split <- paste(one2n[-p], collapse = "\r")
-                        k1 <- match(split, pp1)
-                        if (!length(k2)) k2 <- match(split, pp2)
-                    }
-                    e1 <- match(k1 + n1, TR[[1]]$edge[, 2])
-                    e2 <- match(k2 + n2, TR[[2]]$edge[, 2])
-                    edgecol1[e1] <- edgecol2[e2] <- co
-                    edgew1[e1] <- edgew2[e2] <- 5
-                }
+                pp1 <- SHORTwise(prop.part(TR[[1]]))
+                pp2 <- SHORTwise(prop.part(TR[[2]]))
+                k1 <- which(!is.na(match(pp1, pp2)) & lengths(pp1) > 1) 
+                k2 <- which(!is.na(match(pp2, pp1)) & lengths(pp2) > 1) 
+                e1 <- match(k1 + n1, TR[[1]]$edge[, 2])
+                e2 <- match(k2 + n2, TR[[2]]$edge[, 2])
+                edgecol1[e1] <- edgecol2[e2] <- co
+                edgew1[e1] <- edgew2[e2] <- 5
             }
             plot(TR[[1]], "u", use.edge.length = use.edge.length,
-                 edge.color = edgecol1, edge.width = edgew1, main = tree1, cex = 1.3, font =1, ...)
+                 edge.color = edgecol1, edge.width = edgew1, main = tree1, ...)
             legend(location, legend = "Split present in both trees",
                    lty = 1, col = "black", lwd = 5)
             plot(TR[[2]], "u", use.edge.length = use.edge.length,
-                 edge.color = edgecol2, edge.width = edgew2, main = tree2, cex = 1.3, font =1, ...)
+                 edge.color = edgecol2, edge.width = edgew2, main = tree2, ...)
         }
     }
     res$messages <- paste0(msg, ".")
