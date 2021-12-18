@@ -1,4 +1,4 @@
-## rTrait.R (2021-11-27)
+## rTrait.R (2021-12-15)
 
 ##   Trait Evolution
 
@@ -55,11 +55,11 @@ rTraitDisc <-
     el <- phy$edge.length
 
     if (!is.function(model)) {
-        if (require(expm, quietly = TRUE)) {
+        if (requireNamespace("expm", quietly = TRUE)) {
             FOO <- expm::expm
         } else {
             warning("package expm not available, using ape::matexpo instead")
-            FOO <- ape::matexpo
+            FOO <- matexpo
         }
     }
 

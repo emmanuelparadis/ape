@@ -1,8 +1,8 @@
-## ace.R (2021-09-23)
+## ace.R (2021-12-15)
 
 ##   Ancestral Character Estimation
 
-## Copyright 2005-2021 Emmanuel Paradis and Ben Bolker
+## Copyright 2005-2021 Emmanuel Paradis and 2005 Ben Bolker
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -137,12 +137,13 @@ ace <-
                 M <- dis[as.character(nb.tip + 1), MRCA]
                 dim(M) <- rep(sqrt(length(M)), 2)
             }
-            varAY <- M[-(1:nb.tip), 1:nb.tip]
-            varA <- M[-(1:nb.tip), -(1:nb.tip)]
-            V <- corMatrix(Initialize(corStruct, data.frame(x)),
-                           corr = FALSE)
+            one2n <- 1:nb.tip
+            varAY <- M[-one2n, one2n]
+            varA <- M[-one2n, -one2n]
+            DF <- data.frame(x)
+            V <- corMatrix(Initialize(corStruct, DF), corr = FALSE)
             invV <- solve(V)
-            o <- gls(x ~ 1, data.frame(x), correlation = corStruct)
+            o <- gls(x ~ 1, DF, correlation = corStruct)
             GM <- o$coefficients
             obj$ace <- drop(varAY %*% invV %*% (x - GM) + GM)
             names(obj$ace) <- (nb.tip + 1):(nb.tip + nb.node)

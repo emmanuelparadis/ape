@@ -1,4 +1,4 @@
-## DNA.R (2021-11-02)
+## DNA.R (2021-12-16)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
@@ -1232,108 +1232,54 @@ rDNAbin <- function(n, nrow, ncol, base.freq = rep(0.25, 4), prefix = "Ind_")
     res
 }
 
-dnds <- function(x, code = 1, codonstart = 1, quiet = FALSE)
+dnds <- function(x, code = 1, codonstart = 1, quiet = FALSE,
+                 details = FALSE, return.categories = FALSE)
 {
-    if (code > 2)
-        stop("only the standard (code=1) and the vertebrate mitochondrial (code=2) codes are available for now")
+    if (code > 6) stop("only the genetic codes 1--6 are available for now")
     if (is.list(x)) x <- as.matrix(x)
     n <- nrow(x)
     if (nrow(unique.matrix(x)) != n) stop("sequences are not unique")
+### if (any(base.freq(x, TRUE, TRUE)[-(1:4)] > 0)) stop("ambiguous bases are not permitted")
     if (codonstart > 1) {
         del <- -(1:(codonstart - 1))
         x <- x[, del]
     }
     p <- ncol(x)
     rest <- p %% 3
-    if (rest != 0) {
+    if (rest) {
         p <- p - rest
         x <- x[, 1:p]
-        msg <- paste("sequence length not a multiple of 3:",
-                     rest, ifelse(rest == 1,  "nucleotide", "nucleotides"),
-                     "dropped")
+        msg <- sprintf("sequence length not a multiple of 3: %d %s dropped",
+                       rest, ngettext(rest, "base", "bases"))
         warning(msg)
     }
 
-    class(x) <- NULL
-
-    abin <- as.raw(0x88)
-    gbin <- as.raw(0x48)
-    cbin <- as.raw(0x28)
-    tbin <- as.raw(0x18)
-
-    pos1 <- seq(1, by = 3, length.out = p/3)
-    POS1 <- POS2 <- POS3 <- logical(p)
-    POS1[pos1] <- POS2[pos1 + 1L] <- POS3[pos1 + 2L] <- TRUE
-
+    degMat <- .buildDegeneracyMatrix(code)
     Lcat <- matrix(0L, n, p)
-    Lcat[, POS3] <- 4L # most sites at 3rd positions are fourfold degenerate
+    V1 <- V2 <- V3 <- integer(136)
+    i <- c(136L, 72L, 40L, 24L)
+    V1[i] <- c(1L, 17L, 33L, 49L)
+    V2[i] <- c(0L, 4L, 8L, 12L)
+    V3[i] <- 0:3
 
-    m12 <- -c(1, 2)
+    class(x) <- NULL
+    z <- as.integer(x)
+    N <- length(x)
 
-    if (code == 1) {
+    SHIFT <- c(0L, n, 2L * n)
+    p <- 1L + SHIFT
+    while (p[3] <= N) {
         for (i in 1:n) {
-            z <- x[i, , drop = TRUE]
-            isA <- z == abin
-            isG <- z == gbin
-            isC <- z == cbin
-            isT <- z == tbin
-            ## 1/ are some bases at 1st positions twofold degenerate?
-            s2 <- isT & POS2
-            if (any(s2)) {
-                s3 <- c(FALSE, s2[-p]) & ((isA | isG) & POS3)
-                if (any(s3)) {
-                    s1 <- ((isT | isC) & POS1) & c(s3[m12], FALSE, FALSE)
-                    if (any(s1)) Lcat[i, which(s1)] <- 2L
-                }
-            }
-            s2 <- isG & POS2
-            if (any(s2)) {
-                s3 <- c(FALSE, s2[-p]) & ((isA | isG) & POS3)
-                if (any(s3)) {
-                    s1 <- ((isA | isC) & POS1) & c(s3[m12], FALSE, FALSE)
-                    if (any(s1)) Lcat[i, which(s1)] <- 2L
-                }
-            }
-            ## 2/ all bases at 2nd positions are nondegenerate: no need to do anything
-            ## 3/ find the bases at 3rd positions that are twofold degenerate
-            s2 <- isA & POS2
-            if (any(s2)) Lcat[i, which(s2) + 1L] <- 2L
-            s2 <- isG & POS2
-            if (any(s2)) {
-                s1 <- ((isT | isA) & POS1) & c(s2[-p], FALSE)
-                if (any(s1)) Lcat[i, which(s1) + 2L] <- 2L
-            }
+            codon <- z[p]
+            ii <- V1[codon[1]] + V2[codon[2]] + V3[codon[3]]
+            if (!is.na(ii)) Lcat[p] <- degMat[ii, ]
+            p <- p + 1L
         }
-    } else { # if (code == 2)
-        for (i in 1:n) {
-            z <- x[i, , drop = TRUE]
-            isA <- z == abin
-            isG <- z == gbin
-            isC <- z == cbin
-            isT <- z == tbin
-            ## 1/ are some bases at 1st positions twofold degenerate?
-            s2 <- isT & POS2
-            if (any(s2)) {
-                s3 <- c(FALSE, s2[-p]) & ((isA | isG) & POS3)
-                if (any(s3)) {
-                    s1 <- ((isT | isC) & POS1) & c(s3[m12], FALSE, FALSE)
-                    if (any(s1)) Lcat[i, which(s1)] <- 2L
-                }
-            }
-            ## 2/ all bases at 2nd positions are nondegenerate: no need to do anything
-            ## 3/ find the bases at 3rd positions that twofold/fourfold degenerate
-            s1 <- (isA | isT) & POS1
-            if (any(s1)) {
-                s2 <- c(FALSE, s1[-p]) & ((isT | isA | isG) & POS2)
-                if (any(s2)) Lcat[i, which(s2) + 1L] <- 2L
-            }
-            s1 <- (isC | isG) & POS1
-            if (any(s1)) {
-                s2 <- c(FALSE, s1[-p]) & (isA & POS2)
-                if (any(s2)) Lcat[i, which(s2) + 1L] <- 2L
-            }
-        }
+        p <- p[3] + SHIFT
     }
+
+    if (return.categories) return(Lcat)
+    if (details) quiet <- TRUE
 
     deg <- c(0, 2, 4) # the 3 levels of degeneracy
     nout <- n*(n - 1)/2
@@ -1344,12 +1290,23 @@ dnds <- function(x, code = 1, codonstart = 1, quiet = FALSE)
             if (!quiet) cat("\r", round(100*k/nout), "%")
             z <- x[c(i, j), ]
             Lavg <- (Lcat[i, ] + Lcat[j, ])/2
+            Lavg[Lavg == 1] <- 2
+            Lavg[Lavg == 3] <- 4
             ii <- lapply(deg, function(x) which(x == Lavg))
             L <- lengths(ii)
-            S <- lapply(ii, function(id) dist.dna(z[, id], "TS"))
-            V <- lapply(ii, function(id) dist.dna(z[, id], "TV"))
-            P <- unlist(S, use.names = FALSE)/L
-            Q <- unlist(V, use.names = FALSE)/L
+            S <- lapply(ii, function(id) dist.dna(z[, id, drop = FALSE], "TS"))
+            V <- lapply(ii, function(id) dist.dna(z[, id, drop = FALSE], "TV"))
+            S <- unlist(S, use.names = FALSE)
+            V <- unlist(V, use.names = FALSE)
+            if (details) {
+                cat(sprintf("\nComparing sequences %d and %d:\n", i, j))
+                tmp <- rbind(S, V)
+                dimnames(tmp) <- list(c("Transitions", "Transversions"),
+                                      c("Nondegenerate", "Twofold", "Fourfold"))
+                print(tmp)
+            }
+            P <- S/L
+            Q <- V/L
             a <- 1/(1 - 2*P - Q)
             b <- 1/(1 - 2*Q)
             c <- (a - b)/2
@@ -1371,6 +1328,30 @@ dnds <- function(x, code = 1, codonstart = 1, quiet = FALSE)
     res
 }
 
+.buildDegeneracyMatrix <- function(code) {
+    b <- as.raw(._bs_[1:4])
+    CODONS <- cbind(rep(b, each = 16), rep(rep(b, each = 4), 4), rep(b, 16))
+    AA <- trans(CODONS, code = code)
+
+    degeneracyMatrix <- matrix(0L, 64L, 3L)
+    deg <- c(4L, 2L, 2L, 0L)
+
+    ## 1/ find the bases at 3rd positions that are twofold/fourfold degenerate
+    s  <- 1:4
+    while (s[4L] <= 64) {
+        degeneracyMatrix[s, 3L] <- deg[length(unique(AA[s]))]
+        s <- s + 4L
+    }
+    ## 2/ all bases at 2nd positions are nondegenerate: no need to do anything
+    ## 3/ are some bases at 1st positions twofold degenerate?
+    s <- c(1L, 17L, 33L, 49L)
+    while (s[1L] < 17) {
+        degeneracyMatrix[s, 1L] <- deg[length(unique(AA[s]))]
+        s <- s + 1L
+    }
+    degeneracyMatrix
+}
+
 latag2n <- function(x) {
     if (is.list(x)) x <- as.matrix(x)
     dx <- dim(x)
@@ -1379,6 +1360,31 @@ latag2n <- function(x) {
     class(res) <- clx
     dim(res) <- dx
     res
+}
+
+solveAmbiguousBases <- function(x, method = "columnwise", random = TRUE)
+{
+    if (method == "columnwise") {
+        if (is.list(x)) x <- as.matrix(x)
+        p <- ncol(x)
+        for (j in 1:p) {
+            BF <- base.freq(x[, j], TRUE, TRUE)
+            ambi <- BF[5:15]
+            K <- which(ambi > 0)
+            if (length(K)) {
+                agct <- BF[c(1, 3, 2, 4)]
+                for (b in K) {
+                    base <- as.DNAbin(names(ambi[b]))
+                    sel <- agct[rev(rawToBits(base))[1:4] == 1]
+                    if (!sum(sel)) sel[] <- 1L
+                    i <- which(x[, j] == base)
+                    tmp <- if (random) sample(names(sel), length(i), TRUE, sel) else names(sel)[which.max(sel)]
+                    x[i, j] <- as.DNAbin(tmp)
+                }
+            }
+        }
+    }
+    x
 }
 
 ##distK80 <- function(x, pairwise.deletion = FALSE)

@@ -85,7 +85,7 @@ tcoffee(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE,
   Notredame, C., Higgins, D. and Heringa, J. (2000) T-Coffee: A novel
   method for multiple sequence alignments. \emph{Journal of Molecular
   Biology}, \bold{302}, 205--217.
-  \url{http://www.tcoffee.org/}
+  \url{https://www.tcoffee.org/}
 
   Sievers, F., Wilm, A., Dineen, D., Gibson, T. J., Karplus, K., Li, W.,
   Lopez, R., McWilliam, H., Remmert, M., S\"oding, J., Thompson,
@@ -94,7 +94,7 @@ tcoffee(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE,
   Omega. \emph{Molecular Systems Biology}, \bold{7}, 539.
   \url{http://www.clustal.org/}
 }
-\author{Emmanuel Paradis}
+\author{Emmanuel Paradis, Franz Krah}
 \seealso{
   \code{\link{image.DNAbin}}, \code{\link{del.gaps}},
   \code{\link{all.equal.DNAbin}}, \code{\link{alex}},
