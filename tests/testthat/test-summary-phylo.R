@@ -8,4 +8,6 @@ test_that("[<-.multiPhylo works", {
   expect_equal(trees, rev(twoTrees))
   trees[1] <- trees[2]
   expect_equal(trees, c(twoTrees[1], twoTrees[1]))
+  trees[] <- lapply(twoTrees, function (x) x)
+  expect_equal(trees, twoTrees)
 })
