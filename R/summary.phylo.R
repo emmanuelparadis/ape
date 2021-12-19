@@ -221,9 +221,12 @@ c.multiPhylo <- function(..., recursive = TRUE)
 `[<-.multiPhylo` <- function(x, ..., value)
 {
     ## recycling is allowed so no need to check: length(value) != length(..1)
-    dots <- list(...)
-    dots <- if (length(dots)) dots[[1]] else seq_along(x) # see issue #36 on GH
-
+    dots <- if (missing(...)) { # see issue #36 on GH
+      list(...)[[1]] 
+    } else {
+      seq_along(x)
+    }
+    
     ## check that all elements in 'value' inherit class "phylo"
     test <- unlist(lapply(value, function(xx) !inherits(xx, "phylo")))
     if (any(test))
