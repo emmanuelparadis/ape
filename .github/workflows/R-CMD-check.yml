@@ -24,7 +24,7 @@ jobs:
         config:
         #  - {os: windows-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-bulid-vignettes"'}
         #  - {os: macOS-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-bulid-vignettes"'}
-          - {os: ubuntu-20.04, r: '3.6.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-20.04, r: '4.1', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
