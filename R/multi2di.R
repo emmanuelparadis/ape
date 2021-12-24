@@ -1,4 +1,4 @@
-## multi2di.R (2021-07-07)
+## multi2di.R (2021-12-21)
 
 ##   Collapse or Resolve Multichotomies
 
@@ -12,11 +12,11 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
 .multi2di_ape <- function(phy, random, equiprob, n)
 {
     ## n: number of tips of phy
-    phy <- reorder(phy, "postorder")
     degree <- tabulate(phy$edge[, 1])
     target <- which(degree > 2)
-    pos <- match(target, phy$edge[,1])
     if (!length(target)) return(phy)
+    phy <- reorder(phy, "postorder")
+    pos <- match(target, phy$edge[,1])
     nb.edge <- dim(phy$edge)[1]
     nextnode <- n + phy$Nnode + 1L
     new.edge <- edge2delete <- NULL
