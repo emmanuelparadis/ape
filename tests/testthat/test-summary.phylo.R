@@ -10,4 +10,12 @@ test_that("[<-.multiPhylo works", {
   expect_equal(trees, c(twoTrees[1], twoTrees[1]))
   trees[] <- lapply(twoTrees, function (x) x)
   expect_equal(trees, twoTrees)
+  
+  nexFile <- tempfile()
+  write.nexus(twoTrees, file = nexFile)
+  # trees read from a nexus file have a $TipLabel attribute
+  fromNexus <- read.nexus(nexFile)
+  unlink(nexFile) # delete temporary file
+  fromNexus[] <- twoTrees
+  expect_equal(fromNexus, twoTrees)
 })
