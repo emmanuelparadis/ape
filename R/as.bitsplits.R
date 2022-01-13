@@ -1,4 +1,4 @@
-## as.bitsplits.R (2021-04-24)
+## as.bitsplits.R (2021-12-27)
 
 ##   Conversion Among Split Classes
 
@@ -52,9 +52,12 @@ as.bitsplits.prop.part <- function(x)
 
 print.bitsplits <- function(x, ...)
 {
-    cat('Object of class "bitsplits"\n')
-    cat('   ', length(x$labels), 'tips\n')
-    cat('   ', length(x$freq), 'partitions\n')
+    n <- length(x$freq)
+    cat("Object of class \"bitsplits\"\n")
+    cat("   ", length(x$labels), "tips\n")
+    cat("   ", n, "partition")
+    if (n > 1) cat("s")
+    cat("\n")
 }
 
 sort.bitsplits <- function(x, decreasing = FALSE, ...)
@@ -106,8 +109,13 @@ bitsplits <- function(x)
     nr <- ceiling(n/8)
     ans <- .Call(bitsplits_multiPhylo, x, n, nr)
     nc <- ans[[3]]
-    o <- ans[[1]][1:(nr * nc)]
-    freq <- ans[[2]][1:nc]
+    if (nc) {
+        o <- ans[[1]][1:(nr * nc)]
+        freq <- ans[[2]][1:nc]
+    } else {
+        o <- raw()
+        freq <- integer()
+    }
     dim(o) <- c(nr, nc)
     structure(list(matsplit = o, labels = labs, freq = freq),
               class = "bitsplits")

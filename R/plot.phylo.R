@@ -1,8 +1,10 @@
-## plot.phylo.R (2021-09-17)
+## plot.phylo.R (2022-01-13)
 
 ##   Plot Phylogenies
 
-## Copyright 2002-2021 Emmanuel Paradis
+## Copyright 2002-2021 Emmanuel Paradis, 2021 Martin Smith, 2022 Damien de Vienne
+## colouring of segments by MS
+## tidy trees by DdV
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -44,7 +46,7 @@ plot.phylo <-
         stop("tree badly conformed; cannot plot. Check the edge matrix.")
     ROOT <- Ntip + 1
     type <- match.arg(type, c("phylogram", "cladogram", "fan",
-                              "unrooted", "radial"))
+                              "unrooted", "radial", "tidy"))
     direction <- match.arg(direction, c("rightwards", "leftwards",
                                         "upwards", "downwards"))
     if (is.null(x$edge.length)) {
@@ -75,7 +77,7 @@ plot.phylo <-
     if (type %in% c("unrooted", "radial") || !use.edge.length ||
         is.null(x$root.edge) || !x$root.edge) root.edge <- FALSE
 
-    phyloORclado <- type %in% c("phylogram", "cladogram")
+    phyloORclado <- type %in% c("phylogram", "cladogram", "tidy")
     horizontal <- direction %in% c("rightwards", "leftwards")
     xe <- x$edge # to save
     if (phyloORclado) {
@@ -108,6 +110,37 @@ plot.phylo <-
         TIPS <- x$edge[x$edge[, 2] <= Ntip, 2]
         yy[TIPS] <- 1:Ntip
     }
+
+    ## TIDY
+    ## Function to compute the size of labels
+    ## for each tip in user coordinates
+    getStringLengthbyTip <- function(x, lab, sin, cex) {
+        s <- strwidth(lab, "inches", cex = cex)
+        lim <- getLimit(x, lab, sin, cex)
+        alp <- lim/sin
+        s*alp
+    }
+    ### END TIDY
+
+    ## Function to compute the axis limit
+    ## x: vector of coordinates, must be positive (or at least the largest value)
+    ## lab: vector of labels, length(x) == length(lab)
+    ## sin: size of the device in inches
+    getLimit <- function(x, lab, sin, cex) {
+        s <- strwidth(lab, "inches", cex = cex) # width of the tip labels
+        ## if at least one string is larger than the device,
+        ## give 1/3 of the plot for the tip labels:
+        if (any(s > sin)) return(1.5 * max(x))
+        Limit <- 0
+        while (any(x > Limit)) {
+            i <- which.max(x)
+            ## 'alp' is the conversion coeff from inches to user coordinates:
+            alp <- x[i]/(sin - s[i])
+            Limit <- x[i] + alp*s[i]
+            x <- x + alp*s
+        }
+        Limit
+    }
     ## 'z' is the tree in postorder order used in calls to .C
     z <- reorder(x, order = "postorder")
 
@@ -133,6 +166,20 @@ plot.phylo <-
         } else  {
             xx <- .nodeDepthEdgelength(Ntip, Nnode, z$edge, Nedge, z$edge.length)
         }
+        ## TIDY
+        if (type == "tidy") {
+            if (!show.tip.label) {
+                yy <- tidy.xy(xe, Ntip, Nnode, xx, yy)
+            } else { # we add to xx the size taken by labels, so that tidying considers labels
+                xx.tips <- xx[1:Ntip]
+                pin1 <- par("pin")[1] # width of the device in inches
+                lab.strlength <- getStringLengthbyTip(xx.tips, x$tip.label, pin1, cex) #size of lab strings
+                xx2 <- xx
+                xx2[1:Ntip] <- xx2[1:Ntip] + lab.strlength
+                yy <- tidy.xy(xe, Ntip, Nnode, xx2, yy) #compress taking labels into account
+            }
+        }
+        ### END TIDY
     } else {
         twopi <- 2 * pi
         rotate.tree <- twopi * rotate.tree/360
@@ -198,26 +245,6 @@ plot.phylo <-
     if (show.tip.label) nchar.tip.label <- nchar(x$tip.label)
     max.yy <- max(yy)
 
-    ## Function to compute the axis limit
-    ## x: vector of coordinates, must be positive (or at least the largest value)
-    ## lab: vector of labels, length(x) == length(lab)
-    ## sin: size of the device in inches
-    getLimit <- function(x, lab, sin, cex) {
-        s <- strwidth(lab, "inches", cex = cex) # width of the tip labels
-        ## if at least one string is larger than the device,
-        ## give 1/3 of the plot for the tip labels:
-        if (any(s > sin)) return(1.5 * max(x))
-        Limit <- 0
-        while (any(x > Limit)) {
-            i <- which.max(x)
-            ## 'alp' is the conversion coeff from inches to user coordinates:
-            alp <- x[i]/(sin - s[i])
-            Limit <- x[i] + alp*s[i]
-            x <- x + alp*s
-        }
-        Limit
-    }
-
     if (is.null(x.lim)) {
         if (phyloORclado) {
             if (horizontal) {
@@ -231,7 +258,12 @@ plot.phylo <-
                     tmp <- tmp + label.offset
                 } else tmp <- max(xx.tips)
                 x.lim <- c(0, tmp)
-            } else x.lim <- c(1, Ntip)
+            } else {
+                ### TIDY
+                ## x.lim <- c(1, Ntip) # Not true anymore with tidy trees
+                x.lim <- c(1, max(xx[1:Ntip])) # add offset?
+                ### END TIDY
+            }
         } else switch(type, "fan" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.018 * max.yy * cex)
@@ -262,7 +294,12 @@ plot.phylo <-
     if (phyloORclado && direction == "leftwards") xx <- x.lim[2] - xx
     if (is.null(y.lim)) {
         if (phyloORclado) {
-            if (horizontal) y.lim <- c(1, Ntip) else {
+            if (horizontal) {
+                ### TIDY
+                ## y.lim <- c(1, Ntip) # Not true anymore with tidy trees
+                y.lim <- c(1, max(yy[1:Ntip]))
+                ### END TIDY
+            } else {
                 pin2 <- par("pin")[2] # height of the device in inches
                 ## 1.04 comes from that we are using a regular axis system
                 ## with 4% on both sides of the range of x:
@@ -334,7 +371,7 @@ plot.phylo <-
                 }
             }
         }
-        if (type == "phylogram") {
+        if (type %in% c("phylogram", "tidy")) {
             phylogram.plot(x$edge, Ntip, Nnode, xx, yy, horizontal,
                            edge.color, edge.width, edge.lty,
                            node.color, node.width, node.lty)
@@ -873,3 +910,104 @@ kronoviz <- function(x, layout = length(x), horiz = TRUE, ...)
     }
     axisPhylo(if (horiz) 1 else 4) # better if the deepest tree is last ;)
 }
+
+### TIDY
+tidy.xy <- function(edge, Ntip, Nnode, xx, yy)
+{
+    yynew <- yy # will be updated to get the new y coordinates after tidying
+    ## initialrange<-diff(range(yy)) #for computing compression. Remove ?
+
+    oedge <- edge[match(seq_len(Ntip + Nnode), edge[, 2]), 1] # ordered edges
+    segofnodes <- data.frame(x1 = xx[oedge], y1 = yy, x2 = xx, y2 = yy) # segment associated to each node
+
+    nodes <- order(xx, decreasing = TRUE)
+
+    GetContourPairsFromSegments <- function(seg, which) {
+        allx <- sort(unique(c(seg$x1, seg$x2)))
+        newx2 <- allx[2:length(allx)]
+        if (which == "top") {
+            newy2i <- sapply(newx2, function(cx, se) which(cx > se$x1 & cx <= se$x2)[which.max(se$y1[which(cx > se$x1 & cx <= se$x2)])], se = seg)
+        }
+        if (which == "bottom") {
+            newy2i <- sapply(newx2, function(cx, se) which(cx > se$x1 & cx <= se$x2)[which.min(se$y1[which(cx > se$x1 & cx <= se$x2)])], se = seg)
+        }
+
+        newx1 <- allx[1:(length(allx) - 1)]
+        newy1i <- newy2i
+        ## we simplify segments by merging thsoe on same horiz  (bout a bout)
+        where2mergei <- which((newy1i[2:length(newy1i)] - newy2i[1:(length(newy1i) - 1)]) == 0)
+        if (length(where2mergei) > 0) {
+            newx1 <- newx1[-(where2mergei + 1)]
+            newy1i <- newy1i[-(where2mergei + 1)]
+            newx2 <- newx2[-(where2mergei)]
+            newy2i <- newy2i[-(where2mergei)]
+        }
+
+        newy1ok <- seg$y1[newy1i]
+        newy2ok <- newy1ok
+        newseg <- data.frame(x1 = newx1, y1 = newy1ok, x2 = newx2, y2 = newy2ok)
+        ## TODO: simplify new seg to remove segments "bout a bout"
+        newseg
+    }
+    GetMinDistBetweenContours <- function(topcontour, bottomcontour) {
+        ## efficient way to compare top and bottom contour by only looking
+        ## at necessary pairs (see original publiction)
+        d <- NULL
+        topi <- 1
+        boti <- 1
+        while((topi <= nrow(topcontour)) & (boti <= nrow(bottomcontour))) {
+            d <- c(d, bottomcontour[boti, ]$y1 - topcontour[topi, ]$y1)
+            if (bottomcontour[boti, ]$x2 < topcontour[topi, ]$x2) boti <- boti + 1
+            else topi <- topi + 1
+        }
+        min(d)
+    }
+
+    N <- list() # will contain all info for each node.
+    for (n in nodes) {
+        N[[n]] <- list()
+        childs <- edge[edge[, 1] == n, 2]
+        childs.ord <- childs[order(yy[childs])] # childs ordered by y values
+        desc <- c(childs, unlist(lapply(N[childs], function(x) x$desc)))
+
+        diffiny <- 0
+
+        if (n > Ntip) { # we are in a node
+            oldyofcurrentnode <- yynew[n]
+            for (nn in 2:length(childs.ord)) {
+                top <- N[[childs.ord[nn - 1]]]$segtop
+                bot <- N[[childs.ord[nn]]]$segbottom
+                mindist <- GetMinDistBetweenContours(top, bot)
+                if (mindist != 1) { # There is room for tidying or untidy up if branches are tangled
+                    mod <- mindist - 1
+                    N[[childs.ord[nn]]]$segbottom[, c(2, 4)] <- N[[childs.ord[nn]]]$segbottom[, c(2, 4)] - mod
+                    N[[childs.ord[nn]]]$segtop[, c(2, 4)] <- N[[childs.ord[nn]]]$segtop[, c(2, 4)] - mod
+
+                    yynew[c(childs.ord[nn], N[[childs.ord[nn]]]$desc)] <- yynew[c(childs.ord[nn], N[[childs.ord[nn]]]$desc)] - mod
+                }
+            }
+            newyofcurrentnode <- mean(range(yynew[childs.ord]))
+            yynew[n] <- newyofcurrentnode
+            diffiny <- oldyofcurrentnode - newyofcurrentnode
+        }
+
+        descseg <- segofnodes[n, ]
+        descseg[, c(2, 4)] <- descseg[, c(2, 4)] - diffiny
+        segtop.pre <- rbind(descseg, do.call(rbind, lapply(N[childs], function(x) x$segtop)))
+        segtop <- GetContourPairsFromSegments(segtop.pre, "top")
+        segbottom.pre <- rbind(descseg, do.call(rbind, lapply(N[childs], function(x) x$segbottom)))
+        segbottom <- GetContourPairsFromSegments(segbottom.pre, "bottom")
+
+        N[[n]]$childs <- childs.ord
+        N[[n]]$desc <- desc
+        N[[n]]$segtop <- segtop
+        N[[n]]$segbottom <- segbottom
+    }
+    yynew <- yynew - (min(yynew) - 1) ## so that min(y)=1 always
+    ## finalrange <- diff(range(yynew)) #for computing compression. Remove?
+    ## compression <- ((initialrange-finalrange)/initialrange)*100 # Remove?
+    ## print(paste("Compression: ", round(compression,2),"%", sep="")) #Remove?
+    yynew
+}
+
+### END TIDY
