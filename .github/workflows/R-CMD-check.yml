@@ -70,11 +70,12 @@ jobs:
           
       - name: Check package (without vignettes)
         if: ${{ matrix.config.r }} == '3.6.3'      
-        uses: r-lib/actions/check-r-package@v2        
+        uses: r-lib/actions/check-r-package@v2 
+        with:
+          args: 'c("--no-manual", "--as-cran", "--ignore-vignettes", "--no-build-vignettes")'
+          build_args: 'c("--no-manual", "--no-build-vignettes")'
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        args: 'c("--no-manual", "--as-cran", "--ignore-vignettes", "--no-build-vignettes")'
-        build_args: 'c("--no-manual", "--no-build-vignettes")'          
 
       - name: Upload check results
         if: failure()
