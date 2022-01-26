@@ -3,21 +3,20 @@
 \alias{plot.multiPhylo}
 \title{Plot Phylogenies}
 \description{
-  These functions plot phylogenetic trees on the current graphical
-  device.
+  These functions plot phylogenetic trees.
 }
 \usage{
 \method{plot}{phylo}(x, type = "phylogram", use.edge.length = TRUE,
-                     node.pos = NULL, show.tip.label = TRUE,
-                     show.node.label = FALSE, edge.color = NULL, edge.width
-                     = NULL, edge.lty = NULL, node.color = NULL, node.width
-                     = NULL, node.lty = NULL, font = 3, cex = par("cex"),
-                     adj = NULL, srt = 0, no.margin = FALSE, root.edge =
-                     FALSE, label.offset = 0, underscore = FALSE, x.lim =
-                     NULL, y.lim = NULL, direction = "rightwards", lab4ut =
-                     NULL, tip.color = par("col"), plot = TRUE, rotate.tree
-                     = 0, open.angle = 0, node.depth = 1, align.tip.label =
-                     FALSE, ...)
+     node.pos = NULL, show.tip.label = TRUE,
+     show.node.label = FALSE, edge.color = NULL, edge.width
+     = NULL, edge.lty = NULL, node.color = NULL, node.width
+     = NULL, node.lty = NULL, font = 3, cex = par("cex"),
+     adj = NULL, srt = 0, no.margin = FALSE, root.edge =
+     FALSE, label.offset = 0, underscore = FALSE, x.lim =
+     NULL, y.lim = NULL, direction = "rightwards", lab4ut =
+     NULL, tip.color = par("col"), plot = TRUE, rotate.tree
+     = 0, open.angle = 0, node.depth = 1, align.tip.label =
+     FALSE, ...)
 \method{plot}{multiPhylo}(x, layout = 1, ...)
 }
 \arguments{
@@ -25,8 +24,8 @@
     \code{"multiPhylo"}.}
   \item{type}{a character string specifying the type of phylogeny to be
     drawn; it must be one of "phylogram" (the default), "cladogram",
-    "fan", "unrooted", "radial" or any unambiguous abbreviation of
-    these.}
+    "fan", "unrooted", "radial", "tidy", or any unambiguous abbreviation
+    of these.}
   \item{use.edge.length}{a logical indicating whether to use the edge
     lengths of the phylogeny to draw the branches (the default) or not
     (if \code{FALSE}). This option has no effect if the object of class
@@ -197,7 +196,12 @@
   \item{root.time}{}
   \item{align.tip.label}{}
 }
-\author{Emmanuel Paradis}
+\author{Emmanuel Paradis, Martin Smith, Damien de Vienne}
+\references{
+  van der Ploeg, A. (2014) Drawing non-layered tidy trees in linear
+  time. \emph{Journal of Software: Practice and Experience}, \bold{44},
+  1467--1484.
+}
 \seealso{
   \code{\link{read.tree}}, \code{\link{trex}}, \code{\link{kronoviz}},
   \code{\link{add.scale.bar}}, \code{\link{axisPhylo}},
@@ -267,5 +271,14 @@ co <- c(rep("blue", 9), rep("green", 35))
 plot(bird.orders, "f", edge.col = co)
 plot(bird.orders, edge.col = co)
 layout(1)
+
+## tidy trees
+tr <- rtree(100)
+layout(matrix(1:2, 2))
+plot(tr)
+axis(2)
+plot(tr, "t")
+axis(2)
+## around 20 percent gain on the y-axis
 }
 \keyword{hplot}

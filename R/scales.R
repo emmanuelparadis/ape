@@ -1,11 +1,11 @@
-## scales.R (2014-08-21)
+## scales.R (2021-12-26)
 
 ##   Add a Scale Bar or Axis to a Phylogeny Plot
 
 ## add.scale.bar: add a scale bar to a phylogeny plot
 ## axisPhylo: add a scale axis on the side of a phylogeny plot
 
-## Copyright 2002-2014 Emmanuel Paradis
+## Copyright 2002-2021 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -109,7 +109,14 @@ axisPhylo <- function(side = 1, root.time = NULL, backward = TRUE, ...)
         n <- lastPP$Ntip
         xx <- lastPP$xx[1:n]; yy <- lastPP$yy[1:n]
         r0 <- max(sqrt(xx^2 + yy^2))
-        firstandlast <- c(1, n)
+
+        ## find the widest angle between tips:
+        alpha <- sort(setNames(rect2polar(xx, yy)$angle, 1:n)) # from -pi to +pi
+        angles <- c(diff(alpha), 2*pi - alpha[n] + alpha[1L])
+        j <- which.max(angles)
+        i <- if (j == 1L) n else j - 1L # this is a circle...
+        firstandlast <- as.integer(names(angles[c(i, j)])) # c(1, n)
+
         theta0 <- mean(atan2(yy[firstandlast], xx[firstandlast]))
         x0 <- r0 * cos(theta0); y0 <- r0 * sin(theta0)
         inc <- diff(pretty(c(0, r0))[1:2])
