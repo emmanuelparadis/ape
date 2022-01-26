@@ -5,10 +5,32 @@ on:
     branches:
       - main
       - master
+    paths-ignore:
+      - "Meta**"
+      - "memcheck**"
+      - "docs**"
+      - "**.git"
+      - "**.json"
+      - "**.md"
+      - "**.yml"
+      - "!**R-CMD-check.yml"
+      - "**.R[dD]ata"
+      - "**.Rpro*"
   pull_request:
     branches:
       - main
       - master
+    paths-ignore:
+      - "Meta**"
+      - "memcheck**"
+      - "docs**"
+      - "**.git"
+      - "**.json"
+      - "**.md"
+      - "**.yml"
+      - "!**R-CMD-check.yml"
+      - "**.R[dD]ata"
+      - "**.Rpro*"
 
 name: R-CMD-check
 
