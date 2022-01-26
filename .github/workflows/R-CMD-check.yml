@@ -74,7 +74,7 @@ jobs:
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         args: 'c("--no-manual", "--as-cran", "--ignore-vignettes", "--no-build-vignettes")'
-        build_args: c("--no-manual", "--no-build-vignettes")'          
+        build_args: 'c("--no-manual", "--no-build-vignettes")'          
 
       - name: Upload check results
         if: failure()
