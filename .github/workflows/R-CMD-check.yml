@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        #  - {os: windows-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-bulid-vignettes"'}
-        #  - {os: macOS-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-bulid-vignettes"'}
+          - {os: windows-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-build-vignettes"'}
+          - {os: macOS-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-build-vignettes"'}
           - {os: ubuntu-20.04, r: '3.6.3'}
           - {os: ubuntu-20.04, r: 'release'}
           - {os: ubuntu-20.04, r: 'devel'}
@@ -73,8 +73,8 @@ jobs:
         uses: r-lib/actions/check-r-package@v2        
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        args: 'c("--no-manual", "--as-cran", "--ignore-vignettes", "--no-bulid-vignettes")'
-        build_args: c("--no-manual", "--no-bulid-vignettes")'          
+        args: 'c("--no-manual", "--as-cran", "--ignore-vignettes", "--no-build-vignettes")'
+        build_args: c("--no-manual", "--no-build-vignettes")'          
 
       - name: Upload check results
         if: failure()
