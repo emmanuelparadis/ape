@@ -22,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-build-vignettes"'}
-          - {os: macOS-latest, r: 'release', vignettes: ', "--ignore-vignettes"), build_args = ("--no-build-vignettes"'}
-          - {os: ubuntu-20.04, r: '3.6.3'}
-          - {os: ubuntu-20.04, r: 'release'}
-          - {os: ubuntu-20.04, r: 'devel'}
+          - {os: windows-latest, r: 'release', args: '"--as-cran", "--ignore-vignettes"', build_args: '"--no-manual", "--no-build-vignettes"'}
+          - {os: macOS-latest, r: 'release', args: '"--as-cran", "--ignore-vignettes"', build_args: '"--no-manual", "--no-build-vignettes"'}
+          - {os: ubuntu-20.04, r: '3.6.3', args: '"--as-cran", "--ignore-vignettes"', build_args: '"--no-manual", "--no-build-vignettes"'}
+          - {os: ubuntu-20.04, r: 'release',  args: '"--as-cran"', build_args: '"--no-manual"'}
+          - {os: ubuntu-20.04, r: 'devel',  args: '"--as-cran"', build_args: '"--no-manual"'}
 
     env:
       _R_CHECK_CRAN_INCOMING_: true # Seemingly not set by --as-cran
@@ -61,19 +61,12 @@ jobs:
 
       - name: Set up pandoc
         uses: r-lib/actions/setup-pandoc@v2
-
+        
       - name: Check package
-        if: ${{ matrix.config.r }} != '3.6.3'
-        uses: r-lib/actions/check-r-package@v2        
-        env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false  
-          
-      - name: Check package (without vignettes)
-        if: ${{ matrix.config.r }} == '3.6.3'      
         uses: r-lib/actions/check-r-package@v2 
         with:
-          args: 'c("--no-manual", "--as-cran", "--ignore-vignettes", "--no-build-vignettes")'
-          build_args: 'c("--no-manual", "--no-build-vignettes")'
+          args: 'c(${{ matrix.config.args }}, ${{ matrix.config.build_args }})'
+          build_args: 'c(${{ matrix.config.build_args }})'
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
 
