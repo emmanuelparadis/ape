@@ -33,6 +33,8 @@ fancyarrows(x0, y0, x1, y1, length = 0.25, angle = 30, code = 2,
 \details{
   The first function is helpful when drawing reticulations on a phylogeny,
   especially if computed from the edge matrix.
+
+  \code{fancyarrows} does not work with log-transformed scale(s).
 }
 \author{Emmanuel Paradis}
 \seealso{
