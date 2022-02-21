@@ -1,8 +1,8 @@
-## is.monophyletic.R (2020-07-10)
+## is.monophyletic.R (2022-02-21)
 
 ##   Test Monophyly
 
-## Copyright 2009-2020 Johan Nylander and Emmanuel Paradis
+## Copyright 2009-2022 Johan Nylander and Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -16,11 +16,11 @@ is.monophyletic <-
     ROOT <- n + 1L
     if (is.numeric(tips)) {
         if (any(tips > n))
-            stop("incorrect tip#: should not be greater than the number of tips")
+            stop("incorrect tip #: should not be greater than the number of tips")
         tips <- as.integer(tips)
     }
     if (is.character(tips)) {
-        tips <- match(tips, phy$tip.label)
+        tips <- which(phy$tip.label %in% tips)
         if (anyNA(tips)) stop("some tip label(s) not found in the tree")
     }
     tips <- sort(tips) # fix (2020-07-10)
