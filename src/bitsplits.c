@@ -1,6 +1,6 @@
-/* bitsplits.c    2020-07-19 */
+/* bitsplits.c    2021-12-27 */
 
-/* Copyright 2005-2020 Emmanuel Paradis */
+/* Copyright 2005-2021 Emmanuel Paradis */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
@@ -96,20 +96,37 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
     for (itr = 0; itr < Ntrees; itr++) {
 
 	Nnode = *INTEGER(getListElement(VECTOR_ELT(x, itr), "Nnode"));
+	if (Nnode == 1) continue;
 	PROTECT(EDGE = getListElement(VECTOR_ELT(x, itr), "edge"));
 	e = INTEGER(EDGE);
 	Nedge = LENGTH(EDGE)/2;
 
-	/* see explanations in ape/src/reorder_phylo.c */
-	L = (int*)R_alloc(Nnode * (Nedge - Ntip + 1), sizeof(int));
+/* L is a 1-d array storing, for each node, the C indices of the rows of
+   the edge matrix where the node is ancestor (i.e., present in the 1st
+   column). It is used in the same way than a matrix (which is actually
+   a vector) is used in R as a 2-d structure. */
+
+	L = (int*)R_alloc(Nnode * Ntip, sizeof(int)); /* safe allocation */
+
+/* pos gives the position for each 'row' of L, that is the number of elements
+   which have already been stored for that 'row'. */
+
 	pos = (int*)R_alloc(Nnode, sizeof(int));
 	memset(pos, 0, Nnode * sizeof(int));
+
+/* we now go down along the edge matrix */
+
 	for (i = 0; i < Nedge; i++) {
-	    k = e[i] - Ntip - 1;
-	    j = pos[k];
-	    pos[k]++;
+	    k = e[i] - Ntip - 1; /* k is the 'row' index in L corresponding to node e1[i] */
+	    j = pos[k]; /* the current 'column' position corresponding to k */
+	    pos[k]++; /* increment in case the same node is found in another row of the edge matrix */
 	    L[k + Nnode * j] = i;
 	}
+
+/* L is now ready: we can start the recursive calls.
+   We start with the root 'n + 1': its index will be changed into
+   the corresponding C index inside the recursive function. */
+
 	iii = Nedge - 1;
 	newor = (int*)R_alloc(Nedge, sizeof(int));
 	bar_reorder2(Ntip + 1, Ntip, Nnode, Nedge, e, newor, L, pos);

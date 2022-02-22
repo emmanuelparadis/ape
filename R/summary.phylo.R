@@ -1,4 +1,4 @@
-## summary.phylo.R (2021-11-27)
+## summary.phylo.R (2021-12-26)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
@@ -301,7 +301,7 @@ degree.phylo <- function(x, details = FALSE, ...)
     res <- tabulate(x$edge, N)
     if (details) return(res)
     tab <- tabulate(res)
-    DF <- data.frame(Degree = seq_along(tab), Number = tab)
+    DF <- data.frame(Degree = seq_along(tab), N = tab)
     DF[tab > 0, ]
 }
 
@@ -311,6 +311,6 @@ degree.evonet <- function(x, details = FALSE, ...)
     res <- tabulate(x$edge, N) + tabulate(x$reticulation, N)
     if (details) return(res)
     tab <- tabulate(res)
-    DF <- data.frame(Degree = seq_along(tab), Number = tab)
+    DF <- data.frame(Degree = seq_along(tab), N = tab)
     DF[tab > 0, ]
 }

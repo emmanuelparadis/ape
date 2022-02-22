@@ -38,7 +38,8 @@ getAnnotationsGenBank(access.nb, quiet = TRUE)
   \code{\link{DNAbin}}
 }
 \author{Emmanuel Paradis}
-\references{\url{https://www.ncbi.nlm.nih.gov/Sequin/table.html}}
+\references{https://www.ncbi.nlm.nih.gov/Sequin/table.html (Note: it
+  seems this URL is broken; 2022-01-03)}
 \examples{
 ## The 8 sequences of tanagers (Ramphocelus):
 ref <- c("U15717", "U15718", "U15719", "U15720",

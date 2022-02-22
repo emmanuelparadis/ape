@@ -24,9 +24,8 @@ data(chiroptera)
 \examples{
 data(chiroptera)
 str(chiroptera)
-op <- par()
-par(cex = 0.3)
+op <- par(cex = 0.3)
 plot(chiroptera, type = "c")
-par(cex = op$cex)
+par(op)
 }
 \keyword{datasets}
