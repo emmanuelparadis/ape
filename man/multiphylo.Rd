@@ -15,17 +15,15 @@
 \method{[}{multiPhylo}(x, i)
 \method{[[}{multiPhylo}(x, i)
 \method{$}{multiPhylo}(x, name)
-\method{[}{multiPhylo}(x, ...) <- value
-\method{[[}{multiPhylo}(x, ...) <- value
-\method{$}{multiPhylo}(x, ...) <- value
+\method{[}{multiPhylo}(x, i) <- value
+\method{[[}{multiPhylo}(x, i) <- value
+\method{$}{multiPhylo}(x, i) <- value
 }
 \arguments{
   \item{x, value}{an object of class \code{"phylo"} or \code{"multiPhylo"}.}
   \item{i}{index(ices) of the tree(s) to select from a list; this may be a
     vector of integers, logicals, or names.}
   \item{name}{a character string specifying the tree to be extracted.}
-  \item{\dots}{index(ices) of the tree(s) to replace; this may be a
-    vector of integers, logicals, or names.}
 }
 \details{
   The subsetting operator \code{[} keeps the class correctly
