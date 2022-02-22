@@ -221,44 +221,6 @@ c.multiPhylo <- function(..., recursive = TRUE)
 
 `[<-.multiPhylo` <- function(x, i, value)
 {
-  ###    ## recycling is allowed so no need to check: length(value) != length(..1)
-  ###    dots <- list(...)
-  ###    dots <- if (length(dots)) dots[[1]] else seq_along(x) # see issue #36 on GH
-  
-#   ## check that all elements in 'value' inherit class "phylo"
-#   test <- unlist(lapply(value, function(xx) !inherits(xx, "phylo")))
-#   if (any(test))
-#     stop("at least one element in 'value' is not of class \"phylo\".")
-#   
-#   oc <- oldClass(x)
-#   class(x) <- NULL
-#   
-#   if (is.null(attr(x, "TipLabel")) ||
-#       identical(attr(x, "TipLabel"), attr(value, "TipLabel"))
-#       ) {
-#     x[..1] <- value
-#     ###        x[dots] <- value
-#     class(x) <- oc
-#     return(x)
-#   }
-#   
-#   attr(x, "TipLabel") <- NULL
-#   
-#   dots <- if (missing(..1)) {
-#     seq_along(x)
-#   } else {
-#     ..1
-#   }
-#   x[dots] <- 0L # in case x needs to be elongated
-#   j <- 1L
-#   for (i in dots) {
-#     ## x is of class "multiPhylo", so this uses the operator below:
-#     x[[i]] <- value[[j]]
-#     j <- j + 1L
-#   }
-#   class(x) <- oc
-#   x
-# # =======
     ## recycling is allowed so no need to check length(value) != length(i)
 
     if (missing(i)) i <- seq_along(x)
