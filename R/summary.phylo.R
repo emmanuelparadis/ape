@@ -220,9 +220,8 @@ c.multiPhylo <- function(..., recursive = TRUE)
 
 `[<-.multiPhylo` <- function(x, i, value)
 {
-    ## recycling is allowed so no need to check: length(value) != length(..1)
+    ## recycling is allowed so no need to check length(value) != length(i)
     if (missing(i)) i <- seq_along(x)
-#    dots <- if (length(dots)) dots[[1]] else seq_along(x) # see issue #36 on GH
 
     ## check that all elements in 'value' inherit class "phylo"
     test <- unlist(lapply(value, function(xx) !inherits(xx, "phylo")))
@@ -246,9 +245,11 @@ c.multiPhylo <- function(..., recursive = TRUE)
     ## to solve PR #45
     if (is.null(TipLabel.value)) {
         x <- .uncompressTipLabel(x)
+        class(x) <- NULL
     } else {
         if (!identical(TipLabel.x, TipLabel.value)) {
             x <- .uncompressTipLabel(x)
+            class(x) <- NULL
             value <- .uncompressTipLabel(value)
         }
     }
