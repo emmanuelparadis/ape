@@ -1,8 +1,8 @@
-## summary.phylo.R (2021-12-26)
+## summary.phylo.R (2022-02-22)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
-## Copyright 2003-2021 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
+## Copyright 2003-2022 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -218,7 +218,7 @@ c.multiPhylo <- function(..., recursive = TRUE)
     x
 }
 
-`[<-.multiPhylo` <- function(x, ..., value)
+`[<-.multiPhylo` <- function(x, i, value)
 {
   ###    ## recycling is allowed so no need to check: length(value) != length(..1)
   ###    dots <- list(...)
@@ -257,9 +257,53 @@ c.multiPhylo <- function(..., recursive = TRUE)
   }
   class(x) <- oc
   x
+# =======
+#     ## recycling is allowed so no need to check: length(value) != length(..1)
+#     if (missing(i)) i <- seq_along(x)
+# #    dots <- if (length(dots)) dots[[1]] else seq_along(x) # see issue #36 on GH
+# 
+#     ## check that all elements in 'value' inherit class "phylo"
+#     test <- unlist(lapply(value, function(xx) !inherits(xx, "phylo")))
+#     if (any(test))
+#         stop("at least one element in 'value' is not of class \"phylo\".")
+# 
+#     oc <- oldClass(x)
+#     class(x) <- NULL
+# 
+#     TipLabel.x <- attr(x, "TipLabel")
+#     TipLabel.value <- attr(value, "TipLabel")
+# 
+#     if (is.null(TipLabel.x)) {
+#         if (!is.null(TipLabel.value))           # to solve PR #45
+#             value <- .uncompressTipLabel(value) #
+#         x[i] <- value
+#         class(x) <- oc
+#         return(x)
+#     }
+# 
+#     ## to solve PR #45
+#     if (is.null(TipLabel.value)) {
+#         x <- .uncompressTipLabel(x)
+#     } else {
+#         if (!identical(TipLabel.x, TipLabel.value)) {
+#             x <- .uncompressTipLabel(x)
+#             value <- .uncompressTipLabel(value)
+#         }
+#     }
+# 
+#     x[i] <- 0L # in case x needs to be elongated
+#     class(x) <- oc
+#     j <- 1L
+#     for (k in i) {
+#         ## x is of class "multiPhylo", so this uses the operator below:
+#         x[[k]] <- value[[j]]
+#         j <- j + 1L
+#     }
+#     x
+# >>>>>>> master
 }
 
-`[[<-.multiPhylo` <- function(x, ..., value)
+`[[<-.multiPhylo` <- function(x, i, value)
 {
     if (!inherits(value, "phylo"))
         stop('trying to assign an object not of class "phylo" into an object of class "multiPhylo".')
@@ -282,14 +326,14 @@ c.multiPhylo <- function(..., recursive = TRUE)
         value$edge[ie, 2] <- 1:n
     }
 
-    x[[..1]] <- value
+    x[[i]] <- value
     class(x) <- oc
     x
 }
 
-`$<-.multiPhylo` <- function(x, ..., value)
+`$<-.multiPhylo` <- function(x, i, value)
 {
-    x[[..1]] <- value
+    x[[i]] <- value
     x
 }
 
