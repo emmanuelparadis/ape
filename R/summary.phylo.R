@@ -211,9 +211,10 @@ c.multiPhylo <- function(..., recursive = TRUE)
 {
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
+    oc <- class(x)
     class(x) <- NULL
     for (i in 1:length(x)) x[[i]]$tip.label <- Lab
-    class(x) <- "multiPhylo"
+    class(x) <- oc
     attr(x, "TipLabel") <- NULL
     x
 }
