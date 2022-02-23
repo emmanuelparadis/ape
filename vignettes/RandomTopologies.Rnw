@@ -421,7 +421,7 @@ of the much larger numbers of possible topologies.
     topologies (not shown here to avoid long computations in this vignette).
   \item \code{rtree(, equiprob = TRUE)} simulates unlabeled topologies
     in equal frequencies (from \ape\ 5.5).
-  \item \code{rtopology} simulated labeled topologies with equal
+  \item \code{rtopology} simulates labeled topologies with equal
     probabilities. This is the function now called by \code{multi2di(,
       equiprob = TRUE)}.
 \end{enumerate}

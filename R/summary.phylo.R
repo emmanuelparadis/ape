@@ -1,8 +1,8 @@
-## summary.phylo.R (2021-11-27)
+## summary.phylo.R (2022-02-22)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
-## Copyright 2003-2021 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
+## Copyright 2003-2022 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -211,55 +211,64 @@ c.multiPhylo <- function(..., recursive = TRUE)
 {
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
+    oc <- class(x)
     class(x) <- NULL
     for (i in 1:length(x)) x[[i]]$tip.label <- Lab
-    class(x) <- "multiPhylo"
+    class(x) <- oc
     attr(x, "TipLabel") <- NULL
     x
 }
 
-`[<-.multiPhylo` <- function(x, ..., value)
+`[<-.multiPhylo` <- function(x, i, value)
 {
-  ###    ## recycling is allowed so no need to check: length(value) != length(..1)
-  ###    dots <- list(...)
-  ###    dots <- if (length(dots)) dots[[1]] else seq_along(x) # see issue #36 on GH
-  
-  ## check that all elements in 'value' inherit class "phylo"
-  test <- unlist(lapply(value, function(xx) !inherits(xx, "phylo")))
-  if (any(test))
-    stop("at least one element in 'value' is not of class \"phylo\".")
-  
-  oc <- oldClass(x)
-  class(x) <- NULL
-  
-  if (is.null(attr(x, "TipLabel")) ||
-      identical(attr(x, "TipLabel"), attr(value, "TipLabel"))
-      ) {
-    x[..1] <- value
-    ###        x[dots] <- value
+    ## recycling is allowed so no need to check length(value) != length(i)
+
+    if (missing(i)) i <- seq_along(x)
+
+    ## check that all elements in 'value' inherit class "phylo"
+    test <- unlist(lapply(value, function(xx) !inherits(xx, "phylo")))
+    if (any(test))
+        stop("at least one element in 'value' is not of class \"phylo\".")
+
+    oc <- oldClass(x)
+    class(x) <- NULL
+
+    TipLabel.x <- attr(x, "TipLabel")
+    TipLabel.value <- attr(value, "TipLabel")
+
+    if (is.null(TipLabel.x)) {
+        if (!is.null(TipLabel.value))           # to solve PR #45
+            value <- .uncompressTipLabel(value) #
+        x[i] <- value
+        class(x) <- oc
+        return(x)
+    }
+
+    ## to solve PR #45
+    if (is.null(TipLabel.value)) {
+        x <- .uncompressTipLabel(x)
+        class(x) <- NULL
+    } else {
+        if (!identical(TipLabel.x, TipLabel.value)) {
+            x <- .uncompressTipLabel(x)
+            class(x) <- NULL
+            value <- .uncompressTipLabel(value)
+        }
+    }
+
+    x[i] <- 0L # in case x needs to be elongated
     class(x) <- oc
-    return(x)
-  }
-  
-  attr(x, "TipLabel") <- NULL
-  
-  dots <- if (missing(..1)) {
-    seq_along(x)
-  } else {
-    ..1
-  }
-  x[dots] <- 0L # in case x needs to be elongated
-  j <- 1L
-  for (i in dots) {
-    ## x is of class "multiPhylo", so this uses the operator below:
-    x[[i]] <- value[[j]]
-    j <- j + 1L
-  }
-  class(x) <- oc
-  x
+    j <- 1L
+    for (k in i) {
+        ## x is of class "multiPhylo", so this uses the operator below:
+        x[[k]] <- value[[j]]
+        j <- j + 1L
+    }
+    x
+# >>>>>>> master
 }
 
-`[[<-.multiPhylo` <- function(x, ..., value)
+`[[<-.multiPhylo` <- function(x, i, value)
 {
     if (!inherits(value, "phylo"))
         stop('trying to assign an object not of class "phylo" into an object of class "multiPhylo".')
@@ -282,14 +291,14 @@ c.multiPhylo <- function(..., recursive = TRUE)
         value$edge[ie, 2] <- 1:n
     }
 
-    x[[..1]] <- value
+    x[[i]] <- value
     class(x) <- oc
     x
 }
 
-`$<-.multiPhylo` <- function(x, ..., value)
+`$<-.multiPhylo` <- function(x, i, value)
 {
-    x[[..1]] <- value
+    x[[i]] <- value
     x
 }
 
@@ -301,7 +310,7 @@ degree.phylo <- function(x, details = FALSE, ...)
     res <- tabulate(x$edge, N)
     if (details) return(res)
     tab <- tabulate(res)
-    DF <- data.frame(Degree = seq_along(tab), Number = tab)
+    DF <- data.frame(Degree = seq_along(tab), N = tab)
     DF[tab > 0, ]
 }
 
@@ -311,6 +320,6 @@ degree.evonet <- function(x, details = FALSE, ...)
     res <- tabulate(x$edge, N) + tabulate(x$reticulation, N)
     if (details) return(res)
     tab <- tabulate(res)
-    DF <- data.frame(Degree = seq_along(tab), Number = tab)
+    DF <- data.frame(Degree = seq_along(tab), N = tab)
     DF[tab > 0, ]
 }
