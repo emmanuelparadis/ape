@@ -222,7 +222,6 @@ c.multiPhylo <- function(..., recursive = TRUE)
 `[<-.multiPhylo` <- function(x, i, value)
 {
     ## recycling is allowed so no need to check length(value) != length(i)
-
     if (missing(i)) i <- seq_along(x)
 
     ## check that all elements in 'value' inherit class "phylo"
@@ -265,7 +264,6 @@ c.multiPhylo <- function(..., recursive = TRUE)
         j <- j + 1L
     }
     x
-# >>>>>>> master
 }
 
 `[[<-.multiPhylo` <- function(x, i, value)
