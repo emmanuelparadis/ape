@@ -1,4 +1,4 @@
-## dist.topo.R (2022-02-22)
+## dist.topo.R (2022-03-01)
 
 ##      Topological Distances, Tree Bipartitions,
 ##   Consensus Trees, and Bootstrapping Phylogenies
@@ -138,11 +138,10 @@ dist.topo <- function(x, y = NULL, method = "PH85")
         y$tip.label <- NULL
         y
     }
-    oc <- class(x)
-    class(x) <- NULL
+    x <- unclass(x) # another killer improvement by Tucson's hackathon (1/2/2013)
     x <- lapply(x, relabel)
     attr(x, "TipLabel") <- ref
-    class(x) <- oc
+    class(x) <- "multiPhylo"
     x
 }
 
