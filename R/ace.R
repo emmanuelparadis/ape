@@ -1,8 +1,8 @@
-## ace.R (2021-12-15)
+## ace.R (2022-03-02)
 
 ##   Ancestral Character Estimation
 
-## Copyright 2005-2021 Emmanuel Paradis and 2005 Ben Bolker
+## Copyright 2005-2022 Emmanuel Paradis and 2005 Ben Bolker
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -265,7 +265,7 @@ ace <-
         out.nlm <- try(nlm(function(p) dev(p), p = obj$rates, iterlim = 1,
                            stepmax = 0, hessian = TRUE), silent = TRUE)
         options(oldwarn)
-        obj$se <- if (class(out.nlm) == "try-error") {
+        obj$se <- if (inherits(out.nlm, "try-error")) {
             warning("model fit suspicious: gradients apparently non-finite")
             rep(NaN, np)
         } else .getSEs(out.nlm)

@@ -1,4 +1,4 @@
-## summary.phylo.R (2022-02-22)
+## summary.phylo.R (2022-03-01)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
@@ -211,10 +211,9 @@ c.multiPhylo <- function(..., recursive = TRUE)
 {
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
-    oc <- class(x)
     class(x) <- NULL
     for (i in 1:length(x)) x[[i]]$tip.label <- Lab
-    class(x) <- oc
+    class(x) <- "multiPhylo"
     attr(x, "TipLabel") <- NULL
     x
 }

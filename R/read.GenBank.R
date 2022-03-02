@@ -1,8 +1,8 @@
-## read.GenBank.R (2020-05-15)
+## read.GenBank.R (2022-03-02)
 
 ##   Read DNA Sequences and Annotations from GenBank
 
-## Copyright 2002-2020 Emmanuel Paradis
+## Copyright 2002-2022 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -132,7 +132,7 @@ getAnnotationsGenBank <- function(access.nb, quiet = TRUE)
         URL <- paste0(s1, access.nb[i], s3)
         fl <- tempfile()
         ans <- try(download.file(URL, fl, quiet = TRUE), silent = TRUE)
-        if (class(ans) == "try-error") {
+        if (inherits(ans, "try-error")) {
             notfound <- c(notfound, access.nb[i])
             next
         }

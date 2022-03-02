@@ -35,7 +35,7 @@ mcmc.popsize <-
     if (inherits(tree, "phylo")) {
         ci <- coalescent.intervals(tree)
         sk1 <- skyline(ci)
-    } else if (class(tree) == "coalescentIntervals") {
+    } else if (inherits(tree, "coalescentIntervals")) {
         ci <- tree
         sk1 <- skyline(ci)
     } else

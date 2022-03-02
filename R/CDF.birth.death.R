@@ -1,8 +1,8 @@
-## CDF.birth.death.R (2019-11-07)
+## CDF.birth.death.R (2022-03-02)
 
 ## Functions to Simulate and Fit Time-Dependent Birth-Death Models
 
-## Copyright 2010-2019 Emmanuel Paradis
+## Copyright 2010-2022 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -477,7 +477,7 @@ bd.time <- function(phy, birth, death, BIRTH = NULL, DEATH = NULL,
             x <- sort(sample(x, replace = TRUE))
             o <- try(nlminb(ip, foo, control = list(trace = 0, eval.max = 500),
                             upper = upper, lower = lower))
-            if (class(o) == "list") {
+            if (inherits(o, "list")) {
                 PAR[i, ] <- o$par
                 i <- i + 1L
             }
