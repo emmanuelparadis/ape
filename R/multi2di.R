@@ -15,7 +15,7 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
     degree <- tabulate(phy$edge[, 1])
     target <- which(degree > 2)
     if (!length(target)) return(phy)
-    phy <- reorder(phy, "postorder")
+    phy <- .reorder_ape(phy, "postorder", FALSE, n, 2L)
     pos <- match(target, phy$edge[,1])
     nb.edge <- dim(phy$edge)[1]
     nextnode <- n + phy$Nnode + 1L
@@ -130,7 +130,7 @@ di2multi <- function(phy, ...) UseMethod("di2multi")
 .di2multi_ape <- function (phy, tol = 1e-08, ntips)
 {
     if (is.null(phy$edge.length)) stop("the tree has no branch length")
-    phy <- reorder(phy)
+    phy <- .reorder_ape(phy, "cladewise", FALSE, ntips, 1L)
     e1 <- seq_len(max(phy$edge))
     ind <- which(phy$edge.length < tol & phy$edge[, 2] > ntips)
     n <- length(ind)
