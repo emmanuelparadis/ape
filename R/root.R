@@ -52,7 +52,7 @@ unroot <- function(phy) UseMethod("unroot")
     ophy <- attr(phy, "order")
     if(is.null(ophy) || !(ophy %in% c("cladewise", "postorder", 
                                       "pruningwise"))){
-        phy <- reorder(phy)
+        phy <- .reorder_ape(phy, "cladewise", FALSE, as.integer(n), 1L)
         ophy <- attr(phy, "order")
     }    
     if (ophy != "cladewise") {
