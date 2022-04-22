@@ -1,8 +1,8 @@
-## root.R (2021-04-15)
+## root.R (2022-04-22)
 
 ##   Roots Phylogenetic Trees
 
-## Copyright 2004-2021 Emmanuel Paradis
+## Copyright 2004-2022 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -50,7 +50,11 @@ unroot <- function(phy) UseMethod("unroot")
 ### situated in phy$edge[N - 2L, 1L] will be the new root...
 
     ophy <- attr(phy, "order")
-    if (!is.null(ophy) && ophy != "cladewise") {
+    if (!is.null(ophy) || !(ophy %in% c("cladewise", "postorder", "pruningwise"))) { # fixed by KS
+        phy <- .reorder_ape(phy, "cladewise", FALSE, as.integer(n), 1L)
+        ophy <- attr(phy, "order")
+    }
+    if (ophy != "cladewise") {
         NEWROOT <- phy$edge[N - 2L, 1L]
         EDGEROOT <- c(N, N - 1L)
         ## make sure EDGEROOT is ordered as described above:

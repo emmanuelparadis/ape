@@ -1,8 +1,8 @@
-## multi2di.R (2021-12-21)
+## multi2di.R (2022-04-22)
 
 ##   Collapse or Resolve Multichotomies
 
-## Copyright 2005-2021 Emmanuel Paradis, 2018-2021 Klaus Schliep
+## Copyright 2005-2021 Emmanuel Paradis, 2018-2022 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -15,7 +15,7 @@ multi2di <- function(phy, ...) UseMethod("multi2di")
     degree <- tabulate(phy$edge[, 1])
     target <- which(degree > 2)
     if (!length(target)) return(phy)
-    phy <- reorder(phy, "postorder")
+    phy <- .reorder_ape(phy, "postorder", FALSE, n, 2L) # by Klaus
     pos <- match(target, phy$edge[,1])
     nb.edge <- dim(phy$edge)[1]
     nextnode <- n + phy$Nnode + 1L
@@ -126,23 +126,32 @@ multi2di.multiPhylo <- function(phy, random = TRUE, equiprob = TRUE, ...)
 
 di2multi <- function(phy, ...) UseMethod("di2multi")
 
-## by Klaus (2018-05-28)
-.di2multi_ape <- function (phy, tol = 1e-08, ntips)
+## by Klaus (2018-05-28, 2022-03-24)
+.di2multi_ape <- function(phy, tol = 1e-08, ntips, tip2root = FALSE)
 {
     if (is.null(phy$edge.length)) stop("the tree has no branch length")
-    phy <- reorder(phy)
+    phy <- .reorder_ape(phy, "cladewise", FALSE, ntips, 1L) # by Klaus
     e1 <- seq_len(max(phy$edge))
     ind <- which(phy$edge.length < tol & phy$edge[, 2] > ntips)
     n <- length(ind)
     if (!n) return(phy)
 
+    ## new 24.3.22
+    if (tip2root) {
+      ## nh <- node.depth.edgelength(phy)
+      phy_tmp <- .reorder_ape(phy, "postorder", FALSE, ntips, 2L)
+      m <- phy_tmp$Nnode
+      nh <- .C(node_depth_edgelength, as.integer(phy_tmp$edge[, 1]),
+               as.integer(phy_tmp$edge[, 2]), as.integer(nrow(phy_tmp$edge)),
+               as.double(phy_tmp$edge.length), double(ntips + m))[[5]]
+    }
     for (i in ind)
         e1[phy$edge[i,2]] <-  e1[phy$edge[i,1]]
 
     phy$edge[, 1] <- e1[phy$edge[, 1]]
     node2del <- phy$edge[ind, 2]
     phy$edge <- phy$edge[-ind, ]
-    phy$edge.length <- phy$edge.length[-ind]
+    phy$edge.length <- if (tip2root) nh[phy$edge[, 2]] - nh[phy$edge[, 1]] else phy$edge.length[-ind]
 
     phy$Nnode <- phy$Nnode - n
 
@@ -158,16 +167,16 @@ di2multi <- function(phy, ...) UseMethod("di2multi")
 }
 
 di2multi.phylo <- function (phy, tol = 1e-08, ...)
-    .di2multi_ape(phy, tol, length(phy$tip.label))
+    .di2multi_ape(phy, tol, length(phy$tip.label), ...)
 
 di2multi.multiPhylo <- function(phy, tol = 1e-08, ...)
 {
     labs <- attr(phy, "TipLabel")
     oc <- oldClass(phy)
     class(phy) <- NULL
-    if (is.null(labs)) phy <- lapply(phy, di2multi.phylo, tol = tol)
+    if (is.null(labs)) phy <- lapply(phy, di2multi.phylo, tol = tol, ...)
     else {
-        phy <- lapply(phy, .di2multi_ape, tol = tol, ntips = length(labs))
+        phy <- lapply(phy, .di2multi_ape, tol = tol, ntips = length(labs), ...)
         attr(phy, "TipLabel") <- labs
     }
     class(phy) <- oc
