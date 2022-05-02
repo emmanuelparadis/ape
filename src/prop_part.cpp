@@ -1,4 +1,4 @@
-/* additive.c    2017-07-26 */
+/* prop_part.cpp    2017-07-26 */
 
 /* Copyright 2017 Klaus Schliep */
 
