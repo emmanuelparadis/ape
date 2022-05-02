@@ -1,4 +1,4 @@
-## PGLS.R (2021-12-18)
+## PGLS.R (2022-05-02)
 
 ##   Phylogenetic Generalized Least Squares
 
@@ -76,9 +76,7 @@ corMatrix.corBrownian <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        ##if (! is.character(covariate)) {
-        ##    stop("Covariate must be a character vector.")
-        ##}
+        covariate <- as.character(covariate)
         tree <- attr(object, "tree")
         mat <- vcv.phylo(tree, corr = corr)
         mat[covariate, covariate]
@@ -93,9 +91,7 @@ corMatrix.corMartins <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        ##if (! is.character(covariate)) {
-        ##    stop("Covariate must be a character vector.")
-        ##}
+        covariate <- as.character(covariate)
         tree <- attr(object, "tree")
         dist <- cophenetic.phylo(tree)
         mat <- exp(-object[1] * dist)
@@ -112,9 +108,7 @@ corMatrix.corGrafen <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        ##if (! is.character(covariate)) {
-        ##    stop("Covariate must be a character vector.")
-        ##}
+        covariate <- as.character(covariate)
         tree <- compute.brlen(attr(object, "tree"),
                               method = "Grafen", power = exp(object[1]))
         mat <- vcv.phylo(tree, corr = corr)
@@ -213,9 +207,7 @@ corMatrix.corPagel <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        ##if (! is.character(covariate)) {
-        ##    stop("Covariate must be a character vector.")
-        ##}
+        covariate <- as.character(covariate)
         mat <- vcv.phylo(attr(object, "tree"), corr = corr)
         mat <- mat[covariate, covariate]
         tmp <- diag(mat)
@@ -258,9 +250,7 @@ probably need to set 'fixed = TRUE' in corBlomberg().")
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        ##if (! is.character(covariate)) {
-        ##    stop("Covariate must be a character vector.")
-        ##}
+        covariate <- as.character(covariate)
         phy <- attr(object, "tree")
         d <- (dist.nodes(phy)[length(phy$tip.label) + 1, ])^(1/object[1])
         phy$edge.length <- d[phy$edge[, 2]] - d[phy$edge[, 1]]
