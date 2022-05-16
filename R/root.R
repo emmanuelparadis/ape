@@ -50,7 +50,7 @@ unroot <- function(phy) UseMethod("unroot")
 ### situated in phy$edge[N - 2L, 1L] will be the new root...
 
     ophy <- attr(phy, "order")
-    if (!is.null(ophy) || !(ophy %in% c("cladewise", "postorder", "pruningwise"))) { # fixed by KS
+    if (is.null(ophy) || !(ophy %in% c("cladewise", "postorder", "pruningwise"))) { # fixed by KS
         phy <- .reorder_ape(phy, "cladewise", FALSE, as.integer(n), 1L)
         ophy <- attr(phy, "order")
     }
