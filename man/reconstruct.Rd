@@ -12,58 +12,45 @@
   process (OU, i.e. Brownian with an attractive optimum).
 }
 \usage{
-reconstruct(x, phyInit, method = "ML", alpha = NULL, CI = TRUE)
+reconstruct(x, phy, method = "ML", alpha = NULL,
+            low_alpha = 0.0001, up_alpha = 1, CI = TRUE)
 }
 \arguments{
   \item{x}{a numerical vector.}
-  \item{phyInit}{an object of class \code{"phylo"}.}
+  \item{phy}{an object of class \code{"phylo"}.}
   \item{method}{a character specifying the method used for
-    estimation. Six choices are possible: \code{"ML"}, \code{"REML"},
-    \code{"GLS"}, \code{"GLS_ABM"}, \code{"GLS_OU"} or
-    \code{"GLS_OUS"}.}
-  \item{alpha}{a numerical value which accounts for the attractive
-    strength parameter of \code{"GLS_OU"} or \code{"GLS_OUS"} (used only
-    in these cases). If alpha = NULL (the default), then it is estimated
-    by maximum likelihood using \code{optim} which may lead to
-    convergence issue.}
+    estimation. Six choices are possible: \code{"ML"}, \code{"REML"}, \code{"GLS"}, \code{"GLS_ABM"}, \code{"GLS_OU"} or \code{"GLS_OUS"}.}
+  \item{alpha}{a numerical value which accounts for the attractive strength parameter of \code{"GLS_OU"} or \code{"GLS_OUS"} (used only in these cases). If alpha = NULL (the default), then it is estimated by maximum likelihood using \code{optim}, with \code{low_alpha} (resp. \code{up_alpha}) as lower value (resp. upper value), which may lead to convergence issue.}
+   \item{low_alpha}{a lower bound for alpha, used only with methods \code{"GLS_OU"} or \code{"GLS_OUS"}. It has to be positive.}
+    \item{up_alpha}{an upper bound for alpha, used only with methods \code{"GLS_OU"} or \code{"GLS_OUS"}. It has to be positive.}
   \item{CI}{a logical specifying whether to return the 95\% confidence
     intervals of the ancestral state estimates.}
 }
 \details{
-  For \code{"ML"}, \code{"REML"} and \code{"GLS"}, the default model is
-  Brownian motion. This model can be fitted by maximum likelihood
-  (\code{method = "ML"}, Felsenstein 1973, Schluter et al. 1997) - the
-  default, residual maximum likelihood (\code{method = "REML"}), or
-  generalized least squares (\code{method = "GLS"}, Martins and Hansen
-  1997, Garland T and Ives AR 2000).
-
-  \code{"GLS_ABM"} is based on Brownian motion with trend model. Both
-  \code{"GLS_OU"} and \code{"GLS_OUS"} are based on Ornstein-Uhlenbeck
-  model.
-
-  \code{"GLS_OU"} and \code{"GLS_OUS"} differs in the fact that
-  \code{"GLS_OUS"} assume that the process starts from the optimum,
-  while the root state has to be estimated for \code{"GLS_OU"}, which
-  may rise some issues (see Royer-Carenzi and Didier, 2016). Users may
-  provide the attractive strength parameter \code{alpha}, for these two
-  models.
-
-  \code{"GLS_ABM"}, \code{"GLS_OU"} and \code{"GLS_OUS"} are all fitted
-  by generalized least squares (Royer-Carenzi and Didier, 2016).
+  For \code{"ML"}, \code{"REML"} and \code{"GLS"}, the default model is Brownian motion. This model
+  can be fitted by maximum
+  likelihood (\code{method = "ML"}, Felsenstein 1973, Schluter et al. 1997) - the default, residual maximum likelihood (\code{method = "REML"}), or generalized least
+  squares (\code{method = "GLS"}, Martins and Hansen 1997, Garland T and Ives AR 2000).
+  \code{"GLS_ABM"} is based on Brownian motion with trend model. Both \code{"GLS_OU"} and \code{"GLS_OUS"} are based on Ornstein-Uhlenbeck model.
+  \code{"GLS_OU"} and \code{"GLS_OUS"} differs in the fact that \code{"GLS_OUS"} assume that the process starts from the optimum, while the root state has to be estimated for \code{"GLS_OU"}, which may rise some issues (see Royer-Carenzi and Didier, 2016). Users may provide the attractive strength parameter \code{alpha}, for these two models.
+  \code{"GLS_ABM"}, \code{"GLS_OU"} and \code{"GLS_OUS"} are all fitted by generalized least squares (Royer-Carenzi and Didier, 2016).
 }
 \value{
   an object of class \code{"ace"} with the following elements:
-
-  \item{ace}{the estimates of the ancestral character values.}
-  \item{CI95}{the estimated 95\% confidence intervals.}
-  \item{sigma2}{if \code{method = "ML"}, the maximum likelihood estimate
-    of the Brownian parameter.}
+  \item{ace}{the estimates of the
+    ancestral character values.}
+  \item{CI95}{the estimated 95\%
+    confidence intervals.}
+  \item{sigma2}{if
+    \code{method = "ML"}, the maximum likelihood estimate of the
+    Brownian parameter.}
   \item{loglik}{if \code{method = "ML"}, the maximum log-likelihood.}
+
 }
 \references{
   Felsenstein, J. (1973) Maximum likelihood estimation of evolutionary
   trees from continuous characters. \emph{American Journal of Human
-  Genetics}, \bold{25}, 471--492.
+    Genetics}, \bold{25}, 471--492.
 
   Garland T. and Ives A.R. (2000) Using the past to predict the present:
   confidence intervals for regression equations in phylogenetic
@@ -73,7 +60,7 @@ reconstruct(x, phyInit, method = "ML", alpha = NULL, CI = TRUE)
   Martins, E. P. and Hansen, T. F. (1997) Phylogenies and the
   comparative method: a general approach to incorporating phylogenetic
   information into the analysis of interspecific data. \emph{American
-    Naturalist}, \bold{149}, 646--667.
+  Naturalist}, \bold{149}, 646--667.
 
   Royer-Carenzi, M. and Didier, G. (2016) A comparison of ancestral
   state reconstruction methods for quantitative
@@ -89,7 +76,7 @@ reconstruct(x, phyInit, method = "ML", alpha = NULL, CI = TRUE)
 }
 \author{Manuela Royer-Carenzi, Gilles Didier}
 \seealso{
-  \code{\link{MPR}}, \code{\link{corBrownian}}, \code{\link{compar.ou}}
+  \code{\link{MPR}}, \code{\link{corBrownian}}, \code{\link{compar.ou}}}
 
   Reconstruction of ancestral sequences can be done with the package
   \pkg{phangorn} (see function \code{?ancestral.pml}).
@@ -108,3 +95,4 @@ reconstruct(x, bird.orders)
 reconstruct(x, bird.orders, method = "GLS_OUS", alpha=NULL)
 }
 \keyword{models}
+

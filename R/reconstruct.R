@@ -1,8 +1,8 @@
-## reconstruct.R (2016-07-15)
+## reconstruct.R (2022-06-02)
 
 ##   Ancestral Character Estimation
 
-## Copyright 2014-2016 Manuela Royer-Carenzi, Didier Gilles
+## Copyright 2014-2022 Manuela Royer-Carenzi, Didier Gilles
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -176,13 +176,13 @@ getREMLHessian <- function(value, arbre, sigma2) {
 
 
 
-glsBM <- function (phy, x, CI=TRUE) 
-{	
+glsBM <- function (phy, x, CI=TRUE)
+{
 	obj <- list()
 	nb.tip <- length(phy$tip.label)
 	nb.node <- phy$Nnode
 	nbTotN <- nb.tip+nb.node
-	sigmaMF <- 1	
+	sigmaMF <- 1
 	TsTemps <- dist.nodes(phy)
 	TempsRacine <- TsTemps[(nb.tip+1),]
 	IndicesMRCA <- mrca(phy, full=T)
@@ -201,7 +201,7 @@ glsBM <- function (phy, x, CI=TRUE)
         invVarLL <- solve(varLL)
 	UL <- rep(1, length=nb.tip)
 	UA <- rep(1, length=nb.node)
-	TL <- TempsRacine[1:nb.tip] 
+	TL <- TempsRacine[1:nb.tip]
 	TA <- TempsRacine[(nb.tip+1):(nb.tip+nb.node)]
 #
 	IVL_Z <- invVarLL %*% x
@@ -211,7 +211,7 @@ glsBM <- function (phy, x, CI=TRUE)
 	U_IVL_Z <- t(UL) %*% IVL_Z
 	DeltaU <- UA - varAL %*% IVL_U
 #
-	Racine_chap <- solve(U_IVL_U) %*% U_IVL_Z 
+	Racine_chap <- solve(U_IVL_U) %*% U_IVL_Z
 	Racine_chap <- as.numeric(Racine_chap)
 	Anc_chap <- Racine_chap * DeltaU + varAL %*% IVL_Z
 	Anc_chap <- as.vector(Anc_chap)
@@ -290,7 +290,7 @@ glsABM <- function (phy, x, CI=TRUE)
 		Num <- as.numeric(Num)
 		sigma2_chap <- Num / (nb.tip-2)
 		obj$sigma2 <- sigma2_chap
-                se <- sqrt((varAA - varAL %*% invVarLL %*% t(varAL))[cbind(1:nb.node, 
+                se <- sqrt((varAA - varAL %*% invVarLL %*% t(varAL))[cbind(1:nb.node,
                   1:nb.node)])
 		se <- se * sqrt(sigma2_chap)
                 tmp <- se * qt(0.025, df=nb.tip-2)
@@ -450,96 +450,97 @@ glsOUv2 <- function (phy, x, alpha, CI=TRUE)
 	obj
 }
 
-
-reconstruct <- function (x, phyInit, method = "ML", alpha = NULL, CI = TRUE) {
- if(!is.null(alpha)) {
-  if(alpha<=0)
-   stop("alpha has to be positive.")
- }
- if (!inherits(phyInit, "phylo"))
-  stop("object \"phy\" is not of class \"phylo\"")
- if (is.null(phyInit$edge.length))
-  stop("tree has no branch lengths")
- nN <- phyInit$Nnode
- nT <- length(x)
- switch(method,
-  ML = {
-   Intern <- glsBM(phy=phyInit, x=x, CI=F)$ace
-   Value <- c(x, Intern)
-   Hessian <- getMLHessian(Value, phyInit)
-   se <- sqrt(diag(solve(Hessian)))
-   se <- se[-1]
-   tmp <- se*qt(0.025, nN)
-   CI95 <- cbind(lower=Intern+tmp, upper=Intern-tmp)
-  },
-  REML={
-   minusLogLik <- function(sig2) {
-    if (sig2 < 0) return(1e+100)
-    V <- sig2 * vcv(phyInit)
-    distval <- stats::mahalanobis(x, center = mu, cov = V)
-    logdet <- sum(log(eigen(V, symmetric = TRUE, only.values = TRUE)$values))
-    (nT * log(2 * pi) + logdet + distval)/2
-   }
-   Intern <- glsBM(phy=phyInit, x=x, CI=F)$ace
-   Value <- c(x, Intern)
-   GM <- Intern[1]
-   mu <- rep(GM, nT)
-   out <- nlm(minusLogLik, 1, hessian = FALSE)
-   sigma2 <- out$estimate
-   Hessian <- getREMLHessian(Value, phyInit, sigma2)
-   se <- sqrt(diag(solve(Hessian)))
-   tmp <- se*qt(0.025, nN)
-   CI95 <- cbind(lower=Intern+tmp, upper=Intern-tmp)
-  },
-  GLS = {
-	result <- glsBM(phy=phyInit, x=x, CI=T)
-    Intern <- result$ace
-    CI95 <- result$CI95
-  },
-  GLS_ABM = {
-	result <- glsABM(phy=phyInit, x=x, CI=T)
-    Intern <- result$ace
-    CI95 <- result$CI95
-  },
-  GLS_OUS = {
-	if(is.null(alpha)) {
-		funOpt1 <- function(alpha)
-		{
-			-glsOUv1(phy=phyInit, x=x, alpha, CI=F)$LLik
-		}
-		calOp <- optim(par=0.25, fn=funOpt1, method="Brent", lower=0.001, upper=1)
-		if (calOp$convergence == 0)
-		{
-			alpha <- calOp$par
-		} else {
-			stop("Estimation error for alpha")
-		}
-	}
-	result <- glsOUv1(phy=phyInit, x=x, alpha=alpha, CI=T)
-    Intern <- result$ace
-    CI95 <- result$CI95
-  },
-  GLS_OU = {
-	if(is.null(alpha)) {
-		funOpt2 <- function(alpha)
-		{
-			-glsOUv2(phy=phyInit, x=x, alpha, CI=F)$LLik
-		}
-		calOp <- optim(par=0.25, fn=funOpt2, method="Brent", lower=0.001, upper=1)
-		if (calOp$convergence == 0)
-		{
-			alpha <- calOp$par
-		} else {
-			stop("Estimation error for alpha")
-		}
-	}
-	result <- glsOUv2(phy=phyInit, x=x, alpha=alpha, CI=T)
-    Intern <- result$ace
-    CI95 <- result$CI95
+reconstruct <- function (x, phyInit, method = "ML", alpha = NULL, low_alpha=0.0001, up_alpha=1, CI = TRUE) {
+  if(!is.null(alpha)) {
+    if(alpha<=0)
+      stop("alpha has to be positive.")
   }
- )
-if (CI==TRUE)
- list(ace=Intern, CI95=CI95)
-else
-  list(ace=Intern)
+  if(up_alpha<=0)
+    stop("alpha has to be positive.")
+  if (!inherits(phyInit, "phylo"))
+    stop("object \"phy\" is not of class \"phylo\"")
+  if (is.null(phyInit$edge.length))
+    stop("tree has no branch lengths")
+  nN <- phyInit$Nnode
+  nT <- length(x)
+  switch(method,
+         ML = {
+           Intern <- glsBM(phy=phyInit, x=x, CI=F)$ace
+           Value <- c(x, Intern)
+           Hessian <- getMLHessian(Value, phyInit)
+           se <- sqrt(diag(solve(Hessian)))
+           se <- se[-1]
+           tmp <- se*qt(0.025, nN)
+           CI95 <- cbind(lower=Intern+tmp, upper=Intern-tmp)
+         },
+         REML={
+           minusLogLik <- function(sig2) {
+             if (sig2 < 0) return(1e+100)
+             V <- sig2 * vcv(phyInit)
+             distval <- stats::mahalanobis(x, center = mu, cov = V)
+             logdet <- sum(log(eigen(V, symmetric = TRUE, only.values = TRUE)$values))
+             (nT * log(2 * pi) + logdet + distval)/2
+           }
+           Intern <- glsBM(phy=phyInit, x=x, CI=F)$ace
+           Value <- c(x, Intern)
+           GM <- Intern[1]
+           mu <- rep(GM, nT)
+           out <- nlm(minusLogLik, 1, hessian = FALSE)
+           sigma2 <- out$estimate
+           Hessian <- getREMLHessian(Value, phyInit, sigma2)
+           se <- sqrt(diag(solve(Hessian)))
+           tmp <- se*qt(0.025, nN)
+           CI95 <- cbind(lower=Intern+tmp, upper=Intern-tmp)
+         },
+         GLS = {
+           result <- glsBM(phy=phyInit, x=x, CI=T)
+           Intern <- result$ace
+           CI95 <- result$CI95
+         },
+         GLS_ABM = {
+           result <- glsABM(phy=phyInit, x=x, CI=T)
+           Intern <- result$ace
+           CI95 <- result$CI95
+         },
+         GLS_OUS = {
+           if(is.null(alpha)) {
+             funOpt1 <- function(alpha)
+             {
+               -glsOUv1(phy=phyInit, x=x, alpha, CI=F)$LLik
+             }
+             calOp <- optim(par=0.25, fn=funOpt1, method="Brent", lower=low_alpha, upper=up_alpha)
+             if (calOp$convergence == 0)
+             {
+               alpha <- calOp$par
+             } else {
+               stop("Estimation error for alpha")
+             }
+           }
+           result <- glsOUv1(phy=phyInit, x=x, alpha=alpha, CI=T)
+           Intern <- result$ace
+           CI95 <- result$CI95
+         },
+         GLS_OU = {
+           if(is.null(alpha)) {
+             funOpt2 <- function(alpha)
+             {
+               -glsOUv2(phy=phyInit, x=x, alpha, CI=F)$LLik
+             }
+             calOp <- optim(par=0.25, fn=funOpt2, method="Brent", lower=low_alpha, upper=up_alpha)
+             if (calOp$convergence == 0)
+             {
+               alpha <- calOp$par
+             } else {
+               stop("Estimation error for alpha")
+             }
+           }
+           result <- glsOUv2(phy=phyInit, x=x, alpha=alpha, CI=T)
+           Intern <- result$ace
+           CI95 <- result$CI95
+         }
+  )
+  if (CI==TRUE)
+    list(ace=Intern, CI95=CI95)
+  else
+    list(ace=Intern)
 }
