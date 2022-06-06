@@ -67,7 +67,7 @@ as.phylo.hclust <- function(x, ...)
     }
     if (is.null(x$labels))
         x$labels <- as.character(1:(N + 1))
-    obj <- list(edge = edge, edge.length = edge.length / 2,
+    obj <- list(edge = edge, edge.length = edge.length,
                 tip.label = x$labels, Nnode = N)
     class(obj) <- "phylo"
     reorder(obj)
@@ -123,7 +123,7 @@ as.hclust.phylo <- function(x, ...)
         m[match(oldnodes, m)] <- 1:(N - 1)
         names(bt) <- NULL
     }
-    obj <- list(merge = m, height = 2*bt, order = order, labels = x$tip.label,
+    obj <- list(merge = m, height = bt, order = order, labels = x$tip.label,
                 call = match.call(), method = "unknown")
     class(obj) <- "hclust"
     obj
