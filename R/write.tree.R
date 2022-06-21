@@ -74,15 +74,15 @@ write.tree <-
     n <- length(phy$tip.label)
 
     ## terminal branches:
-    terms <- phy$edge[, 2] <= n
-    TERMS <- phy$tip.label[phy$edge[terms, 2]]
+    terms <- match(seq_len(n), phy$edge[, 2])
+    TERMS <- phy$tip.label
     if (brl) TERMS <- paste0(TERMS, sprintf(f.d, phy$edge.length[terms]))
 
     ## internal branches, including root edge:
     INTS <- rep(")", phy$Nnode)
     if (nodelab) INTS <- paste0(INTS, phy$node.label)
     if (brl) {
-        tmp <- phy$edge.length[!terms][order(phy$edge[!terms, 2])]
+        tmp <- phy$edge.length[-terms][order(phy$edge[-terms, 2])]
         tmp <- c("", sprintf(f.d, tmp))
         if (!is.null(phy$root.edge)) tmp[1L] <- sprintf(f.d, phy$root.edge)
         INTS <- paste0(INTS, tmp)
