@@ -12,12 +12,12 @@
   process (OU, i.e. Brownian with an attractive optimum).
 }
 \usage{
-reconstruct(x, phy, method = "ML", alpha = NULL,
+reconstruct(x, phyInit, method = "ML", alpha = NULL,
             low_alpha = 0.0001, up_alpha = 1, CI = TRUE)
 }
 \arguments{
   \item{x}{a numerical vector.}
-  \item{phy}{an object of class \code{"phylo"}.}
+  \item{phyInit}{an object of class \code{"phylo"}.}
   \item{method}{a character specifying the method used for
     estimation. Six choices are possible: \code{"ML"}, \code{"REML"}, \code{"GLS"}, \code{"GLS_ABM"}, \code{"GLS_OU"} or \code{"GLS_OUS"}.}
   \item{alpha}{a numerical value which accounts for the attractive strength parameter of \code{"GLS_OU"} or \code{"GLS_OUS"} (used only in these cases). If alpha = NULL (the default), then it is estimated by maximum likelihood using \code{optim}, with \code{low_alpha} (resp. \code{up_alpha}) as lower value (resp. upper value), which may lead to convergence issue.}
@@ -76,7 +76,7 @@ reconstruct(x, phy, method = "ML", alpha = NULL,
 }
 \author{Manuela Royer-Carenzi, Gilles Didier}
 \seealso{
-  \code{\link{MPR}}, \code{\link{corBrownian}}, \code{\link{compar.ou}}}
+  \code{\link{MPR}}, \code{\link{corBrownian}}, \code{\link{compar.ou}}
 
   Reconstruction of ancestral sequences can be done with the package
   \pkg{phangorn} (see function \code{?ancestral.pml}).

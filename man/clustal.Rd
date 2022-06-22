@@ -2,7 +2,10 @@
 \alias{clustal}
 \alias{clustalomega}
 \alias{muscle}
+\alias{muscle5}
 \alias{tcoffee}
+\alias{efastats}
+\alias{letterconf}
 \title{Multiple Sequence Alignment with External Applications}
 \description{
   These functions call their respective program from \R to align a set
@@ -10,6 +13,14 @@
   \code{"AAbin"}. The application(s) must be installed seperately and it
   is highly recommended to do this so that the executables are in a
   directory located on the PATH of the system.
+
+  This version includes an experimental version of \code{muscle5} which
+  calls MUSCLE5 (see the link to the documentation in the References
+  below); \code{muscle} still calls MUSCLE version 3. Note that the
+  executable of MUSCLE5 is also named `muscle' by the default
+  compilation setting.
+
+  The functions \code{efastats} and \code{letterconf} require MUSCLE5.
 }
 \usage{
 clustal(x, y, guide.tree, pw.gapopen = 10, pw.gapext = 0.1,
@@ -19,8 +30,13 @@ clustalomega(x, y, guide.tree, exec = NULL,MoreArgs = "",
               quiet = TRUE, original.ordering = TRUE, file)
 muscle(x, y, guide.tree, exec, MoreArgs = "",
         quiet = TRUE, original.ordering = TRUE, file)
+muscle5(x, exec = "muscle", MoreArgs = "", quiet = FALSE,
+        file, super5 = FALSE, mc.cores = 1)
 tcoffee(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE,
         original.ordering = TRUE)
+
+efastats(X, exec = "muscle", quiet = FALSE)
+letterconf(X, exec = "muscle")
 }
 \arguments{
   \item{x}{an object of class \code{"DNAbin"} or \code{"AAbin"} (can be
@@ -43,6 +59,10 @@ tcoffee(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE,
     default).}
   \item{file}{a file with its path if results should be stored (can be
     missing).}
+  \item{super5}{a logical value. By default, the PPP algorithm is used.}
+  \item{mc.cores}{the number of cores to be used by MUSCLE5.}
+  \item{X}{a list with several alignments of the same sequences with
+    all with the same row order.}
 }
 \details{
   It is highly recommended to install the executables properly so that
@@ -70,6 +90,10 @@ tcoffee(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE,
 \value{
   an object of class \code{"DNAbin"} or \code{"AAbin"} with the aligned
   sequences.
+
+  \code{efastats} returns a data frame.
+
+  \code{letterconf} opens the default Web brower.
 }
 \references{
   Chenna, R., Sugawara, H., Koike, T., Lopez, R., Gibson, T. J.,
@@ -93,6 +117,8 @@ tcoffee(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE,
   high-quality protein multiple sequence alignments using Clustal
   Omega. \emph{Molecular Systems Biology}, \bold{7}, 539.
   \url{http://www.clustal.org/}
+
+  \url{https://drive5.com/muscle5/}
 }
 \author{Emmanuel Paradis, Franz Krah}
 \seealso{

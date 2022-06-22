@@ -1,4 +1,4 @@
-## PGLS.R (2022-05-02)
+## PGLS.R (2022-06-22)
 
 ##   Phylogenetic Generalized Least Squares
 
@@ -56,11 +56,11 @@ Initialize.corPhyl <- function(object, data, ...)
       warning("No covariate specified, species will be taken as ordered in the data frame. To avoid this message, specify a covariate containing the species names with the 'form' argument.")
     }
     ## Obtaining the group information, if any
-    if (!is.null(getGroupsFormula(form))) {
+    if (is.null(getGroupsFormula(form))) {
+        attr(object, "Dim") <- Dim(object, as.factor(rep(1, nrow(data))))
+    } else { # no groups
         attr(object, "groups") <- getGroups(object, form, data = data)
         attr(object, "Dim") <- Dim(object, attr(object, "groups"))
-    } else { # no groups
-        attr(object, "Dim") <- Dim(object, as.factor(rep(1, nrow(data))))
     }
     ## Obtaining the covariate(s)
     attr(object, "covariate") <- getCovariate(object, data = data)
@@ -76,9 +76,10 @@ corMatrix.corBrownian <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        covariate <- as.character(covariate)
         tree <- attr(object, "tree")
         mat <- vcv.phylo(tree, corr = corr)
+        if (formula(object) == ~1) return(mat) # added by EP (2022-06-22)
+        covariate <- as.character(covariate)
         mat[covariate, covariate]
     }
 }
@@ -91,11 +92,12 @@ corMatrix.corMartins <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        covariate <- as.character(covariate)
         tree <- attr(object, "tree")
         dist <- cophenetic.phylo(tree)
         mat <- exp(-object[1] * dist)
         if (corr) mat <- cov2cor(mat)
+        if (formula(object) == ~1) return(mat) # added by EP (2022-06-22)
+        covariate <- as.character(covariate)
         mat[covariate, covariate]
     }
 }
@@ -108,10 +110,11 @@ corMatrix.corGrafen <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        covariate <- as.character(covariate)
         tree <- compute.brlen(attr(object, "tree"),
                               method = "Grafen", power = exp(object[1]))
         mat <- vcv.phylo(tree, corr = corr)
+        if (formula(object) == ~1) return(mat) # added by EP (2022-06-22)
+        covariate <- as.character(covariate)
         mat[covariate, covariate]
     }
 }
@@ -207,13 +210,13 @@ corMatrix.corPagel <-
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        covariate <- as.character(covariate)
         mat <- vcv.phylo(attr(object, "tree"), corr = corr)
-        mat <- mat[covariate, covariate]
         tmp <- diag(mat)
         mat <- object[1]*mat
         diag(mat) <- tmp
-        mat
+        if (formula(object) == ~1) return(mat) # added by EP (2022-06-22)
+        covariate <- as.character(covariate)
+        mat[covariate, covariate]
     }
 }
 
@@ -250,11 +253,12 @@ probably need to set 'fixed = TRUE' in corBlomberg().")
     if (data.class(covariate) == "list") {
         as.list(lapply(covariate, function(el) corMatrix(object, covariate = el)))
     } else {
-        covariate <- as.character(covariate)
         phy <- attr(object, "tree")
         d <- (dist.nodes(phy)[length(phy$tip.label) + 1, ])^(1/object[1])
         phy$edge.length <- d[phy$edge[, 2]] - d[phy$edge[, 1]]
         mat <- vcv.phylo(phy, corr = corr)
+        if (formula(object) == ~1) return(mat) # added by EP (2022-06-22)
+        covariate <- as.character(covariate)
         mat[covariate, covariate]
     }
 }

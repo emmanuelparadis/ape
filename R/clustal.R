@@ -1,8 +1,8 @@
-## clustal.R (2018-03-28)
+## clustal.R (2022-06-22)
 
 ##   Multiple Sequence Alignment with External Applications
 
-## Copyright 2011-2018 Emmanuel Paradis, 2018 Franz Krah
+## Copyright 2011-2022 Emmanuel Paradis, 2018 Franz Krah
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -276,4 +276,89 @@ tcoffee <- function(x, exec = "t_coffee", MoreArgs = "", quiet = TRUE, original.
     if (original.ordering) res <- res[labels(x), ]
     rownames(res) <- labels.bak
     res
+}
+
+## not called so far
+##.getMUSCLEversion <- function(exec)
+##{
+##    o <- system2(exec, "-version", stdout = TRUE)
+##    ver <- 0L
+##    if (any(grepl("3\\.", o))) ver <- 3L
+##    if (any(grepl("5\\.", o))) ver <- 5L
+##    ver
+##}
+
+.write.efa <- function(x, file)
+{
+    N <- length(x)
+    HDR <- names(x)
+    if (is.null(HDR)) HDR <- paste("alignment", 1:N, sep = "_")
+    for (i in 1:N) {
+        hdr <- paste0("<", HDR[i])
+        write.FASTA(x[[i]], file, hdr, TRUE)
+    }
+}
+
+muscle5 <- function(x, exec = "muscle", MoreArgs = "", quiet = FALSE,
+                    file, super5 = FALSE, mc.cores = 1)
+{
+    if (missing(x)) {
+        out <- system(exec)
+        if (out == 127) stop(.errorAlignment(exec, "MUSCLE"))
+        return(invisible(NULL))
+    }
+    type <- if (inherits(x, "DNAbin")) "DNA" else "AA"
+    if (type == "AA" && !inherits(x, "AAbin"))
+        stop("'x' should be of class \"DNAbin\" or \"AAbin\"")
+
+    ## Write input sequences x to file
+    x <- as.list(x)
+    labels.bak <- names(x)
+    names(x) <- paste0("Id", 1:length(x))
+    ifl <- tempfile()
+    ofl <- tempfile()
+    on.exit(unlink(c(ifl, ofl)))
+    write.FASTA(x, ifl)
+
+    args <- paste(ifelse(super5, "-super5", "-align"), ifl,
+                  "-output", ofl, "-threads", mc.cores)
+    if (MoreArgs != "") args <- paste(args, MoreArgs)
+    if (!quiet) quiet <- ""
+    o <- system2(exec, args, stdout = quiet, stderr = quiet)
+    res <- read.FASTA(ofl, type)
+    ## original.ordering is always TRUE
+    res <- res[labels(x)]
+    names(res) <- labels.bak
+    if (missing(file)) return(as.matrix(res)) else write.FASTA(res, file)
+}
+
+efastats <- function(X, exec = "muscle", quiet = FALSE)
+{
+    N <- length(X)
+    ifl <- tempfile()
+    ofl <- tempfile()
+    on.exit(unlink(c(ifl, ofl)))
+    .write.efa(X, ifl)
+    args <- paste("-efastats", ifl, "-log", ofl)
+    o <- system2(exec, args, stdout = TRUE, stderr = TRUE)
+    if (!quiet)
+        cat(scan(ofl, what = "", n = 1L, skip = 5L + N,
+                 sep = "\n", quiet = TRUE),
+            sep = "\n")
+    read.table(ofl, header = TRUE, skip = 4, nrows = N)
+}
+
+letterconf <- function(X, exec = "muscle")
+{
+    N <- length(X)
+    ifl <- tempfile()
+    rfl <- tempfile()
+    ofl <- tempfile()
+    hfl <- tempfile()
+    on.exit(unlink(c(ifl, rfl, ofl)))
+    .write.efa(X, ifl)
+    write.FASTA(X[[1]], rfl)
+    args <- paste("-letterconf", ifl, "-ref", rfl, "-output", ofl, "-html", hfl)
+    o <- system2(exec, args, stdout = TRUE, stderr = TRUE)
+    browseURL(hfl)
 }
