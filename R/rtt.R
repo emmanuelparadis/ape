@@ -7,18 +7,47 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
+# helper functions extracted from summary.lm
+r.squared <- function(x){
+    r <- x$residuals
+    f <- x$fitted.values
+    mss <- sum((f - mean(f))^2)
+    rss <- sum(r^2)
+    mss/(mss + rss)
+}
+
+
+sigmasq <- function(x){
+    r <- x$residuals
+    rss <- sum(r^2) / x$df.residual
+}
+
+
 rtt <- function (t, tip.dates, ncpu = 1, objective = "correlation",
     opt.tol = .Machine$double.eps^0.25)  {
     if (objective == "correlation")
-        objective <- function(x, y) cor.test(y, x)$estimate
+        objective <- function(x, y){
+            # cor.test(y, x)$estimate
+            cor(y, x)
+        }
     else if (objective == "rsquared")
-        objective <- function(x, y) summary(lm(y ~ x))$r.squared
-    else if (objective == "rms")
-        objective <- function(x, y) -summary(lm(y ~ x))$sigma^2
+        objective <- function(x, y) {
+            # summary(lm(y ~ x))$r.squared
+            X[,2] <- x
+            lm.fit(X, y) |> r.squared()
+        }
+    else if (objective == "rms"){
+        objective <- function(x, y){
+            # -summary(lm(y ~ x))$sigma^2
+            X[,2] <- x
+            - sigmasq( lm.fit(X, y) )
+        }
+    }
     else stop("objective must be one of \"correlation\", \"rsquared\", or \"rms\"")
 
     ut <- unroot(t)
-    dist <- dist.nodes(ut)[, 1:(ut$Nnode + 2)]
+    dist <- dist.nodes(ut)[, seq_len(Ntip(ut))] # allow multifurcations
+    X <- matrix(1, Ntip(ut), 2)
 
     f <- function (x, parent, child) {
         edge.dist <- x * dist[parent, ] + (1 - x) * dist[child,]
