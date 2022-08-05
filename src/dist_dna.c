@@ -568,7 +568,7 @@ void distDNA_T92_pairdel(unsigned char *x, int n, int s, double *d,
         Nd++;\
         if (AdenineAndGuanine(x[s1], x[s2])) {\
             Ns1++;\
-    	continue;\
+    	    continue;\
         }\
         if (CytosineAndThymine(x[s1], x[s2])) Ns2++;\
     }
@@ -580,31 +580,46 @@ void distDNA_T92_pairdel(unsigned char *x, int n, int s, double *d,
     w1 = 1 - P1/k1 - Q/(2*gR);\
     w2 = 1 - P2/k2 - Q/(2*gY);\
     w3 = 1 - Q/(2*gR*gY);\
-    if (gamma) {\
-        k4 = 2*(BF[0]*BF[2] + BF[1]*BF[3] + gR*gY);\
-    	b = -1 / alpha;\
-    	c1 = pow(w1, b);\
-    	c2 = pow(w2, b);\
-    	c3 = pow(w3, b);\
-    	c4 = k1*c1/(2*gR) + k2*c2/(2*gY) + k3*c3/(2*gR*gY);\
-    	d[target] = alpha * (k1*pow(w1, b) + k2*pow(w2, b) + k3*pow(w3, b) - k4);\
-    } else {\
-        k4 = 2*((BF[0]*BF[0] + BF[2]*BF[2])/(2*gR*gR) + (BF[2]*BF[2] + BF[3]*BF[3])/(2*gY*gY));\
-    	c1 = 1/w1;\
-    	c2 = 1/w2;\
-    	c3 = 1/w3;\
-    	c4 = k1 * c1/(2 * gR) + k2 * c2/(2 * gY) + k4 * c3;\
-    	d[target] = -k1*log(w1) - k2*log(w2) - k3*log(w3);\
+    if (variance) {\
+        gA2 = BF[0]*BF[0];\
+	gC2 = BF[1]*BF[1];\
+	gG2 = BF[2]*BF[2];\
+	gT2 = BF[3]*BF[3];\
+	gAgG = BF[0]*BF[2];\
+	gCgT = BF[1]*BF[3];\
+	gR2 = gR*gR;\
+	gY2 = gY*gY;\
     }\
-    if (variance)\
-      var[target] = (c1*c1*P1 + c2*c2*P2 + c4*c4*Q - pow(c1*P1 + c2*P2 + c4*Q, 2))/L;
+    if (gamma) {\
+        b = -1/alpha;\
+	k4 = 2*(BF[0]*BF[2] + BF[1]*BF[3] + gR*gY);\
+    	d[target] = alpha * (k1*pow(w1, b) + k2*pow(w2, b) + k3*pow(w3, b) - k4);\
+	if (variance) {\
+	    b = -(1 + 1/alpha);\
+	    c1 = pow(w1, b);\
+	    c2 = pow(w2, b);\
+    	    c3 = gAgG*c1/gR2 + gCgT*c2/gY2 + ((gA2 + gG2)/(2*gR2) + ((gT2 + gC2)/(2*gY2))) * pow(1 - Q/(2*gR*gY), b);\
+	    k4 = c1*P1 + c2*P2 + c3*Q;\
+	    var[target] = (c1*c1*P1 + c2*c2*P2 + c3*c3*Q - k4*k4)/L;\
+	}\
+    } else {\
+    	d[target] = -k1*log(w1) - k2*log(w2) - k3*log(w3);\
+	if (variance) {\
+	    c1 = 1/w1;\
+	    c2 = 1/w2;\
+	    c3 = 2*gA2*gG2/(gR*(2*gAgG*gR - gR2*P1 - gAgG*Q)) + 2*gC2*gT2/(gY*(2*gCgT*gY - gY2*P2 - gCgT*Q)) + (gR2*(gT2 + gC2) + gY2*(gA2 + gG2))/(2*gR2*gY2 - gR*gY*Q);\
+	    k4 = c1*P1 + c2*P2 + c3*Q;\
+	    var[target] = (c1*c1*P1 + c2*c2*P2 + c3*c3*Q - k4*k4)/L;\
+	}\
+    }
 
 void distDNA_TN93(unsigned char *x, int n, int s, double *d,
 		  double *BF, int variance, double *var,
 		  int gamma, double alpha)
 {
     int i1, i2, Nd, Ns1, Ns2, L, target, s1, s2;
-    double P1, P2, Q, gR, gY, k1, k2, k3, k4, w1, w2, w3, c1, c2, c3, c4, b;
+    double P1, P2, Q, gR, gY, k1, k2, k3, k4, w1, w2, w3, c1, c2, c3, b;
+    double gA2, gC2, gG2, gT2, gAgG, gCgT, gR2, gY2;
 
     L = s;
 
@@ -628,7 +643,8 @@ void distDNA_TN93_pairdel(unsigned char *x, int n, int s, double *d,
 			  int gamma, double alpha)
 {
     int i1, i2, Nd, Ns1, Ns2, L, target, s1, s2;
-    double P1, P2, Q, gR, gY, k1, k2, k3, k4, w1, w2, w3, c1, c2, c3, c4, b;
+    double P1, P2, Q, gR, gY, k1, k2, k3, k4, w1, w2, w3, c1, c2, c3, b;
+    double gA2, gC2, gG2, gT2, gAgG, gCgT, gR2, gY2;
 
     PREPARE_BF_TN93
 
