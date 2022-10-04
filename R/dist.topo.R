@@ -420,6 +420,10 @@ consensus <- function(..., p = 1, check.labels = TRUE, rooted = FALSE)
     ntree <- length(obj)
     ## Get all observed partitions and their frequencies:
     pp <- prop.part(obj, check.labels = FALSE)
+    if (!rooted) {
+        pp <- postprocess.prop.part(pp, "SHORTwise")
+        pp[[1]] <- seq_along(labels)
+    }
     ## Drop the partitions whose frequency is less than 'p':
     if (p == 0.5) p <- 0.5000001 # avoid incompatible splits
     bs <- attr(pp, "number")
@@ -440,6 +444,10 @@ consensus <- function(..., p = 1, check.labels = TRUE, rooted = FALSE)
         pos <- 1L
         foo(1, nextnode)
     }
-    structure(list(edge = edge, tip.label = labels, node.label = bs/ntree,
-              Nnode = m), class = "phylo")
+    res <- structure(list(edge = edge, tip.label = labels,
+                          Nnode = m), class = "phylo")
+    res <- reorder(res)
+    node.label <- prop.clades(res, obj, rooted=rooted)/ntree
+    res$node.label <- node.label
+    res
 }
