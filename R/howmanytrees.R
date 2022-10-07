@@ -1,8 +1,8 @@
-## howmanytrees.R (2020-11-13)
+## howmanytrees.R (2022-10-07)
 
 ##   Calculate Numbers of Phylogenetic Trees
 
-## Copyright 2004-2020 Emmanuel Paradis
+## Copyright 2004-2022 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -12,11 +12,18 @@ LargeNumber <- function(a, b)
     c <- b * log10(a)
     n <- floor(c)
     x <- 10^(c - n)
-    ## cat(a, "^", b, " ~= ", x, " * 10^", n, "\n", sep = "")
     structure(c(x = x, n = n), class = "LargeNumber")
 }
-print.LargeNumber <- function(x, ...)
-    cat("approximately ", x["x"], " * 10^", x["n"], "\n", sep = "")
+
+print.LargeNumber <- function(x, latex = FALSE, digits = 1, ...)
+{
+    if (latex) {
+        cat("$", a, "^{", b, "} \\approx ", round(x, digits),
+            " \\times 10^{", n, "}$\n", sep = "")
+    } else {
+        cat("approximately ", x["x"], " * 10^", x["n"], "\n", sep = "")
+    }
+}
 
 howmanytrees <- function(n, rooted = TRUE, binary = TRUE,
                          labeled = TRUE, detail = FALSE)

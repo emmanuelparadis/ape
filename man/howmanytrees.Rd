@@ -14,7 +14,7 @@
 howmanytrees(n, rooted = TRUE, binary = TRUE,
              labeled = TRUE, detail = FALSE)
 LargeNumber(a, b)
-\method{print}{LargeNumber}(x, ...)
+\method{print}{LargeNumber}(x, latex = FALSE, digits = 1, ...)
 }
 \arguments{
   \item{n}{a positive numeric integer giving the number of tips.}
@@ -30,6 +30,10 @@ LargeNumber(a, b)
     rooted, unlabeled trees (aka tree shapes).}
   \item{a, b}{two numbers.}
   \item{x}{an object of class \code{"LargeNumber"}.}
+  \item{latex}{a logical value specifying whether to print the number in
+    LaTeX code in addition to return it.}
+  \item{digits}{the number of digits printed for the real part of the
+    large number (unused if \code{latex = FALSE}).}
   \item{\dots}{(unused).}
 }
 \details{
