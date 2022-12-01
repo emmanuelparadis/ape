@@ -12,10 +12,14 @@
   from a given node, and deletes all the other tips.
 }
 \usage{
-drop.tip(phy, tip, trim.internal = TRUE, subtree = FALSE,
+drop.tip(phy, tip, ...)
+\method{drop.tip}{phylo}(phy, tip, trim.internal = TRUE, subtree = FALSE,
          root.edge = 0, rooted = is.rooted(phy), collapse.singles = TRUE,
-         interactive = FALSE)
-keep.tip(phy, tip)
+         interactive = FALSE, ...)
+\method{drop.tip}{multiPhylo}(phy, tip, ...)
+keep.tip(phy, tip, ...)
+\method{keep.tip}{phylo}(phy, tip, ...)
+\method{keep.tip}{multiPhylo}(phy, tip, ...)
 extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
               interactive = FALSE)
 }

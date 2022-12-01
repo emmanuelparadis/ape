@@ -30,7 +30,8 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        di2multi.multiPhylo, di2multi.phylo, dist.aa, dist.dna,
        dist.gene, dist.nodes, dist.topo, diversi.gof, diversi.time,
        diversity.contrast.test, DNAbin2indel, dnds,
-       drawSupportOnEdges, drop.fossil, drop.tip, dyule, edgelabels,
+       drawSupportOnEdges, drop.fossil, drop.tip, drop.tip.phylo,
+       drop.tip.multiPhylo, dyule, edgelabels,
        edges, editFileExtensions, efastats, estimate.dates,
        estimate.mu, evonet, ewLasso, extract.clade, extract.popsize,
        fancyarrows, fastme.bal, fastme.ols, find.skyline.epsilon,
@@ -41,6 +42,7 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        is.compatible.bitsplits, is.monophyletic, is.rooted,
        is.rooted.multiPhylo, is.rooted.phylo, is.ultrametric,
        is.ultrametric.multiPhylo, is.ultrametric.phylo, keep.tip,
+       keep.tip.phylo, keep.tip.multiPhylo,
        kronoviz, label2table, labels.DNAbin, ladderize, LargeNumber,
        latag2n, letterconf, lmorigin, LTT, ltt.coplot, ltt.lines,
        ltt.plot, ltt.plot.coords, makeChronosCalib, makeLabel,
@@ -168,9 +170,11 @@ S3method("$", multiPhylo)
 S3method("$<-", multiPhylo)
 S3method(c, multiPhylo)
 S3method(di2multi, multiPhylo)
+S3method(drop.tip, multiPhylo)
 S3method(is.binary, multiPhylo)
 S3method(is.rooted, multiPhylo)
 S3method(is.ultrametric, multiPhylo)
+S3method(keep.tip, multiPhylo)
 S3method(makeLabel, multiPhylo)
 S3method(multi2di, multiPhylo)
 S3method(Nedge, multiPhylo)
@@ -193,10 +197,12 @@ S3method(c, phylo)
 S3method(cophenetic, phylo)
 S3method(degree, phylo)
 S3method(di2multi, phylo)
+S3method(drop.tip, phylo)
 S3method(identify, phylo)
 S3method(is.binary, phylo)
 S3method(is.rooted, phylo)
 S3method(is.ultrametric, phylo)
+S3method(keep.tip, phylo)
 S3method(makeLabel, phylo)
 S3method(multi2di, phylo)
 S3method(Nedge, phylo)
