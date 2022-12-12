@@ -271,6 +271,11 @@ drop.tip.phylo <-
 
 
 drop.tip.multiPhylo <- function(phy, tip, ...){
+    if (hasArg(interactive))
+        interactive <- list(...)$interactive
+    else interactive <- FALSE
+    if (interactive)
+        stop("interactive=TRUE does not work for drop.tip.multiPhylo.")
     if(is.null(attr(phy, "TipLabel"))){
         tmp <- try(.compressTipLabel(phy), TRUE)
         if(!inherits(tmp, "try-error")) phy <- tmp
