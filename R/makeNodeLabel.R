@@ -7,6 +7,12 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
+# relabel derived from dist.topo.R inside .compressTipLabel,
+# with an extra argument.
+# makeNodeLabel is faster:
+# 1. use relabel to avoid calling sort inside the loop
+# 2. use digest package to avoid writing files files as with md5sum
+# the node labels are the same
 makeNodeLabel <- function(phy, method = "number", prefix = "Node",
                           nodeList = list(), ...)
 {
@@ -17,18 +23,16 @@ makeNodeLabel <- function(phy, method = "number", prefix = "Node",
         phy$node.label <- paste(prefix, 1:phy$Nnode, sep = "")
 
     if ("md5sum" %in% method) {
+        phy <- relabel(phy, sort(phy$tip.label))
         nl <- character(phy$Nnode)
         pp <- prop.part(phy, check.labels = FALSE)
         labs <- attr(pp, "labels")
-        fl <- tempfile()
         for (i in seq_len(phy$Nnode)) {
-            cat(sort(labs[pp[[i]]]), sep = "\n", file = fl)
-            nl[i] <- tools::md5sum(fl)
+            tmp <- paste0(labs[pp[[i]]], sep="\n", collapse = "")
+            nl[i] <- digest(tmp, algo="md5", serialize = FALSE)
         }
-        unlink(fl)
         phy$node.label <- nl
     }
-
     if ("user" %in% method) {
         if (is.null(phy$node.label))
             phy$node.label <- character(phy$Nnode)
@@ -58,3 +62,23 @@ makeNodeLabel <- function(phy, method = "number", prefix = "Node",
     }
     phy
 }
+
+
+relabel <- function (y, ref, tip.label=TRUE) {
+    label <- y$tip.label
+    if (!identical(label, ref)) {
+        if (length(label) != length(ref))
+            stop("one tree has a different number of tips")
+        ilab <- match(label, ref)
+        if (any(is.na(ilab)))
+            stop("one tree has different tip labels")
+        ie <- match(seq_len(Ntip(y)), y$edge[, 2])
+        y$edge[ie, 2] <- ilab
+    }
+    if(tip.label) y$tip.label <- ref
+    else  y$tip.label <- NULL
+    y
+}
+
+
+

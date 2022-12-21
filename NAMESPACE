@@ -79,6 +79,7 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        zoom, node_depth, node_depth_edgelength, node_height,
        node_height_clado, seq_root2tip)
 
+importFrom(digest, digest)
 importFrom(graphics, abline, arrows, axTicks, axis, barplot, boxplot, bxp,
            close.screen, identify, image, image.default, layout, legend,
            lines, locator, mtext, par, plot, plot.default, points, polygon,
