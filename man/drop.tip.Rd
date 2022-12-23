@@ -1,6 +1,10 @@
 \name{drop.tip}
 \alias{drop.tip}
+\alias{drop.tip.phylo}
+\alias{drop.tip.multiPhylo}
 \alias{keep.tip}
+\alias{keep.tip.phylo}
+\alias{keep.tip.multiPhylo}
 \alias{extract.clade}
 \title{Remove Tips in a Phylogenetic Tree}
 \description{
@@ -12,10 +16,16 @@
   from a given node, and deletes all the other tips.
 }
 \usage{
-drop.tip(phy, tip, trim.internal = TRUE, subtree = FALSE,
+drop.tip(phy, tip, \dots)
+\method{drop.tip}{phylo}(phy, tip, trim.internal = TRUE, subtree = FALSE,
          root.edge = 0, rooted = is.rooted(phy), collapse.singles = TRUE,
-         interactive = FALSE)
+         interactive = FALSE, \dots)
+\method{drop.tip}{multiPhylo}(phy, tip, \dots)
+
 keep.tip(phy, tip)
+\method{keep.tip}{phylo}(phy, tip)
+\method{keep.tip}{multiPhylo}(phy, tip)
+
 extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
               interactive = FALSE)
 }
@@ -39,6 +49,7 @@ extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
   \item{node}{a node number or label.}
   \item{interactive}{if \code{TRUE} the user is asked to select the tips
     or the node by clicking on the tree which must be plotted.}
+  \item{\dots}{arguments passed from and to methods.}
 }
 \details{
   The argument \code{tip} can be either character or numeric. In the

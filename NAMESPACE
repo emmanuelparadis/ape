@@ -92,7 +92,7 @@ importFrom(nlme, corMatrix, Dim, getCovariate, getCovariateFormula,
 importFrom(stats, AIC, anova, as.dist, as.hclust, biplot, coef, complete.cases,
            cophenetic, cor, cor.test, cov, cov2cor, density, dgamma,
            dpois, drop1, formula, gaussian, glm, hclust, integrate,
-           lm, mahalanobis, median, model.frame, model.matrix,
+           lm, lm.fit, mahalanobis, median, model.frame, model.matrix,
            model.response, na.fail, na.omit, nlm, nlminb, optim, optimize,
            p.adjust, pchisq, pf, pgamma, pnorm, ppois, printCoefmat, pt,
            qbinom, qnorm, qt, quantile, quasibinomial, rbinom, reorder, resid,
@@ -168,9 +168,11 @@ S3method("$", multiPhylo)
 S3method("$<-", multiPhylo)
 S3method(c, multiPhylo)
 S3method(di2multi, multiPhylo)
+S3method(drop.tip, multiPhylo)
 S3method(is.binary, multiPhylo)
 S3method(is.rooted, multiPhylo)
 S3method(is.ultrametric, multiPhylo)
+S3method(keep.tip, multiPhylo)
 S3method(makeLabel, multiPhylo)
 S3method(multi2di, multiPhylo)
 S3method(Nedge, multiPhylo)
@@ -193,10 +195,12 @@ S3method(c, phylo)
 S3method(cophenetic, phylo)
 S3method(degree, phylo)
 S3method(di2multi, phylo)
+S3method(drop.tip, phylo)
 S3method(identify, phylo)
 S3method(is.binary, phylo)
 S3method(is.rooted, phylo)
 S3method(is.ultrametric, phylo)
+S3method(keep.tip, phylo)
 S3method(makeLabel, phylo)
 S3method(multi2di, phylo)
 S3method(Nedge, phylo)

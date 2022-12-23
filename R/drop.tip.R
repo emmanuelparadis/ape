@@ -1,16 +1,18 @@
-## drop.tip.R (2021-09-29)
+## drop.tip.R (2022-10-10)
 
 ##   Remove Tips in a Phylogenetic Tree
 
-## Copyright 2003-2021 Emmanuel Paradis, 2017-2018 Klaus Schliep, 2018 Joseph Brown
+## Copyright 2003-2022 Emmanuel Paradis, 2017-2022 Klaus Schliep, 2018 Joseph Brown
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-keep.tip <- function(phy, tip)
+keep.tip <- function(phy, tip) UseMethod("keep.tip")
+
+keep.tip.phylo <- function(phy, tip)
 {
-    if (!inherits(phy, "phylo"))
-        stop("object \"phy\" is not of class \"phylo\"")
+###    if (!inherits(phy, "phylo"))
+###        stop("object \"phy\" is not of class \"phylo\"")
     Ntip <- length(phy$tip.label)
     ## convert to indices if strings passed in
     if (is.character(tip)) {
@@ -61,14 +63,14 @@ extract.clade <- function(phy, node, root.edge = 0, collapse.singles = TRUE, int
              collapse.singles = collapse.singles)
 }
 
-drop.tip <-
-    function(phy, tip, trim.internal = TRUE, subtree = FALSE,
-             root.edge = 0, rooted = is.rooted(phy), collapse.singles = TRUE,
-             interactive = FALSE)
-{
-    if (!inherits(phy, "phylo"))
-        stop('object "phy" is not of class "phylo"')
+drop.tip <- function(phy, tip, ...) UseMethod("drop.tip")
 
+drop.tip.phylo <- function(phy, tip, trim.internal = TRUE, subtree = FALSE,
+    root.edge = 0, rooted = is.rooted(phy), collapse.singles = TRUE,
+    interactive = FALSE, ...)
+{
+###    if (!inherits(phy, "phylo"))
+###        stop('object "phy" is not of class "phylo"')
     Ntip <- length(phy$tip.label)
     ## find the tips to drop:
     if (interactive) {
@@ -241,5 +243,45 @@ drop.tip <-
     if (!is.null(phy$node.label)) # update node.label if needed
         phy$node.label <- phy$node.label[which(newNb > 0) - Ntip]
     if (collapse.singles) phy <- collapse.singles(phy)
+    phy
+}
+
+## "multiPhylo" methods by Klaus:
+
+keep.tip.multiPhylo <- function(phy, tip)
+{
+    if (is.null(attr(phy, "TipLabel"))) {
+        tmp <- try(.compressTipLabel(phy), TRUE)
+        if (!inherits(tmp, "try-error")) phy <- tmp
+    }
+    if (!is.null(attr(phy, "TipLabel"))) {
+        phy <- lapply(phy, keep.tip, tip)
+        class(phy) <- "multiPhylo"
+        phy <- .compressTipLabel(phy)
+    } else {
+        if (!inherits(tip, "character"))
+            stop("Trees have different labels, tip needs to be of class character!")
+        phy <- lapply(phy, keep.tip, tip)
+        class(phy) <- "multiPhylo"
+    }
+    phy
+}
+
+drop.tip.multiPhylo <- function(phy, tip, ...)
+{
+    if (is.null(attr(phy, "TipLabel"))) {
+        tmp <- try(.compressTipLabel(phy), TRUE)
+        if (!inherits(tmp, "try-error")) phy <- tmp
+    }
+    if (!is.null(attr(phy, "TipLabel"))) {
+        phy <- lapply(phy, drop.tip, tip, ...)
+        class(phy) <- "multiPhylo"
+        phy <- .compressTipLabel(phy)
+    } else {
+        if (!inherits(tip, "character"))
+            stop("Trees have different labels, tip needs to be of class character!")
+        phy <- lapply(phy, drop.tip, tip, ...)
+        class(phy) <- "multiPhylo"
+    }
     phy
 }
