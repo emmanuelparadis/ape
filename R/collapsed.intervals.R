@@ -10,7 +10,7 @@
 # construct collapsed intervals from coalescent intervals
 collapsed.intervals <- function(ci, epsilon=0.0)
 {
-  if (class(ci) != "coalescentIntervals")
+  if (!inherits(ci, "coalescentIntervals"))
     stop("object \"ci\" is not of class \"coalescentIntervals\"")
 
   sz <- ci$interval.length

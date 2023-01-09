@@ -119,7 +119,7 @@ node *makeNode(int label, edge *parentEdge, int index);
 node *copyNode(node *v);
 edge *siblingEdge(edge *e);
 edge *makeEdge(char *label, node *tail, node *head, double weight);
-tree *newTree();
+tree *newTree(void);
 void updateSizes(edge *e, int direction);
 tree *detrifurcate(tree *T);
 void compareSets(tree *T, set *S);

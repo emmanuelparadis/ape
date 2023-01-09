@@ -56,7 +56,7 @@ write.nexus <- function(..., file = "", translate = TRUE)
     }
 
     for (i in 1:ntree) {
-        if (class(obj[[i]]) != "phylo") next
+        if (!inherits(obj[[i]], "phylo")) next
         root.tag <- if (is.rooted(obj[[i]])) "= [&R] " else "= [&U] "
         cat("\tTREE *", title[i], root.tag, file = file, append = TRUE)
         cat(write.tree(obj[[i]], file = ""),

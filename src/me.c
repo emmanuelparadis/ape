@@ -231,7 +231,7 @@ edge *makeEdge(char *label, node *tail, node *head, double weight)
   return(newEdge);
 }
 
-tree *newTree()
+tree *newTree(void)
 {
   tree *T;
   T = (tree *) malloc(sizeof(tree));

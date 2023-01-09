@@ -12,7 +12,7 @@ coalescent.intervals <- function(x) UseMethod("coalescent.intervals")
 # set up coalescent interval object (from NH tree)
 coalescent.intervals.phylo <- function(x)
 {
-    if (class(x) != "phylo") stop("object \"x\" is not of class \"phylo\"")
+    if (!inherits(x, "phylo")) stop("object \"x\" is not of class \"phylo\"")
 
     # ensure we have a BINARY tree
     if (!is.binary.phylo(x)) stop("object \"x\" is not a binary tree")

@@ -109,7 +109,7 @@ letterconf(X, exec = "muscle")
   Notredame, C., Higgins, D. and Heringa, J. (2000) T-Coffee: A novel
   method for multiple sequence alignments. \emph{Journal of Molecular
   Biology}, \bold{302}, 205--217.
-  \url{https://www.tcoffee.org/}
+  \url{https://tcoffee.org/}
 
   Sievers, F., Wilm, A., Dineen, D., Gibson, T. J., Karplus, K., Li, W.,
   Lopez, R., McWilliam, H., Remmert, M., S\"oding, J., Thompson,

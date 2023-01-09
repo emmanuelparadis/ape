@@ -10,7 +10,7 @@
 # plot skyline
 plot.skyline <- function(x, show.years=FALSE, subst.rate, present.year, ...)
 {
-  if (class(x) != "skyline")
+  if (!inherits(x, "skyline"))
     stop("object \"x\" is not of class \"skyline\"")
   t <- x$time
   m <- x$population.size
@@ -33,7 +33,7 @@ plot.skyline <- function(x, show.years=FALSE, subst.rate, present.year, ...)
 # plot another skyline plot on top
 lines.skyline <- function(x, show.years=FALSE, subst.rate, present.year, ...)
 {
-  if (class(x) != "skyline")
+  if (!inherits(x, "skyline"))
     stop("object \"x\" is not of class \"skyline\"")
   t <- x$time
   m <- x$population.size
@@ -58,7 +58,7 @@ skylineplot <- function(z, ...) plot(skyline(z, ...))
 #input: phylogenetic tree
 skylineplot.deluxe <- function(tree, ...)
 {
-  if (class(tree) != "phylo")
+  if (!inherits(tree, "phylo"))
     stop("object \"tree\" is not of class \"phylo\"")
 
   ci <- coalescent.intervals(tree)

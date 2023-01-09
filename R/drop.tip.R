@@ -1,8 +1,8 @@
-## drop.tip.R (2022-10-10)
+## drop.tip.R (2023-01-09)
 
 ##   Remove Tips in a Phylogenetic Tree
 
-## Copyright 2003-2022 Emmanuel Paradis, 2017-2022 Klaus Schliep, 2018 Joseph Brown
+## Copyright 2003-2023 Emmanuel Paradis, 2017-2023 Klaus Schliep, 2018 Joseph Brown
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -269,6 +269,9 @@ keep.tip.multiPhylo <- function(phy, tip)
 
 drop.tip.multiPhylo <- function(phy, tip, ...)
 {
+    interactive <- if (hasArg(interactive)) list(...)$interactive else FALSE
+    if (interactive)
+        stop("interactive = TRUE does not work for drop.tip.multiPhylo().")
     if (is.null(attr(phy, "TipLabel"))) {
         tmp <- try(.compressTipLabel(phy), TRUE)
         if (!inherits(tmp, "try-error")) phy <- tmp

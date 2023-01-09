@@ -12,7 +12,7 @@ skyline <- function(x, ...) UseMethod("skyline")
 # input: phylogenetic tree
 skyline.phylo <- function(x, ...)
 {
-  if (class(x) != "phylo")
+  if (!inherits(x, "phylo"))
     stop("object \"x\" is not of class \"phylo\"")
 
   skyline(coalescent.intervals(x), ...)
@@ -21,7 +21,7 @@ skyline.phylo <- function(x, ...)
 # input: coalescent intervals and epsilon
 skyline.coalescentIntervals <- function(x, epsilon=0, ...)
 {
-  if (class(x) != "coalescentIntervals")
+  if (!inherits(x, "coalescentIntervals"))
     stop("object \"x\" is not of class \"coalescentIntervals\"")
 
   if (epsilon < 0)
@@ -38,7 +38,7 @@ skyline.coalescentIntervals <- function(x, epsilon=0, ...)
 # input: collapsed intervals
 skyline.collapsedIntervals <- function(x, old.style=FALSE, ...)
 {
-  if (class(x) != "collapsedIntervals")
+  if (!inherits(x, "collapsedIntervals"))
     stop("object \"x\" is not of class \"collapsedIntervals\"")
 
   link <- x$collapsed.interval
