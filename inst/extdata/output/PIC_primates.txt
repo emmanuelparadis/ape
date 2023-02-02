@@ -1,6 +1,0 @@
-## source: http://www0.nih.go.jp/~jun/research/phylip/contrast.htm (accessed 2017-09-25)
-body brain
-0.74593 2.17989
-1.58474 0.71761
-1.19293 0.86790
-3.35832 0.89706

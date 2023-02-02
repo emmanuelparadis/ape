@@ -1,6 +1,6 @@
 Package: ape
-Version: 5.6-5
-Date: 2023-01-09
+Version: 5.7
+Date: 2023-02-02
 Title: Analyses of Phylogenetics and Evolution
 Authors@R: c(person("Emmanuel", "Paradis", role = c("aut", "cre", "cph"), email = "Emmanuel.Paradis@ird.fr", comment = c(ORCID = "0000-0003-3092-2199")),
   person("Simon", "Blomberg", role = c("aut", "cph"), comment = c(ORCID = "0000-0003-1062-0839")),
@@ -35,7 +35,7 @@ Authors@R: c(person("Emmanuel", "Paradis", role = c("aut", "cre", "cph"), email 
   person("Korbinian", "Strimmer", role = c("aut", "cph"), comment = c(ORCID = "0000-0001-7917-2056")),
   person("Damien", "de Vienne", role = c("aut", "cph"), comment = c(ORCID = "0000-0001-9532-5251")))
 Depends: R (>= 3.2.0)
-Suggests: gee, expm, igraph, phangorn, testthat (>= 3.0), vdiffr (>= 1.0)
+Suggests: gee, expm, igraph, phangorn
 Imports: nlme, lattice, graphics, methods, stats, utils, parallel, Rcpp (>= 0.12.0), digest
 LinkingTo: Rcpp
 ZipData: no
@@ -43,6 +43,3 @@ Description: Functions for reading, writing, plotting, and manipulating phylogen
 License: GPL-2 | GPL-3
 URL: http://ape-package.ird.fr/
 Encoding: UTF-8
-Config/Needs/check: rcmdcheck
-Config/Needs/memcheck: devtools, rcmdcheck
-Config/testthat/edition: 3
