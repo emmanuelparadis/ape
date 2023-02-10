@@ -14,8 +14,8 @@ consensus(..., p = 1, check.labels = TRUE, rooted = FALSE)
     of each tree. If \code{FALSE} (the default), it is assumed that all
     trees have the same tip labels, and that they are in the same order
     (see details).}
-  \item{rooted}{a logical specifying whether the trees should be treated as 
-    rooted or not.}  
+  \item{rooted}{a logical specifying whether the trees should be treated as
+    rooted or not.}
 }
 \description{
   Given a series of trees, this function returns the consensus tree. By
@@ -29,6 +29,14 @@ consensus(..., p = 1, check.labels = TRUE, rooted = FALSE)
   trees have the same tip labels, \emph{and} these labels are
   ordered similarly in all trees (in other words, the element
   \code{tip.label} are identical in all trees).
+
+  Until \pkg{ape} 5.6-2, the trees passed to this function were
+  implicitly treated as rooted, even when the option \code{rooted =
+  FALSE} was used. This is now fixed (see PR65 on GitHub) so that, by
+  default, the trees are explicitly treated as unrooted (even if
+  \code{\link{is.rooted}} returns \code{TRUE}). Thus, it could
+  be that results now differ from previous analyses (setting
+  \code{rooted = TRUE} might help to replicate previous results).
 }
 \value{
   an object of class \code{"phylo"}.

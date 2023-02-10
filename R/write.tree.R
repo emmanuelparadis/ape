@@ -1,8 +1,8 @@
-## write.tree.R (2022-05-02)
+## write.tree.R (2023-02-03)
 
 ##   Write Tree File in Parenthetic Format
 
-## Copyright 2002-2022 Emmanuel Paradis, Daniel Lawson, and Klaus Schliep
+## Copyright 2002-2023 Emmanuel Paradis, Daniel Lawson, and Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -87,7 +87,7 @@ write.tree <-
         if (!is.null(phy$root.edge)) tmp[1L] <- sprintf(f.d, phy$root.edge)
         INTS <- paste0(INTS, tmp)
     }
-    INTS[1] <- paste0(INTS[1], ";")
+###    INTS[1] <- paste0(INTS[1], ";")
 
 ###    ## borrowed from phangorn:
 ###    parent <- phy$edge[, 1]
@@ -97,13 +97,22 @@ write.tree <-
 ###        kids[[parent[i]]] <- c(kids[[parent[i]]], children[i])
 ###    Nkids <- lengths(kids, FALSE)
 ###    root <- parent[! parent %in% children][1]
-###
-    o <- postorder(phy)
+
+    ## find the root node:
+    tmp.nodes <- unique.default(phy$edge[, 1L])
+    tmp.m <- match(tmp.nodes, phy$edge[, 2L])
+    root <- tmp.nodes[is.na(tmp.m)]
+    if (length(root) > 1)
+        stop("seems there is more than one root node")
+    storage.mode(root) <- "integer"
+
+###    o <- postorder(phy)
+    o <- reorderRcpp(phy$edge, n, root, 2L)
     ANC <- phy$edge[o, 1L]
     DESC <- phy$edge[o, 2L]
     NEWICK <- character(n + phy$Nnode)
     NEWICK[1:n] <- TERMS
-    root <- n + 1L
+###    root <- n + 1L
     from <- to <- 1L
     repeat {
         thenode <- ANC[from]
@@ -118,6 +127,5 @@ write.tree <-
         if (thenode == root) break
         from <- to + 1L
     }
-    NEWICK[root]
+    paste0(NEWICK[root], ";")
 }
-

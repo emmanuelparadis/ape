@@ -1,8 +1,8 @@
-## ladderize.R (2022-04-25)
+## ladderize.R (2023-02-09)
 
 ##   Ladderize a Tree
 
-## Copyright 2007-2017 Emmanuel Paradis, 2022 Klaus Schliep
+## Copyright 2007-2023 Emmanuel Paradis, 2022 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -59,5 +59,5 @@ ladderize <- function(phy, right = TRUE)
     phy$edge <- edge
     if (!is.null(phy$edge.length)) phy$edge.length <- el[edge[, 2L]]
     attr(phy, "order") <- "postorder"
-    phy
+    reorder(phy)
 }

@@ -1,8 +1,8 @@
-## is.binary.tree.R (2021-04-08)
+## is.binary.tree.R (2023-02-07)
 
 ##    Test for Binary Tree
 
-## Copyright 2016-2021 Emmanuel Paradis
+## Copyright 2016-2023 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -10,11 +10,20 @@
 is.binary <- function(phy) UseMethod("is.binary")
 
 is.binary.phylo <- function(phy)
-    length(phy$tip.label) - phy$Nnode + is.rooted.phylo(phy) == 2
+{
+    n <- length(phy$tip.label)
+    m <- phy$Nnode
+    dgr <- tabulate(phy$edge, n + m)
+    ref <- c(rep.int(1L, n), rep.int(3L, m))
+    ## the root is assumed to be numbered n+1
+    if (.is.rooted_ape(phy, n)) ref[n + 1L] <- 2L
+    ## can use identical() as long as tabulate() returns integers
+    identical(dgr, ref)
+}
 
 is.binary.tree <- function(phy)
 {
-    message("is.binary.tree() is deprecated; using is.binary() instead.\n\nis.binary.tree() will be removed soon: see ?is.binary and update your code.")
+    message("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nis.binary.tree() is deprecated; using is.binary() instead.\n\nis.binary.tree() will be removed soon: see ?is.binary and update your code.\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     is.binary(phy)
 }
 
