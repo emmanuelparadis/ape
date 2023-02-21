@@ -34,7 +34,7 @@ rtt <- function (t, tip.dates, ncpu = 1, objective = "correlation",
         objective <- function(x, y) {
             # summary(lm(y ~ x))$r.squared
             X[,2] <- x
-            lm.fit(X, y) |> r.squared()
+            r.squared(lm.fit(X, y))
         }
     else if (objective == "rms"){
         objective <- function(x, y){
