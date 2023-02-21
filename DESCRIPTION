@@ -34,7 +34,7 @@ Authors@R: c(person("Emmanuel", "Paradis", role = c("aut", "cre", "cph"), email 
   person("Klaus", "Schliep", role = c("aut", "cph"), comment = c(ORCID = "0000-0003-2941-0161")),
   person("Korbinian", "Strimmer", role = c("aut", "cph"), comment = c(ORCID = "0000-0001-7917-2056")),
   person("Damien", "de Vienne", role = c("aut", "cph"), comment = c(ORCID = "0000-0001-9532-5251")))
-Depends: R (>= 4.1.0)
+Depends: R (>= 3.2.0)
 Suggests: gee, expm, igraph, phangorn
 Imports: nlme, lattice, graphics, methods, stats, utils, parallel, Rcpp (>= 0.12.0), digest
 LinkingTo: Rcpp
