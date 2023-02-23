@@ -1,8 +1,8 @@
-## DNA.R (2021-12-16)
+## DNA.R (2023-02-13)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
-## Copyright 2002-2021 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
+## Copyright 2002-2023 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -1357,8 +1357,12 @@ latag2n <- function(x) {
     dx <- dim(x)
     clx <- class(x)
     res <- .Call(leading_trailing_gaps_to_N, x)
-    class(res) <- clx
+    ## the order of the next two commands is crucial if 'clx' is
+    ## c("matrix", "array") because the dimension must be set before
+    ## setting the class (this is the case for pegas::mjn() where the
+    ## class "DNAbin" is dropped before calling latag2n())
     dim(res) <- dx
+    class(res) <- clx
     res
 }
 
