@@ -1,12 +1,16 @@
-/* tree_build.c    2020-02-12 */
+/* tree_build.c    2023-02-25 */
 
-/* Copyright 2008-2020 Emmanuel Paradis, 2017 Klaus Schliep */
+/* Copyright 2008-2023 Emmanuel Paradis, 2017 Klaus Schliep */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
 
 #include <R.h>
 #include <Rinternals.h>
+
+#define STACK_SIZE 100000
+#define MAX_STR_LENGTH 100
+#define MAX_LABEL_LENGTH 512
 
 static int str2int(char *x, int n)
 {
@@ -30,7 +34,7 @@ void extract_portion_Newick(const char *x, int a, int b, char *y)
 void decode_terminal_edge_token(const char *x, int a, int b, int *node, double *w)
 {
 	int co = a;
-	char *endstr, str[100];
+	char *endstr, str[MAX_STR_LENGTH];
 
 	while (x[co] != ':' && co <= b) co++;
 
@@ -45,7 +49,7 @@ void decode_terminal_edge_token(const char *x, int a, int b, int *node, double *
 void decode_internal_edge(const char *x, int a, int b, char *lab, double *w)
 {
 	int co = a;
-	char *endstr, str[100];
+	char *endstr, str[MAX_STR_LENGTH];
 
 	while (x[co] != ':' && co <= b) co++;
 
@@ -59,7 +63,7 @@ void decode_internal_edge(const char *x, int a, int b, char *lab, double *w)
 
 void decode_terminal_edge_token_clado(const char *x, int a, int b, int *node)
 {
-	char str[100];  // *endstr,
+	char str[MAX_STR_LENGTH];  // *endstr,
 
 	extract_portion_Newick(x, a, b, str);
 	*node = str2int(str, b + 1 - a);
@@ -67,7 +71,7 @@ void decode_terminal_edge_token_clado(const char *x, int a, int b, int *node)
 
 void decode_internal_edge_clado(const char *x, int a, int b, char *lab)
 {
-//	char *endstr, str[100];
+//	char *endstr, str[MAX_STR_LENGTH];
 	if (a > b) lab[0] = '\0'; /* if no node label */
 	else extract_portion_Newick(x, a, b, lab);
 }
@@ -75,7 +79,7 @@ void decode_internal_edge_clado(const char *x, int a, int b, char *lab)
 void decode_terminal_edge(const char *x, int a, int b, char *tip, double *w)
 {
 	int co = a;
-	char *endstr, str[100];
+	char *endstr, str[MAX_STR_LENGTH];
 
 	while (x[co] != ':' && co <= b) co++;
 
@@ -179,9 +183,9 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
 SEXP treeBuildWithTokens(SEXP nwk)
 {
 	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[10000];
+	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE];
 	double *el, tmpd;
-	char lab[512];
+	char lab[MAX_LABEL_LENGTH];
 	SEXP edge, edge_length, Nnode, node_label, phy;
 
 	/* first pass on the Newick string to localize parentheses and commas */
@@ -279,8 +283,8 @@ SEXP treeBuildWithTokens(SEXP nwk)
 SEXP cladoBuildWithTokens(SEXP nwk)
 {
 	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[10000];
-	char lab[512];
+	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE];
+	char lab[MAX_LABEL_LENGTH];
 	SEXP edge, Nnode, node_label, phy;
 
 	INITIALIZE_SKELETON;
@@ -348,9 +352,9 @@ SEXP cladoBuildWithTokens(SEXP nwk)
 SEXP treeBuild(SEXP nwk)
 {
 	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[10000], curtip = 1;
+	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[STACK_SIZE], curtip = 1;
 	double *el, tmpd;
-	char lab[512], tip[512];
+	char lab[MAX_LABEL_LENGTH], tip[MAX_LABEL_LENGTH];
 	SEXP edge, edge_length, Nnode, node_label, tip_label, phy;
 
 	INITIALIZE_SKELETON;
@@ -436,8 +440,8 @@ SEXP treeBuild(SEXP nwk)
 SEXP cladoBuild(SEXP nwk)
 {
 	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[10000], curtip = 1;
-	char lab[512], tip[512];
+	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[STACK_SIZE], curtip = 1;
+	char lab[MAX_LABEL_LENGTH], tip[MAX_LABEL_LENGTH];
 	SEXP edge, Nnode, node_label, tip_label, phy;
 
 	INITIALIZE_SKELETON;

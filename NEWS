@@ -1,3 +1,13 @@
+		CHANGES IN APE VERSION 5.7-0.1
+
+
+BUG FIXES
+
+    o Some very unbalanced resulted in a segfault (see issue #70 on
+      GitHub).
+
+
+
 		CHANGES IN APE VERSION 5.7
 
 
