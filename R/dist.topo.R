@@ -15,61 +15,106 @@
     obj
 }
 
-dist.topo <- function(x, y = NULL, method = "PH85")
+dist.topo <- function (x, y = NULL, method = "PH85", cores = detectCores())
 {
-    method <- match.arg(method, c("PH85", "score"))
-    if (!is.null(y)) x <- c(x, y)
-    testroot <- any(is.rooted(x))
-    n <- length(x) # number of trees
-    res <- numeric(n * (n - 1) /2)
-    nms <- names(x)
-    if (is.null(nms)) nms <- paste0("tree", 1:n)
-
+  method <- match.arg(method, c("PH85", "score"))
+  if (!is.null(y)) x <- c(x, y)
+  testroot <- any(is.rooted(x))
+  n <- length(x)
+  res <- numeric(n * (n - 1)/2)
+  nms <- names(x)
+  if (is.null(nms)) nms <- paste0("tree", 1:n)
+  if (cores == 1) {
     if (method == "PH85") {
-        if (testroot)
-            warning("Some trees were rooted: topological distances may be spurious.")
-
-        x <- .compressTipLabel(x)
-        ntip <- length(attr(x, "TipLabel"))
-        nnode <- sapply(x, Nnode)
-
-        foo <- function(phy, ntip) {
-            phy <- reorder(phy, "postorder")
-            pp <- bipartition2(phy$edge, ntip)
-            attr(pp, "labels") <- phy$tip.label
-            ans <- SHORTwise(pp)
-            sapply(ans, paste, collapse = "\r")
+      if (testroot) warning("Some trees were rooted: topological distances may be spurious.")
+      x <- .compressTipLabel(x)
+      ntip <- length(attr(x, "TipLabel"))
+      nnode <- sapply(x, Nnode)
+      foo <- function(phy, ntip) {
+        phy <- reorder(phy, "postorder")
+        pp <- bipartition2(phy$edge, ntip)
+        attr(pp, "labels") <- phy$tip.label
+        ans <- SHORTwise(pp)
+        sapply(ans, paste, collapse = "\r")
+      }
+      x <- lapply(x, foo, ntip = ntip)
+      res_list <- lapply(1:(n - 1), function(i) {
+        y <- x[[i]]
+        m1 <- nnode[i]
+        res_sub <- numeric(n - i)
+        for (j in (i + 1):n) {
+          z <- x[[j]]
+          res_sub[j - i] <- m1 + nnode[j] - 2 * sum(z %in% y)
         }
-
-        x <- lapply(x, foo, ntip = ntip)
-
-        k <- 0L
-        for (i in 1:(n - 1)) {
-            y <- x[[i]]
-            m1 <- nnode[i]
-            for (j in (i + 1):n) {
-                z <- x[[j]]
-                k <- k + 1L
-                res[k] <- m1 + nnode[j] - 2 * sum(z %in% y)
-            }
+        res_sub
+      })
+    } else {
+      res_list <- lapply(1:(n - 1), function(i) {
+        res_sub <- numeric(n - i)
+        for (j in (i + 1):n) {
+          res_sub[j - i] <- .dist.topo.score(x[[i]], x[[j]])
         }
-    } else { # method == "score"
-        k <- 0L
-        for (i in 1:(n - 1)) {
-            for (j in (i + 1):n) {
-                k <- k + 1L
-                ## still very slow......
-                res[k] <- .dist.topo.score(x[[i]], x[[j]])
-            }
-        }
+        res_sub
+      })
     }
-
-    attr(res, "Size") <- n
-    attr(res, "Labels") <- nms
-    attr(res, "Diag") <- attr(res, "Upper") <- FALSE
-    attr(res, "method") <- method
-    class(res) <- "dist"
-    res
+  } else {
+    tryCatch({
+      cl <- makeCluster(cores)
+      registerDoParallel(cl)
+      library(parallel)
+      library(doParallel)
+      cl <- makeCluster(cores)
+      registerDoParallel(cl)
+    }, error = function(e) {
+     message("Failed to initiate cluster: ", conditionMessage(e))
+     stop(e)
+     })
+    if (method == "PH85") {
+      if (testroot) warning("Some trees were rooted: topological distances may be spurious.")
+      x <- .compressTipLabel(x)
+      ntip <- length(attr(x, "TipLabel"))
+      nnode <- sapply(x, Nnode)
+      foo <- function(phy, ntip) {
+        phy <- reorder(phy, "postorder")
+        pp <- bipartition2(phy$edge, ntip)
+        attr(pp, "labels") <- phy$tip.label
+        ans <- SHORTwise(pp)
+        sapply(ans, paste, collapse = "\r")
+      }
+      x <- lapply(x, foo, ntip = ntip)
+      res_list <- mclapply(1:(n - 1), function(i) {
+        y <- x[[i]]
+        m1 <- nnode[i]
+        res_sub <- numeric(n - i)
+        for (j in (i + 1):n) {
+          z <- x[[j]]
+          res_sub[j - i] <- tryCatch(m1 + nnode[j] - 2 * sum(z %in% y),
+                                 error = function(e) NA)
+        }
+        res_sub
+      }, mc.cores = cores)
+    } else {
+      res_list <- mclapply(1:(n - 1), function(i) {
+        res_sub <- numeric(n - i)
+        for (j in (i + 1):n) {
+          res_sub[j - i] <- tryCatch(.dist.topo.score(x[[i]], x[[j]]),
+                                 error = function(e) NA)
+        }
+        res_sub
+      }, mc.cores = cores)
+    }
+    stopCluster(cl)
+    registerDoSEQ()
+  }
+  res <- unlist(res_list)
+  if (length(res) == 0) { res <- numeric(n * (n - 1)/2) }
+  attr(res, "Size") <- n
+  attr(res, "Labels") <- nms
+  attr(res, "Diag") <- attr(res, "Upper") <- FALSE
+  attr(res, "method") <- method
+  class(res) <- "dist"
+  res <- as.dist(res)
+  res
 }
 
 .dist.topo.score <- function(x, y)
