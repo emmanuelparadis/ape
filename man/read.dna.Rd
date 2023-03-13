@@ -22,8 +22,8 @@ read.fastq(file, offset = -33)
     or a double-quoted string. Can also be a \link{connection} (which
     will be opened for reading if necessary, and if so
     \code{\link{close}}d (and hence destroyed) at the end of the
-    function call). Files compressed with GZIP can be read (providing
-    the name ends with .gz), as well as remote files.}
+    function call). Files compressed with GZIP can be read (the name
+    must end with .gz), as well as remote files.}
   \item{format}{a character string specifying the format of the DNA
     sequences. Four choices are possible: \code{"interleaved"},
     \code{"sequential"}, \code{"clustal"}, or \code{"fasta"}, or any
@@ -64,24 +64,24 @@ read.fastq(file, offset = -33)
   the file. Particularities for each format are detailed below.
 
 \itemize{
-  \item{Interleaved:}{the function starts to read the sequences after it
+  \item{Interleaved:}{ the function starts to read the sequences after it
     finds one or more spaces (or tabulations). All characters before the
     sequences are taken as the taxa names after removing the leading and
     trailing spaces (so spaces in taxa names are not allowed). It is
     assumed that the taxa names are not repeated in the subsequent
     blocks of nucleotides.}
 
-  \item{Sequential:}{the same criterion than for the interleaved format
+  \item{Sequential:}{ the same criterion than for the interleaved format
     is used to start reading the sequences and the taxa names; the
     sequences are then read until the number of nucleotides specified in
     the first line of the file is reached. This is repeated for each taxa.}
 
-  \item{Clustal:}{this is the format output by the Clustal programs
+  \item{Clustal:}{ this is the format output by the Clustal programs
     (.aln). It is close to the interleaved format: the differences are
     that the dimensions of the data are not indicated in the file, and
     the names of the sequences are repeated in each block.}
 
-  \item{FASTA:}{This looks like the sequential format but the taxa names
+  \item{FASTA:}{ this looks like the sequential format but the taxa names
     (or a description of the sequence) are on separate lines beginning
     with a `greater than' character `>' (there may be leading spaces
     before this character). These lines are taken as taxa names after
@@ -121,16 +121,21 @@ examples).
 }
 \author{Emmanuel Paradis and RJ Ewing}
 \examples{
-## a small extract from data(woodmouse) in sequential format:
+## 1. Simple text files
+
+TEXTfile <- tempfile("exdna", fileext = ".txt")
+
+## 1a. Extract from data(woodmouse) in sequential format:
 cat("3 40",
 "No305     NTTCGAAAAACACACCCACTACTAAAANTTATCAGTCACT",
 "No304     ATTCGAAAAACACACCCACTACTAAAAATTATCAACCACT",
 "No306     ATTCGAAAAACACACCCACTACTAAAAATTATCAATCACT",
-file = "exdna.txt", sep = "\n")
-ex.dna <- read.dna("exdna.txt", format = "sequential")
+file = TEXTfile, sep = "\n")
+ex.dna <- read.dna(TEXTfile, format = "sequential")
 str(ex.dna)
 ex.dna
-## the same data in interleaved format...
+
+## 1b. The same data in interleaved format, ...
 cat("3 40",
 "No305     NTTCGAAAAA CACACCCACT",
 "No304     ATTCGAAAAA CACACCCACT",
@@ -138,61 +143,93 @@ cat("3 40",
 "          ACTAAAANTT ATCAGTCACT",
 "          ACTAAAAATT ATCAACCACT",
 "          ACTAAAAATT ATCAATCACT",
-file = "exdna.txt", sep = "\n")
-ex.dna2 <- read.dna("exdna.txt")
-## ... in clustal format...
+file = TEXTfile, sep = "\n")
+ex.dna2 <- read.dna(TEXTfile)
+
+## 1c. ... in clustal format, ...
 cat("CLUSTAL (ape) multiple sequence alignment", "",
 "No305     NTTCGAAAAACACACCCACTACTAAAANTTATCAGTCACT",
 "No304     ATTCGAAAAACACACCCACTACTAAAAATTATCAACCACT",
 "No306     ATTCGAAAAACACACCCACTACTAAAAATTATCAATCACT",
 "           ************************** ******  ****",
-file = "exdna.txt", sep = "\n")
-ex.dna3 <- read.dna("exdna.txt", format = "clustal")
-## ... and in FASTA format
+file = TEXTfile, sep = "\n")
+ex.dna3 <- read.dna(TEXTfile, format = "clustal")
+
+## 1d. ... and in FASTA format
+FASTAfile <- tempfile("exdna", fileext = ".fas")
 cat(">No305",
 "NTTCGAAAAACACACCCACTACTAAAANTTATCAGTCACT",
 ">No304",
 "ATTCGAAAAACACACCCACTACTAAAAATTATCAACCACT",
 ">No306",
 "ATTCGAAAAACACACCCACTACTAAAAATTATCAATCACT",
-file = "exdna.fas", sep = "\n")
-ex.dna4 <- read.dna("exdna.fas", format = "fasta")
-## They are the same:
+file = FASTAfile, sep = "\n")
+ex.dna4 <- read.dna(FASTAfile, format = "fasta")
+
+## The 4 data objects are the same:
 identical(ex.dna, ex.dna2)
 identical(ex.dna, ex.dna3)
 identical(ex.dna, ex.dna4)
 
-## How to read compressed files:
+## 2. How to read GZ compressed files
 
-## create the ZIP file:
-zip("exdna.fas.zip", "exdna.fas")
-## create the GZ file with a connection:
-con <- gzfile("exdna.fas.gz", "wt")
+## create a GZ file and open a connection:
+GZfile <- tempfile("exdna", fileext = ".fas.gz")
+con <- gzfile(GZfile, "wt")
+## write the data using the connection:
 cat(">No305", "NTTCGAAAAACACACCCACTACTAAAANTTATCAGTCACT",
     ">No304", "ATTCGAAAAACACACCCACTACTAAAAATTATCAACCACT",
     ">No306", "ATTCGAAAAACACACCCACTACTAAAAATTATCAATCACT",
     file = con, sep = "\n")
-close(con)
+close(con) # close the connection
 
-ex.dna5 <- read.dna(unz("exdna.fas.zip", "exdna.fas"), "fasta")
-ex.dna6 <- read.dna(gzfile("exdna.fas.gz"), "fasta")
-identical(ex.dna5, ex.dna4)
-identical(ex.dna6, ex.dna4)
+## read the GZ'ed file:
+ex.dna5 <- read.dna(gzfile(GZfile), "fasta")
 
-unlink("exdna.txt")
-unlink("exdna.fas")
-unlink("exdna.fas.zip")
-unlink("exdna.fas.gz")
+## This example is with a FASTA file but this works as well
+## with the other formats described above.
+
+## All 5 data objects are identical:
+identical(ex.dna, ex.dna5)
+
+unlink(c(TEXTfile, FASTAfile, GZfile)) # clean-up
+
+\dontrun{
+## 3. How to read files from a ZIP archive
+
+## NOTE: since ape 5.7-1, all files in these examples are written
+## in the temporary directory, thus the following commands work
+## best when run in the user's working directory.
+
+## write the woodmouse data in a FASTA file:
+data(woodmouse)
+write.dna(woodmouse, "woodmouse.fas", "fasta")
+## archive a FASTA file in a ZIP file:
+zip("myarchive.zip", "woodmouse.fas")
+## Note: the file myarchive.zip is created if necessary
+
+## Read the FASTA file from the ZIP archive without extraction:
+wood2 <- read.dna(unz("myarchive.zip", "woodmouse.fas"), "fasta")
+
+## Alternatively, unzip the archive:
+fl <- unzip("myarchive.zip")
+## the previous command eventually creates locally
+## the fullpath archived with 'woodmouse.fas'
+wood3 <- read.dna(fl, "fasta")
+
+identical(woodmouse, wood2)
+identical(woodmouse, wood3)
+}
 
 ## read a FASTQ file from 1000 Genomes:
 \dontrun{
 a <- "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00096/sequence_read/"
-b <- "SRR062641.filt.fastq.gz"
-URL <- paste0(a, b)
-download.file(URL, b)
+file <- "SRR062641.filt.fastq.gz"
+URL <- paste0(a, file)
+download.file(URL, file)
 ## If the above command doesn't work, you may copy/paste URL in
 ## a Web browser instead.
-X <- read.fastq(b)
+X <- read.fastq(file)
 X # 109,811 sequences
 ## get the qualities of the first sequence:
 (qual1 <- attr(X, "QUAL")[[1]])

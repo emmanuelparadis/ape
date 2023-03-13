@@ -42,7 +42,7 @@ as.prop.part(x, ...)
 }
 \details{
   These functions count bipartitions as defined by internal branches, so
-  they not work only with unrooted trees. The structure of the class
+  they work only with unrooted trees. The structure of the class
   \code{"bitsplits"} is described in a separate document on ape's web
   site.
 }

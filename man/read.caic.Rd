@@ -30,14 +30,15 @@ read.caic(file, brlen = NULL, skip = 0, comment.char = "#", ...)
 \section{Warning}{The branch length support is still experimental and was not fully tested.}
 \seealso{ \code{\link{read.tree}}, \code{\link{read.nexus}} }
 \examples{
-### The same example than in read.tree, without branch lengths.
-### An extract from Sibley and Ahlquist (1990)
+## The same example than in read.tree, without branch lengths.
+## An extract from Sibley and Ahlquist (1990)
+fl <- tempfile("tree", fileext = ".tre")
 cat("AAA","Strix_aluco","AAB","Asio_otus",
    "AB","Athene_noctua","B","Tyto_alba",
-   file = "ex.tre", sep = "\n")
-tree.owls <- read.caic("ex.tre")
+   file = fl, sep = "\n")
+tree.owls <- read.caic(fl)
 plot(tree.owls)
 tree.owls
-unlink("ex.tre") # delete the file "ex.tre"
+unlink(fl) # delete the file "ex.tre"
 }
 \keyword{hplot}

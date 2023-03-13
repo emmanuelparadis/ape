@@ -55,7 +55,8 @@ dnds(x, code = 1, codonstart = 1, quiet = FALSE,
 data(woodmouse)
 res <- dnds(woodmouse, quiet = TRUE) # NOT correct
 res2 <- dnds(woodmouse, code = 2, quiet = TRUE) # using the correct code
-identical(res, res2)
+identical(res, res2) # FALSE...
+cor(res, res2) # ... but very close
 ## There a few N's in the woodmouse data, but this does not affect
 ## greatly the results:
 res3 <- dnds(solveAmbiguousBases(woodmouse), code = 2, quiet = TRUE)
@@ -64,6 +65,6 @@ cor(res, res3)
 ## a simple example showing the usefulness of 'details = TRUE'
 X <- as.DNAbin(matrix(c("C", "A", "G", "G", "T", "T"), 2, 3))
 alview(X)
-dnds(X, quiet = TRUE) # NaN + warnings
+dnds(X, quiet = TRUE) # NaN
 dnds(X, details = TRUE) # only a TV at a nondegenerate site
 }

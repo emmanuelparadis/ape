@@ -1,4 +1,5 @@
 \name{ape-internal}
+\alias{.PlotPhyloEnv}
 \alias{perm.rowscols}
 \alias{phylogram.plot}
 \alias{cladogram.plot}
