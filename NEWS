@@ -1,3 +1,12 @@
+		CHANGES IN APE VERSION 5.7-1.1
+
+
+BUG FIXES
+
+    o rtt() was fixed when dates include NAs (issue #73 on GitHub).
+
+
+
 		CHANGES IN APE VERSION 5.7-1
 
 
@@ -12,6 +21,9 @@ OTHER CHANGES
     o ape 5.7 introduced an implicit dependence on R >= 4.1. This has
       been corrected and this version should work with R >= 3.4 (and
       certainly with R >= 3.2).
+
+    o All examples should now write files in the TMP directory (some
+      still used to do this in the user's working directory).
 
 
 

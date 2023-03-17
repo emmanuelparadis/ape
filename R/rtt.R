@@ -1,4 +1,4 @@
-## rtt.R (2015-07-16)
+## rtt.R (2023-03-17)
 
 ##   Root a tree by root-to-tip regression
 
@@ -28,7 +28,7 @@ rtt <- function (t, tip.dates, ncpu = 1, objective = "correlation",
     if (objective == "correlation")
         objective <- function(x, y){
             # cor.test(y, x)$estimate
-            cor(y, x)
+            cor(y, x, use = "complete.obs") # fix by Brad Jones (2023-03-17)
         }
     else if (objective == "rsquared")
         objective <- function(x, y) {
