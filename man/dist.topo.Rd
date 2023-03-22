@@ -7,7 +7,7 @@
   different methods.
 }
 \usage{
-dist.topo(x, y = NULL, method = "PH85")
+dist.topo(x, y = NULL, method = "PH85", mc.cores = 1)
 }
 \arguments{
   \item{x}{an object of class \code{"phylo"} or of class
@@ -15,6 +15,8 @@ dist.topo(x, y = NULL, method = "PH85")
   \item{y}{an (optional) object of class \code{"phylo"}.}
   \item{method}{a character string giving the method to be used: either
     \code{"PH85"}, or \code{"score"}.}
+  \item{mc.cores}{the number of cores (CPUs) to be used (passed to
+    \pkg{parallel}).}
 }
 \value{
   a single numeric value if both \code{x} and \code{y} are used, an

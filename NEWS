@@ -1,6 +1,15 @@
 		CHANGES IN APE VERSION 5.7-1.1
 
 
+NEW FEATURES
+
+    o dist.topo() has a new option 'mc.cores'. With the default PH85
+      distance, the gain of using several cores is visible with 200+
+      trees. The internal code for the score distance has been
+      improved and is now twice faster with a single core, and 4-5
+      times faster with mc.cores = 2.
+
+
 BUG FIXES
 
     o rtt() was fixed when dates include NAs (issue #73 on GitHub).

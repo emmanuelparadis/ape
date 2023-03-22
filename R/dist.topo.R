@@ -1,4 +1,4 @@
-## dist.topo.R (2023-02-06)
+## dist.topo.R (2023-03-22)
 
 ##      Topological Distances, Tree Bipartitions,
 ##   Consensus Trees, and Bootstrapping Phylogenies
@@ -15,13 +15,12 @@
     obj
 }
 
-dist.topo <- function(x, y = NULL, method = "PH85")
+dist.topo <- function(x, y = NULL, method = "PH85", mc.cores = 1)
 {
     method <- match.arg(method, c("PH85", "score"))
     if (!is.null(y)) x <- c(x, y)
     testroot <- any(is.rooted(x))
     n <- length(x) # number of trees
-    res <- numeric(n * (n - 1) /2)
     nms <- names(x)
     if (is.null(nms)) nms <- paste0("tree", 1:n)
 
@@ -41,25 +40,72 @@ dist.topo <- function(x, y = NULL, method = "PH85")
             sapply(ans, paste, collapse = "\r")
         }
 
-        x <- lapply(x, foo, ntip = ntip)
-
-        k <- 0L
-        for (i in 1:(n - 1)) {
-            y <- x[[i]]
-            m1 <- nnode[i]
-            for (j in (i + 1):n) {
-                z <- x[[j]]
-                k <- k + 1L
-                res[k] <- m1 + nnode[j] - 2 * sum(z %in% y)
+        if (mc.cores > 1) {
+            x <- mclapply(x, foo, ntip = ntip, mc.cores = mc.cores)
+            bar <- function(i) {
+                y <- x[[i]]
+                m1 <- nnode[i]
+                res_sub <- numeric(n - i)
+                for (j in (i + 1):n) {
+                    z <- x[[j]]
+                    res_sub[j - i] <- m1 + nnode[j] - 2 * sum(z %in% y)
+                }
+                res_sub
+            }
+            res_list <- mclapply(1:(n - 1), bar, mc.cores = mc.cores)
+            res <- unlist(res_list)
+        } else {
+            x <- lapply(x, foo, ntip = ntip)
+            k <- 0L
+            res <- numeric(n * (n - 1) /2)
+            for (i in 1:(n - 1)) {
+                y <- x[[i]]
+                m1 <- nnode[i]
+                for (j in (i + 1):n) {
+                    z <- x[[j]]
+                    k <- k + 1L
+                    res[k] <- m1 + nnode[j] - 2 * sum(z %in% y)
+                }
             }
         }
     } else { # method == "score"
-        k <- 0L
-        for (i in 1:(n - 1)) {
-            for (j in (i + 1):n) {
-                k <- k + 1L
-                ## still very slow......
-                res[k] <- .dist.topo.score(x[[i]], x[[j]])
+        NTIP <- Ntip(x)
+        x <- unroot(x)
+
+        foo <- function(phy) {
+            if (is.null(phy$edge.length))
+                stop("trees must have branch lengths for the branch score distance.")
+            ntip <- length(phy$tip.label)
+            phy <- reorder.phylo(phy, "postorder")
+            bp <- bipartition2(phy$edge, ntip)
+            lapply(bp, function(x) sort(phy$tip.label[x]))
+        }
+
+        if (mc.cores > 1) {
+            BP <- mclapply(x, foo, mc.cores = mc.cores)
+            bar <- function(i) {
+                tr <- x[[i]]
+                bp <- BP[[i]]
+                nx <- NTIP[i]
+                res_sub <- numeric(n - i)
+                for (j in (i + 1):n)
+                    res_sub[j - i] <- .dist.topo.score(tr, x[[j]], nx, NTIP[j], bp, BP[[j]])
+                res_sub
+            }
+            res_list <- mclapply(1:(n - 1), bar, mc.cores = mc.cores)
+            res <- unlist(res_list)
+        } else {
+            BP <- lapply(x, foo)
+            k <- 0L
+            res <- numeric(n * (n - 1) /2)
+            for (i in 1:(n - 1)) {
+                tr <- x[[i]]
+                bp <- BP[[i]]
+                nx <- NTIP[i]
+                for (j in (i + 1):n) {
+                    k <- k + 1L
+                    res[k] <- .dist.topo.score(tr, x[[j]], nx, NTIP[j], bp, BP[[j]])
+                }
             }
         }
     }
@@ -72,26 +118,19 @@ dist.topo <- function(x, y = NULL, method = "PH85")
     res
 }
 
-.dist.topo.score <- function(x, y)
+.dist.topo.score <- function(x, y, nx, ny, bp1, bp2)
 {
-    if (is.null(x$edge.length) || is.null(y$edge.length))
-        stop("trees must have branch lengths for branch score distance.")
-    nx <- length(x$tip.label)
-    x <- reorder.phylo(unroot(x), "postorder")
-    y <- reorder.phylo(unroot(y), "postorder")
-    ##bp1 <- .Call(bipartition, x$edge, nx, x$Nnode)
-    bp1 <- bipartition2(x$edge, nx)
-    bp1 <- lapply(bp1, function(xx) sort(x$tip.label[xx]))
-    ny <- length(y$tip.label) # fix by Otto Cordero
+    ## ny <- length(y$tip.label) # fix by Otto Cordero
     ## fix by Tim Wallstrom:
-    bp2.tmp <- bipartition2(y$edge, ny)
-    ##bp2.tmp <- .Call(bipartition, y$edge, ny, y$Nnode)
-    bp2 <- lapply(bp2.tmp, function(xx) sort(y$tip.label[xx]))
-    bp2.comp <- lapply(bp2.tmp, function(xx) setdiff(1:ny, xx))
-    bp2.comp <- lapply(bp2.comp, function(xx) sort(y$tip.label[xx]))
+    bp2.comp <- lapply(bp2, function(a) sort(y$tip.label[is.na(match(y$tip.label, a))]))
     ## End
     q1 <- length(bp1)
     q2 <- length(bp2)
+
+    xe2 <- x$edge[, 2]
+    ye2 <- y$edge[, 2]
+    xel <- x$edge.length
+    yel <- y$edge.length
 
     dT <- 0
     found1 <- FALSE
@@ -99,18 +138,17 @@ dist.topo <- function(x, y = NULL, method = "PH85")
     found2[1] <- TRUE
     for (i in 2:q1) {
         for (j in 2:q2) {
-            if (identical(bp1[[i]], bp2[[j]]) | identical(bp1[[i]], bp2.comp[[j]])) {
-                dT <- dT + (x$edge.length[which(x$edge[, 2] == nx + i)] -
-                            y$edge.length[which(y$edge[, 2] == ny + j)])^2
+            if (identical(bp1[[i]], bp2[[j]]) || identical(bp1[[i]], bp2.comp[[j]])) {
+                dT <- dT + (xel[which(xe2 == nx + i)] - yel[which(ye2 == ny + j)])^2
                 found1 <- found2[j] <- TRUE
                 break
             }
         }
         if (found1) found1 <- FALSE
-        else dT <- dT + (x$edge.length[which(x$edge[, 2] == nx + i)])^2
+        else dT <- dT + (xel[which(xe2 == nx + i)])^2
     }
     if (!all(found2))
-        dT <- dT + sum((y$edge.length[y$edge[, 2] %in% (ny + which(!found2))])^2)
+        dT <- dT + sum((yel[ye2 %in% (ny + which(!found2))])^2)
     sqrt(dT)
 }
 
