@@ -227,7 +227,7 @@ c.multiPhylo <- function(..., recursive = TRUE)
         x$tip.label <- Lab
         x
     }
-    y <- lapply(y, fun, Lab)
+    y <- lapply(x, fun, Lab)
     class(y) <- "multiPhylo"
     y
 }
