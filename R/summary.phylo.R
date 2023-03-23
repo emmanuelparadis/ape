@@ -212,7 +212,7 @@ c.multiPhylo <- function(..., recursive = TRUE)
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
     class(x) <- NULL
-    for (i in 1:length(x)) x[[i]]$tip.label <- Lab
+    for (i in seq_along(x)) x[[i]]$tip.label <- Lab
     class(x) <- "multiPhylo"
     attr(x, "TipLabel") <- NULL
     x
