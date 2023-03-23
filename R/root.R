@@ -320,8 +320,7 @@ root.multiPhylo <- function(phy, outgroup, ...)
     oc <- oldClass(phy)
     class(phy) <- NULL
     labs <- attr(phy, "TipLabel")
-    if (!is.null(labs))
-        for (i in seq_along(phy)) phy[[i]]$tip.label <- labs
+    if (!is.null(labs)) phy <- .uncompressTipLabel(phy)
     phy <- lapply(phy, root.phylo, outgroup = outgroup, ...)
     if (!is.null(labs)) {
         for (i in seq_along(phy)) phy[[i]]$tip.label <- NULL
