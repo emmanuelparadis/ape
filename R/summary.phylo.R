@@ -211,7 +211,7 @@ c.multiPhylo <- function(..., recursive = TRUE)
     .makeMultiPhyloFromObj(obj)
 }
 
-.uncompressTipLabel <- function(x, class = class(x))
+.uncompressTipLabel <- function(x, class = attr(x, "class"))
 {
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
@@ -250,8 +250,7 @@ c.multiPhylo <- function(..., recursive = TRUE)
 
     ## to solve PR #45
     if (is.null(TipLabel.value)) {
-        x <- .uncompressTipLabel(x)
-        class(x) <- NULL
+        x <- .uncompressTipLabel(x, class = NULL)
     } else {
         if (!identical(TipLabel.x, TipLabel.value)) {
             x <- .uncompressTipLabel(x, class = NULL)
