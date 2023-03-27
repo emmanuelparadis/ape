@@ -193,8 +193,6 @@ prop.part <- function(..., check.labels = TRUE)
     for (i in 1:ntree) storage.mode(obj[[i]]$Nnode) <- "integer"
     class(obj) <- "multiPhylo"
     obj <- reorder(obj, "postorder")
-# the following line should not be necessary any more
-#    obj <- .uncompressTipLabel(obj) # fix a bug (2010-11-18)
     nTips <- length(obj[[1]]$tip.label)
     clades <- prop_part2(obj, nTips)
     attr(clades, "labels") <- obj[[1]]$tip.label
@@ -327,8 +325,8 @@ boot.phylo <-
     ## sort labels after mixed them up
     if (jumble) {
         boot.tree <- .compressTipLabel(boot.tree, ref = phy$tip.label)
-        boot.tree <- .uncompressTipLabel(boot.tree)
-        boot.tree <- unclass(boot.tree) # otherwise countBipartitions crashes
+        # class = NULL, otherwise countBipartitions crashes
+        boot.tree <- .uncompressTipLabel(boot.tree, class = NULL)
     }
     class(boot.tree) <- "multiPhylo"
     if (rooted) {

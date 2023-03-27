@@ -162,7 +162,9 @@ c.phylo <- function(..., recursive = TRUE)
     if (all(isphylo | ismulti)) {
         for (i in which(isphylo)) obj[[i]] <- .c_phylo_single(obj[[i]])
         ## added by Klaus:
-        for (i in which(ismulti)) obj[[i]] <- .uncompressTipLabel(obj[[i]])
+        for (i in which(ismulti)) {
+          obj[[i]] <- .uncompressTipLabel(obj[[i]], class = "multiPhylo")
+        }
         obj <- .makeMultiPhyloFromObj(obj)
     } else {
         warning('some objects not of class "phylo" or "multiPhylo": argument recursive=TRUE ignored')
@@ -203,17 +205,21 @@ c.multiPhylo <- function(..., recursive = TRUE)
     }
     for (i in which(isphylo)) obj[[i]] <- .c_phylo_single(obj[[i]])
     ## added by Klaus
-    for (i in which(ismulti)) obj[[i]] <- .uncompressTipLabel(obj[[i]])
+    for (i in which(ismulti)) {
+      obj[[i]] <- .uncompressTipLabel(obj[[i]], class = "multiPhylo")
+    }
     .makeMultiPhyloFromObj(obj)
 }
 
-.uncompressTipLabel <- function(x)
+.uncompressTipLabel <- function(x, class = class(x))
 {
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
     class(x) <- NULL
     for (i in 1:length(x)) x[[i]]$tip.label <- Lab
-    class(x) <- "multiPhylo"
+    if (!is.null(class)) {
+      class(x) <- class
+    }
     attr(x, "TipLabel") <- NULL
     x
 }
@@ -248,8 +254,7 @@ c.multiPhylo <- function(..., recursive = TRUE)
         class(x) <- NULL
     } else {
         if (!identical(TipLabel.x, TipLabel.value)) {
-            x <- .uncompressTipLabel(x)
-            class(x) <- NULL
+            x <- .uncompressTipLabel(x, class = NULL)
             value <- .uncompressTipLabel(value)
         }
     }

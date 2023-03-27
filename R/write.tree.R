@@ -53,8 +53,7 @@ write.tree <-
     }
 
     ## added by EP (2019-01-23):
-    phy <- .uncompressTipLabel(phy)
-    class(phy) <- NULL
+    phy <- .uncompressTipLabel(phy, class = NULL)
 
     for (i in 1:N)
         res[i] <- .write.tree2(phy[[i]], digits = digits,

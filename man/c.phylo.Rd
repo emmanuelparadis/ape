@@ -11,7 +11,7 @@
 \method{c}{phylo}(..., recursive = TRUE)
 \method{c}{multiPhylo}(..., recursive = TRUE)
 .compressTipLabel(x, ref = NULL)
-.uncompressTipLabel(x)
+.uncompressTipLabel(x, class = class(x))
 }
 \arguments{
   \item{\dots}{one or several objects of class \code{"phylo"} and/or
@@ -20,6 +20,8 @@
   \item{x}{an object of class \code{"phylo"} or \code{"multiPhylo"}.}
   \item{ref}{an optional vector of mode character to constrain the order
     of the tips. By default, the order from the first tree is used.}
+  \item{class}{character vector stipulating the class to assign to the returned
+  object.}
 }
 \details{
   These \code{c} methods check all the arguments, and return by default
@@ -39,7 +41,8 @@
   \code{.uncompressTipLabel} does the reverse operation.
 }
 \value{
-  An object of class \code{"multiPhylo"}.
+  An object of class \code{"multiPhylo"} (or, if \code{class} is specified, of
+  class \code{class}).
 }
 \author{Emmanuel Paradis}
 \seealso{\code{\link{summary.phylo}}, \code{\link{multiphylo}}}
