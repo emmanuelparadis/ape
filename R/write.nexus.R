@@ -44,7 +44,7 @@ write.nexus <- function(..., file = "", translate = TRUE)
                 obj[[i]]$tip.label <- checkLabel(obj[[i]]$tip.label)
         } else {
             attr(obj, "TipLabel") <- checkLabel(attr(obj, "TipLabel"))
-            obj <- .uncompressTipLabel(obj)
+            obj <- .uncompressTipLabel(obj, class = "multiPhylo")
         }
     }
 
