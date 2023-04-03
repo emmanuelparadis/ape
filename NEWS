@@ -15,6 +15,13 @@ BUG FIXES
     o rtt() was fixed when dates include NAs (issue #73 on GitHub).
 
 
+OTHER CHANGES
+
+    o .uncompressTipLabel() now returns an object of the same class
+      than the input object (previously the returned object was always
+      of class "multiPhylo").
+
+
 
 		CHANGES IN APE VERSION 5.7-1
 

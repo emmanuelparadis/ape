@@ -1,8 +1,8 @@
-## summary.phylo.R (2022-03-01)
+## summary.phylo.R (2023-04-03)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
-## Copyright 2003-2022 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
+## Copyright 2003-2023 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -211,9 +211,10 @@ c.multiPhylo <- function(..., recursive = TRUE)
 {
     Lab <- attr(x, "TipLabel")
     if (is.null(Lab)) return(x)
+    clx <- class(x) # <- new
     class(x) <- NULL
-    for (i in 1:length(x)) x[[i]]$tip.label <- Lab
-    class(x) <- "multiPhylo"
+    for (i in seq_along(x)) x[[i]]$tip.label <- Lab # <- modified
+    class(x) <- clx # <- modified
     attr(x, "TipLabel") <- NULL
     x
 }
