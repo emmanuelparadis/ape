@@ -23,6 +23,10 @@ is.binary(phy)
   nodes (including the root node) have exactly two descendant nodes, so
   that they are of degree three expect the root which is of degree 2.
 
+  The test ignores branch lengths. Consider using \code{\link{di2multi}}
+  if you want to treat zero-branch lengths as resulting from
+  multichotomies.
+  
   \code{is.binary.tree} is deprecated and will be removed soon:
   currently it calls \code{is.binary}.
 }

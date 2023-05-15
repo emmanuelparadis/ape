@@ -1,4 +1,4 @@
-## njs.R (2013-10-04)
+## njs.R (2023-05-15)
 
 ## Tree Reconstruction from Incomplete Distances With NJ* or bio-NJ*
 
@@ -16,6 +16,7 @@ njs <- function(X, fs = 15)
     X[X < 0] <- -1
     X[is.nan(X)] <- -1
     N <- attr(X, "Size")
+    if (N < 3) stop("cannot build an NJ* tree with less than 3 observations")
     labels <- attr(X, "Labels")
     if (is.null(labels)) labels <- as.character(1:N)
     ans <- .C(C_njs, as.double(X), as.integer(N), integer(2*N - 3),
@@ -36,6 +37,7 @@ bionjs <- function(X, fs = 15)
     X[X < 0] <- -1
     X[is.nan(X)] <- -1
     N <- attr(X, "Size")
+    if (N < 3) stop("cannot build a BIONJ* tree with less than 3 observations")
     labels <- attr(X, "Labels")
     if (is.null(labels)) labels <- as.character(1:N)
     ans <- .C(C_bionjs, as.double(X), as.integer(N), integer(2*N - 3),

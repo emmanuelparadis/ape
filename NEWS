@@ -14,12 +14,19 @@ BUG FIXES
 
     o rtt() was fixed when dates include NAs (issue #73 on GitHub).
 
+    o njs(), bionj(), bionjs(), fastme.bal(), and fastme.ols() now
+      check that there are least three observations in the distance
+      matrix (issue #84 on GitHub).
+
 
 OTHER CHANGES
 
     o .uncompressTipLabel() now returns an object of the same class
       than the input object (previously the returned object was always
       of class "multiPhylo").
+
+    o The help page of is.binary() has been clarified that branch
+      lengths are ignored (issue #83 on GitHub).
 
 
 
@@ -82,8 +89,9 @@ BUG FIXES
     o consensus() did not use postprocess.prop.part() and might
       scramble nodelabels (see PR #65 on GitHub).
 
-    o is.binary.phylo() returned TRUE with trees such as
-      ((a:1):1,b:2,c:2):1;.
+    o is.binary.phylo() used to return TRUE with trees such as
+      ((a:1):1,b:2,c:2):1;. This test now conforms with what is
+      written in the documentation.
 
 
 OTHER CHANGES

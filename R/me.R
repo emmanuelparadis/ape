@@ -1,4 +1,4 @@
-## me.R (2019-03-26)
+## me.R (2023-05-15)
 
 ##   Tree Estimation Based on Minimum Evolution Algorithm
 
@@ -16,6 +16,8 @@ fastme.bal <- function(X, nni = TRUE, spr = TRUE, tbr = FALSE)
     }
     if (is.matrix(X)) X <- as.dist(X)
     N <- as.integer(attr(X, "Size"))
+    if (N < 3)
+        stop("cannot build ME tree with less than 3 observations")
     nedge <- 2L * N - 3L
     ans <- .C(me_b, as.double(X), N, 1:N, as.integer(nni),
               as.integer(spr), as.integer(tbr), integer(nedge),
@@ -35,6 +37,8 @@ fastme.ols <- function(X, nni = TRUE)
 {
     if (is.matrix(X)) X <- as.dist(X)
     N <- as.integer(attr(X, "Size"))
+    if (N < 3)
+        stop("cannot build ME tree with less than 3 observations")
     nedge <- 2L * N - 3L
     ans <- .C(me_o, as.double(X), N, 1:N, as.integer(nni),
               integer(nedge), integer(nedge), double(nedge),
@@ -58,7 +62,8 @@ bionj <- function(X)
     if (any(X > 100))
         stop("at least one distance was greater than 100")
     N <- as.integer(attr(X, "Size"))
-
+    if (N < 3)
+        stop("cannot build a BIONJ tree with less than 3 observations")
     ans <- .C(C_bionj, as.double(X), N, integer(2 * N - 3),
               integer(2 * N - 3), double(2*N - 3), NAOK = TRUE)
     labels <- attr(X, "Labels")
