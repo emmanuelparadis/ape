@@ -1,8 +1,8 @@
-## nodelabels.R (2020-12-06)
+## nodelabels.R (2023-05-15)
 
 ##   Labelling Trees
 
-## Copyright 2004-2020 Emmanuel Paradis, 2006 Ben Bolker, and 2006 Jim Lemon
+## Copyright 2004-2023 Emmanuel Paradis, 2006 Ben Bolker, and 2006 Jim Lemon
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -55,9 +55,9 @@ BOTHlabels <- function(text, sel, XX, YY, adj, frame, pch, thermo,
     args <- list(...)
     CEX <- if ("cex" %in% names(args)) args$cex else par("cex")
     if (frame != "none" && !is.null(text)) {
+        width <- strwidth(text, units = "inches", cex = CEX)
+        height <- strheight(text, units = "inches", cex = CEX)
         if (frame == "rect") {
-            width <- strwidth(text, units = "inches", cex = CEX)
-            height <- strheight(text, units = "inches", cex = CEX)
             if ("srt" %in% names(args)) {
                 args$srt <- args$srt %% 360 # just in case srt >= 360
                 if (args$srt == 90 || args$srt == 270) {
@@ -69,16 +69,24 @@ BOTHlabels <- function(text, sel, XX, YY, adj, frame, pch, thermo,
             }
             width <- xinch(width)
             height <- yinch(height)
-            xl <- XX - width*adj[1] - xinch(0.03)
+            xl <- XX - width * adj[1] - xinch(0.03)
             xr <- xl + width + xinch(0.03)
-            yb <- YY - height*adj[2] - yinch(0.02)
+            yb <- YY - height * adj[2] - yinch(0.02)
             yt <- yb + height + yinch(0.05)
             rect(xl, yb, xr, yt, col = bg)
         }
         if (frame == "circle") {
-            radii <- 0.8*apply(cbind(strheight(text, units = "inches", cex = CEX),
-                                     strwidth(text, units = "inches", cex = CEX)), 1, max)
-            symbols(XX, YY, circles = radii, inches = max(radii), add = TRUE, bg = bg)
+            radii <- 0.8 * apply(cbind(height, width), 1, max)
+            offsetX <- offsetY <- 0
+            if (any(adj != 0.5)) {
+                width <- xinch(width)
+                height <- yinch(height)
+                offsetX <- width * (adj[1] - 0.5)
+                offsetY <- height * (adj[2] - 0.5)
+                #browser()
+            }
+            symbols(XX - offsetX, YY - offsetY, circles = radii,
+                    inches = max(radii), add = TRUE, bg = bg)
         }
     }
     if (!is.null(thermo)) {

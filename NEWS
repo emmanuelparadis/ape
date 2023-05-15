@@ -18,6 +18,9 @@ BUG FIXES
       check that there are least three observations in the distance
       matrix (issue #84 on GitHub).
 
+    o nodelabels(, frame = "circle") used to ignore the argument
+      'adj'. This is fixed (issue #85 on GitHub).
+
 
 OTHER CHANGES
 
