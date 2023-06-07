@@ -136,8 +136,8 @@ ace(x, phy, type = "continuous", method = if (type == "continuous")
   discrete characters are computed with a joint estimation procedure
   using a procedure similar to the one described in Pupko et al. (2000).
   If \code{marginal = TRUE}, a marginal estimation procedure is used
-  (this was the only choice until ape 3.1-1). With this method, the
-  likelihood values at a given node are computed using only the
+  (this was the only choice until \pkg{ape} 3.1-1). With this method,
+  the likelihood values at a given node are computed using only the
   information from the tips (and branches) descending from this node.
   With the joint estimation, all information is used for each node. The
   difference between these two methods is further explained in

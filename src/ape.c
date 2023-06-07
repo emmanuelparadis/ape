@@ -1,6 +1,6 @@
-/* ape.c    2021-04-08 */
+/* ape.c    2023-06-07 */
 
-/* Copyright 2011-2021 Emmanuel Paradis, and 2007 R Development Core Team */
+/* Copyright 2011-2023 Emmanuel Paradis, and 2007 R Development Core Team */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
@@ -36,7 +36,7 @@ void C_additive(double *dd, int* np, int* mp, double *ret);
 void C_bionj(double *X, int *N, int *edge1, int *edge2, double *el);
 void C_bionjs(double *D, int *N, int *edge1, int *edge2, double *edge_length, int* fsS);
 void delta_plot(double *D, int *size, int *nbins, int *counts, double *deltabar);
-void dist_nodes(int *n, int *m, int *e1, int *e2, double *el, int *N, double *D);
+SEXP dist_nodes(SEXP Ntips, SEXP Nnodes, SEXP edge, SEXP edge_length);
 void C_ewLasso(double *D, int *N, int *e1, int *e2);
 void mat_expo(double *P, int *nr);
 void me_b(double *X, int *N, int *labels,
@@ -96,7 +96,6 @@ static R_CMethodDef C_entries[] = {
     {"C_bionj", (DL_FUNC) &C_bionj, 5},
     {"C_bionjs", (DL_FUNC) &C_bionjs, 6},
     {"delta_plot", (DL_FUNC) &delta_plot, 5},
-    {"dist_nodes", (DL_FUNC) &dist_nodes, 7},
     {"C_ewLasso", (DL_FUNC) &C_ewLasso, 4},
     {"mat_expo", (DL_FUNC) &mat_expo, 2},
     {"me_b", (DL_FUNC) &me_b, 9},
@@ -122,6 +121,7 @@ static R_CMethodDef C_entries[] = {
 
 static R_CallMethodDef Call_entries[] = {
     {"dist_dna", (DL_FUNC) &dist_dna, 7},
+    {"dist_nodes", (DL_FUNC) &dist_nodes, 4},
     {"GlobalDeletionDNA", (DL_FUNC) &GlobalDeletionDNA, 1},
     {"rawStreamToDNAorAAbin", (DL_FUNC) &rawStreamToDNAorAAbin, 2},
     {"seq_root2tip", (DL_FUNC) &seq_root2tip, 3},

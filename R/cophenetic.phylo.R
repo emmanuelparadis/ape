@@ -1,8 +1,8 @@
-## cophenetic.phylo.R (2021-06-14)
+## cophenetic.phylo.R (2023-06-07)
 
 ##   Pairwise Distances from a Phylogenetic Tree
 
-## Copyright 2006-2021 Emmanuel Paradis
+## Copyright 2006-2023 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -12,13 +12,8 @@ dist.nodes <- function(x)
     x <- reorder(x) # required for the C code
     n <- Ntip(x)
     m <- x$Nnode
+    d <- .Call(dist_nodes, n, m, x$edge, x$edge.length)
     nm <- n + m
-    if (nm > floor(sqrt(2^31 - 1))) stop("tree too big")
-    d <- .C(dist_nodes, as.integer(n), as.integer(m),
-            as.integer(x$edge[, 1] - 1L), as.integer(x$edge[, 2] - 1L),
-            as.double(x$edge.length), as.integer(Nedge(x)),
-            double(nm * nm), NAOK = TRUE)[[7]]
-    dim(d) <- c(nm, nm)
     dimnames(d) <- list(1:nm, 1:nm)
     d
 }

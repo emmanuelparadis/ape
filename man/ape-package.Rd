@@ -16,7 +16,8 @@ Analyses of Phylogenetics and Evolution
   The complete list of functions can be displayed with
   \code{library(help = ape)}.
 
-  More information on \pkg{ape} can be found at \url{http://ape-package.ird.fr/}.
+  More information on \pkg{ape} can be found at
+  \url{https://emmanuelparadis.github.io}.
 }
 
 \author{
