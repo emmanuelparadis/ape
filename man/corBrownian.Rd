@@ -9,10 +9,11 @@ corBrownian(value=1, phy, form=~1)
 \method{corMatrix}{corBrownian}(object, covariate = getCovariate(object), corr = TRUE, ...)
 }
 \arguments{
-  \item{value}{The \eqn{\gamma}{gamma} parameter (default to 1)}
+  \item{value}{The \eqn{\gamma}{gamma} parameter (default to 1). The
+    exact value has no effect on model fitting with PGLS.}
   \item{phy}{An object of class \code{phylo} representing the phylogeny
-    (with branch lengths) to consider}
-  \item{object}{An (initialized) object of class \code{corBrownian}}
+    (with branch lengths) to consider.}
+  \item{object}{An (initialized) object of class \code{corBrownian}.}
   \item{corr}{a logical value. If 'TRUE' the function returns the
     correlation matrix, otherwise it returns the variance/covariance matrix.}
   \item{form}{a one sided formula of the form ~ t, or ~ t | g, specifying the taxa covariate t and, optionally, a grouping factor g. A covariate for this correlation structure must be character valued, with entries matching the tip labels in the phylogenetic tree. When a grouping factor is present in form, the correlation structure is assumed to apply only to observations within the same grouping level; observations with different grouping levels are assumed to be uncorrelated. Defaults to ~ 1, which corresponds to using the order of the observations in the data as a covariate, and no groups.}
