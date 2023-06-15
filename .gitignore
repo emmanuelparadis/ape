@@ -52,3 +52,4 @@ vignettes/*.pdf
 *.Rnw~
 DESCRIPTION~
 NAMESPACE~
+.DS_Store
