@@ -22,9 +22,9 @@ drop.tip(phy, tip, \dots)
          interactive = FALSE, \dots)
 \method{drop.tip}{multiPhylo}(phy, tip, \dots)
 
-keep.tip(phy, tip)
-\method{keep.tip}{phylo}(phy, tip)
-\method{keep.tip}{multiPhylo}(phy, tip)
+keep.tip(phy, tip, ...)
+\method{keep.tip}{phylo}(phy, tip, ...)
+\method{keep.tip}{multiPhylo}(phy, tip, ...)
 
 extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
               interactive = FALSE)
@@ -67,9 +67,9 @@ extract.clade(phy, node, root.edge = 0, collapse.singles = TRUE,
   are used.
 
   If \code{subtree = TRUE}, the returned tree has one or several
-  terminal branches indicating how many tips have been removed (with a
-  label \code{"[x_tips]"}). This is done for as many monophyletic groups
-  that have been deleted.
+  terminal branches named with node labels if available. Otherwise it is
+  indicated how many tips have been removed (with a label \code{"[x_tips]"}).
+  This is done for as many monophyletic groups that have been deleted.
 
   Note that \code{subtree = TRUE} implies \code{trim.internal = TRUE}.
 
