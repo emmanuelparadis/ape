@@ -7,9 +7,9 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-keep.tip <- function(phy, tip) UseMethod("keep.tip")
+keep.tip <- function(phy, tip, ...) UseMethod("keep.tip")
 
-keep.tip.phylo <- function(phy, tip)
+keep.tip.phylo <- function(phy, tip, ...)
 {
 ###    if (!inherits(phy, "phylo"))
 ###        stop("object \"phy\" is not of class \"phylo\"")
@@ -34,7 +34,7 @@ keep.tip.phylo <- function(phy, tip)
     }
     ## get complement tip indices to drop
     toDrop <- setdiff(1:Ntip, tip)
-    drop.tip(phy, toDrop)
+    drop.tip(phy, toDrop, ...)
 }
 
 extract.clade <- function(phy, node, root.edge = 0, collapse.singles = TRUE, interactive = FALSE)
@@ -218,7 +218,7 @@ drop.tip.phylo <- function(phy, tip, trim.internal = TRUE, subtree = FALSE,
         new.tip.label <-
             if (!length(node2tip)) {
                 character(0)
-            } else if (subtree) {
+            } else if (subtree && is.null(phy$node.label)) {
                 paste("[", N[node2tip], "_tips]", sep = "")
             } else {
                 if (is.null(phy$node.label)) rep("NA", length(node2tip))
@@ -248,20 +248,20 @@ drop.tip.phylo <- function(phy, tip, trim.internal = TRUE, subtree = FALSE,
 
 ## "multiPhylo" methods by Klaus:
 
-keep.tip.multiPhylo <- function(phy, tip)
+keep.tip.multiPhylo <- function(phy, tip, ...)
 {
     if (is.null(attr(phy, "TipLabel"))) {
         tmp <- try(.compressTipLabel(phy), TRUE)
         if (!inherits(tmp, "try-error")) phy <- tmp
     }
     if (!is.null(attr(phy, "TipLabel"))) {
-        phy <- lapply(phy, keep.tip, tip)
+        phy <- lapply(phy, keep.tip, tip, ...)
         class(phy) <- "multiPhylo"
         phy <- .compressTipLabel(phy)
     } else {
         if (!inherits(tip, "character"))
             stop("Trees have different labels, tip needs to be of class character!")
-        phy <- lapply(phy, keep.tip, tip)
+        phy <- lapply(phy, keep.tip, tip, ...)
         class(phy) <- "multiPhylo"
     }
     phy
