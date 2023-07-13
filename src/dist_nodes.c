@@ -17,7 +17,7 @@
    one distance, then by moving up along the edge matrix, one finds nodes
    that have already been visited and the distance matrix can be updated. */
 
-SEXP dist_nodes2(SEXP Ntips, SEXP Nnodes, SEXP edge, SEXP edge_length)
+SEXP dist_nodes(SEXP Ntips, SEXP Nnodes, SEXP edge, SEXP edge_length)
 {
     /* n: nb of tips, m: nb of nodes, N: nb of edges */
 
