@@ -42,7 +42,12 @@ reorder.phylo <- function(x, order = "cladewise", index.only = FALSE, ...)
     io <- pmatch(order, ORDER)
     if (is.na(io)) stop("ambiguous order")
     order <- ORDER[io]
-    .reorder_ape(x, order, index.only, length(x$tip.label), io)
+    n <- length(x$tip.label)
+    if (n < 2) {
+        x
+    } else {
+        .reorder_ape(x, order, index.only, n, io)
+    }
 }
 
 reorder.multiPhylo <- function(x, order = "cladewise", ...)
