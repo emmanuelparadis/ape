@@ -40,7 +40,8 @@
 
 \method{image}{AAbin}(x, what, col, bg = "white", xlab = "", ylab = "",
       show.labels = TRUE, cex.lab = 1, legend = TRUE, grid = FALSE,
-      show.aa = FALSE, aa.cex = 1, aa.font = 1, aa.col = "black",\dots)
+      show.aa = FALSE, aa.cex = 1, aa.font = 1, aa.col = "black",
+      scheme = "Ape_AA",\dots)
 
 as.AAbin(x, \dots)
 \method{as.AAbin}{character}(x, \dots)
@@ -103,6 +104,9 @@ default).}
 default).}
 \item{aa.cex, aa.font, aa.col}{control the aspect of the AA symbols
 (ignored if the previous is \code{FALSE}).}
+  \item{scheme}{a predefined color scheme. For amino acid options are "Ape_AA",
+    "Zappo_AA", "Clustal" and "Hydrophobicity", for nucleotides "Ape_NT" and
+    "RY_NT".}
 \item{pairwise.deletion}{a logical indicating whether to delete the
 sites with missing data in a pairwise way. The default is to delete the
 sites with at least one missing data for all sequences.}
