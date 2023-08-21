@@ -21,6 +21,9 @@ has.singles <- function(tree)
 collapse.singles <- function(tree, root.edge = FALSE)
 {
     n <- length(tree$tip.label)
+    if (n == 0) {
+        return(tree)
+    }
     tree <- reorder(tree) # this works now
     e1 <- tree$edge[, 1]
     e2 <- tree$edge[, 2]

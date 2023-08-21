@@ -9,6 +9,11 @@ NEW FEATURES
       improved and is now twice faster with a single core, and 4-5
       times faster with mc.cores = 2.
 
+    o keep.tip() gains a '...' argument which is passed to drop.tip().
+      The behaviour of the latter is changed so that node labels, if
+      available, are used to create new tip labels when subtree = TRUE
+      (see PR #90 on GitHub).
+
 
 BUG FIXES
 
@@ -42,8 +47,8 @@ OTHER CHANGES
 
 BUG FIXES
 
-    o Some very unbalanced resulted in a segfault (see issue #70 on
-      GitHub).
+    o Some very unbalanced trees resulted in a segfault (see issue #70
+      on GitHub).
 
 
 OTHER CHANGES
