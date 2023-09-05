@@ -37,8 +37,8 @@
   \item{base.cex, base.font, base.col}{control the aspect of the base
     symbols (ignored if the previous is \code{FALSE}).}
   \item{scheme}{a predefined color scheme. For amino acid options are "Ape_AA",
-    "Zappo_AA", "Clustal" and "Hydrophobicity", for nucleotides "Ape_NT" and
-    "RY_NT".}
+    "Zappo_AA", "Clustal", "Polarity" and "Transmembrane_tendency", for
+    nucleotides "Ape_NT" and"RY_NT".}
   \item{\dots}{further arguments passed to
     \code{\link[graphics]{image.default}} (e.g., \code{xlab},
     \code{cex.axis}).}

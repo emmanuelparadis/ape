@@ -797,6 +797,15 @@ Clustal <- list(properties = list(
              "#15a4a4", "#f08080")
 )
 
+
+# Polarity geneious
+Polarity <- list(properties = list(
+    "Non polar" = c("G", "A", "V", "L", "I", "F", "W", "M", "P"),
+    "Polar, uncharged" = c("S", "T", "C", "Y", "N", "Q"),
+    "Polar, acidic" = c("D", "E"),
+    "Polar, basic" = c("K", "R", "H")),
+    color = c("yellow", "green", "red", "blue"))
+
 # Physicochemical Properties
 Zappo_AA <- list(properties = list(
     Hydrophobic = c("I", "L", "V", "A", "M"), # `Aliphatic/Hydrophobic`
@@ -810,7 +819,7 @@ Zappo_AA <- list(properties = list(
              "#ffff00")
 )
 
-Hydrophobicity <- list(properties = list(
+Transmembrane_tendency <- list(properties = list(
     Lys = "K",
     Asp = "D",
     Glu = "E",
@@ -836,6 +845,32 @@ Hydrophobicity <- list(properties = list(
            "#A1005D", "#AE0050", "#BB0043", "#C90035", "#D60028", "#E4001A",
            "#F1000D", "#FF0000"))
 
+
+Hydrop <- list(properties = list(
+    Lys = "K",
+    Asp = "D",
+    Glu = "E",
+    Arg = "R",
+    Gln = "Q",
+    Asn = "N",
+    Pro = "P",
+    His = "H",
+    Ser = "S",
+    Thr = "T",
+    Cys = "C",
+    Gly = "G",
+    Ala = "A",
+    Tyr = "Y",
+    Met = "M",
+    Val = "V",
+    Trp = "W",
+    Leu = "L",
+    Ile = "I",
+    Phe = "F"
+), color=c("#0000FF", "#0D00F1", "#1A00E4", "#2800D6", "#3500C9", "#4300BB",
+           "#5000AE", "#5D00A1", "#6B0093", "#780086", "#860078", "#93006B",
+           "#A1005D", "#AE0050", "#BB0043", "#C90035", "#D60028", "#E4001A",
+           "#F1000D", "#FF0000"))
 
 
 image.worker <-
@@ -915,7 +950,7 @@ image.AAbin <-
              aa.font = 1, aa.col = "black", scheme="Ape_AA", ...)
 {
     scheme <- match.arg(scheme, c("Ape_AA", "Clustal", "Zappo_AA",
-                                  "Hydrophobicity"))
+                                  "Polarity", "Transmembrane_tendency"))
     scheme <- get(scheme, environment(image.AAbin))
     if (missing(what)){
         if(!is.null(scheme)) what <- scheme$properties
