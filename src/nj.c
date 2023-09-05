@@ -1,15 +1,25 @@
-/* nj.c       2011-10-20 */
+/* nj.c       2023-09-03 */
 
-/* Copyright 2006-2011 Emmanuel Paradis */
+/* Copyright 2006-2023 Emmanuel Paradis */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
 
 #include "ape.h"
 
+#define DINDEXl(i, j) n*(i - 1) - i*(i - 1)/2 + j - i - 1
+
+int give_indexl(int i, int j, int n)
+{
+	if (i > j) return(DINDEXl(j, i));
+	else return(DINDEXl(i, j));
+}
+
+/*
+   returns the sum of all distances D_ij between i and j
+   with j = 1...n and j != i
+*/
 double sum_dist_to_i(int n, double *D, int i)
-/* returns the sum of all distances D_ij between i and j
-   with j = 1...n and j != i */
 {
 /* we use the fact that the distances are arranged sequentially
    in the lower triangle, e.g. with n = 6 the 15 distances are
@@ -28,7 +38,7 @@ j 4  2  6  9
   (i - 1)th row (labelled 'i')--2nd loop */
 
 	double sum = 0;
-	int j, start, end;
+	long j, start, end;
 
 	if (i < n) {
 		/* the expression below CANNOT be factorized
@@ -52,13 +62,15 @@ j 4  2  6  9
 
 SEXP C_nj(SEXP DIST, SEXP N)
 {
-    double *D, *edge_length, *S, *new_dist, A, B, smallest_S;
-    int n, i, j, k, ij, *edge, cur_nod, *otu_label, smallest, OTU1, OTU2, Nedge;
+    double *D, *edge_length, *S, *new_dist, A, B, smallest_S, L;
+    int n, i, j, k, *edge, cur_nod, *otu_label, OTU1, OTU2, Nedge;
+    long ij, smallest;
     SEXP phy, E, EL;
 
     PROTECT(DIST = coerceVector(DIST, REALSXP));
     PROTECT(N = coerceVector(N, INTSXP));
     D = REAL(DIST);
+    L = XLENGTH(DIST);
     n = INTEGER(N)[0];
 
     Nedge = 2 * n - 3;
@@ -72,7 +84,7 @@ SEXP C_nj(SEXP DIST, SEXP N)
     cur_nod = 2 * n - 2;
 
     S = (double*)R_alloc(n + 1, sizeof(double));
-    new_dist = (double*)R_alloc(n * (n - 1) / 2, sizeof(double));
+    new_dist = (double*)R_alloc(L, sizeof(double));
     otu_label = (int*)R_alloc(n + 1, sizeof(int));
 
     for (i = 1; i <= n; i++) otu_label[i] = i; /* otu_label[0] is not used */
@@ -112,8 +124,8 @@ SEXP C_nj(SEXP DIST, SEXP N)
 	ij = 0;
 	for (i = 1; i <= n; i++) {
 	    if (i == OTU1 || i == OTU2) continue;
-	    new_dist[ij] = (D[give_index(i, OTU1, n)] + /* dist(i, OTU1) */
-			    D[give_index(i, OTU2, n)] - /* dist(i, OTU2) */
+	    new_dist[ij] = (D[give_indexl(i, OTU1, n)] + /* dist(i, OTU1) */
+			    D[give_indexl(i, OTU2, n)] - /* dist(i, OTU2) */
 			    A) / 2;
 	    ij++;
 	}
@@ -133,13 +145,15 @@ SEXP C_nj(SEXP DIST, SEXP N)
 	    if (i == OTU1 || i == OTU2) continue;
 	    for (j = i + 1; j <= n; j++) {
 		if (j == OTU1 || j == OTU2) continue;
-		new_dist[ij] = D[DINDEX(i, j)];
+		new_dist[ij] = D[DINDEXl(i, j)];
 		ij++;
 	    }
 	}
 
+	L -= n - 1;
 	n--;
-	for (i = 0; i < n * (n - 1) / 2; i++) D[i] = new_dist[i];
+	/* for (i = 0; i < n * (n - 1) / 2; i++) D[i] = new_dist[i]; */
+	memcpy(D, new_dist, L * sizeof(double));
 
 	cur_nod--;
 	k += 2;
