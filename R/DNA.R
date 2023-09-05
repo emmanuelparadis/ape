@@ -846,33 +846,6 @@ Transmembrane_tendency <- list(properties = list(
            "#F1000D", "#FF0000"))
 
 
-Hydrop <- list(properties = list(
-    Lys = "K",
-    Asp = "D",
-    Glu = "E",
-    Arg = "R",
-    Gln = "Q",
-    Asn = "N",
-    Pro = "P",
-    His = "H",
-    Ser = "S",
-    Thr = "T",
-    Cys = "C",
-    Gly = "G",
-    Ala = "A",
-    Tyr = "Y",
-    Met = "M",
-    Val = "V",
-    Trp = "W",
-    Leu = "L",
-    Ile = "I",
-    Phe = "F"
-), color=c("#0000FF", "#0D00F1", "#1A00E4", "#2800D6", "#3500C9", "#4300BB",
-           "#5000AE", "#5D00A1", "#6B0093", "#780086", "#860078", "#93006B",
-           "#A1005D", "#AE0050", "#BB0043", "#C90035", "#D60028", "#E4001A",
-           "#F1000D", "#FF0000"))
-
-
 image.worker <-
     function(x, what, col, bg = "white", xlab = "", ylab = "",
              show.labels = TRUE, cex.lab = 1, legend = TRUE,
