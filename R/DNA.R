@@ -455,74 +455,6 @@ dist.dna <- function(x, model = "K80", variance = FALSE, gamma = FALSE,
     d
 }
 
-image.DNAbin <-
-    function(x, what, col, bg = "white", xlab = "", ylab = "",
-             show.labels = TRUE, cex.lab = 1, legend = TRUE,
-             grid = FALSE, show.bases = FALSE, base.cex = 1,
-             base.font = 1, base.col = "black", ...)
-{
-    what <-
-        if (missing(what)) c("a", "g", "c", "t", "n", "-") else tolower(what)
-    if (missing(col))
-        col <- c("red", "yellow", "green", "blue", "grey", "black")
-    x <- as.matrix(x) # tests if all sequences have the same length
-    n <- (dx <- dim(x))[1] # number of sequences
-    s <- dx[2] # number of sites
-    y <- integer(N <- length(x))
-    ncl <- length(what)
-    col <- rep(col, length.out = ncl)
-    brks <- 0.5:(ncl + 0.5)
-    sm <- 0L
-    for (i in ncl:1) {
-        k <- ._bs_[._cs_ == what[i]]
-        sel <- which(x == k)
-        if (L <- length(sel)) {
-            y[sel] <- i
-            sm <- sm + L
-        } else {
-            what <- what[-i]
-            col <- col[-i]
-            brks <- brks[-i]
-        }
-    }
-    dim(y) <- dx
-    ## if there's no 0 in y, must drop 'bg' from the cols passed to image:
-    if (sm == N) {
-        leg.co <- co <- col
-        leg.txt <- toupper(what)
-    } else {
-        co <- c(bg, col)
-        leg.txt <- c(toupper(what), "others")
-        leg.co <- c(col, bg)
-        brks <- c(-0.5, brks)
-    }
-    yaxt <- if (show.labels) "n" else "s"
-    image.default(1:s, 1:n, t(y[n:1, , drop = FALSE]), col = co, xlab = xlab,
-                  ylab = ylab, yaxt = yaxt, breaks = brks, ...)
-    if (show.labels)
-        mtext(rownames(x), side = 2, line = 0.1, at = n:1,
-              cex = cex.lab, adj = 1, las = 1)
-    if (legend) {
-        psr <- par("usr")
-        xx <- psr[2]/2
-        yy <- psr[4] * (0.5 + 0.5/par("plt")[4])
-        legend(xx, yy, legend = leg.txt, pch = 22, pt.bg = leg.co,
-               pt.cex = 2, bty = "n", xjust = 0.5, yjust = 0.5,
-               horiz = TRUE, xpd = TRUE)
-    }
-    if (grid) {
-        if (is.logical(grid)) grid <- 3L
-        if (grid %in% 2:3) abline(v = seq(1.5, s - 0.5, 1), lwd = 0.33, xpd = FALSE)
-        if (grid %in% c(1, 3)) abline(h = seq(1.5, n - 0.5, 1), lwd = 0.33, xpd = FALSE)
-    }
-    if (show.bases) {
-        x <- toupper(as.character(x))
-        xx <- rep(1:s, each = n)
-        yy <- rep(n:1, s)
-        text(xx, yy, x, cex = base.cex, font = base.font, col = base.col)
-    }
-}
-
 alview <- function(x, file = "", uppercase = TRUE, showpos = TRUE)
 {
     if (is.list(x)) x <- as.matrix(x)
@@ -825,76 +757,213 @@ AAsubst <- function(x)
                  Small = .AA_raw[c("P", "G", "A", "C")],
                  Hydrophilic = .AA_raw[c("S", "T", "H", "N", "Q", "D", "E", "K", "R")])
 
+#.AA_3cat <- list(Hydrophobic = .AA_raw[c("V", "I", "L", "F", "W", "Y", "M")],
+#                 Small = .AA_raw[c("P", "G", "A", "C")],
+#                 Hydrophilic = .AA_raw[c("S", "T", "H", "N", "Q", "D", "E", "K", "R")])
+
+
+
+Ape_NT <- list(properties = list(
+    a="a", g="g", c="c", t="t", n="n", "-"="-"),
+    color=c("red", "yellow", "green", "blue", "grey", "black"))
+
+
+RY_NT <- list(properties = list(
+    Purine = c("a", "g", "r"),
+    Pyrimidine = c("c", "t", "y"),
+    "n" = "n",
+    "-" = "-"),
+    color=c("#FF00FF", "#00FFFF", "grey", "black"))
+
+
+
+Ape_AA <- list(properties = list(
+    Hydrophobic = c("V", "I", "L", "F", "W", "Y", "M"),
+    Small = c("P", "G", "A", "C"),
+    Hydrophilic = c("S", "T", "H", "N", "Q", "D", "E", "K", "R")),
+    color=c("red", "yellow", "blue"))
+
+# Properties + Conservation (Clustal X)
+Clustal <- list(properties = list(
+    Hydrophobic = c("A", "I", "L", "M", "F", "W", "V"),
+    Positive = c("K", "R"),
+    Negative = c("E", "D"),
+    Polar = c("N", "Q", "S", "T"),
+    Glycines = "G",
+    Prolines = "P",
+    Aromatic = c("H", "Y"),
+    Cysteine = "C"),
+    color= c("#80a0f0", "#f01505", "#c048c0", "#15c015", "#f09048", "#c0c000",
+             "#15a4a4", "#f08080")
+)
+
+
+# Polarity geneious
+Polarity <- list(properties = list(
+    "Non polar" = c("G", "A", "V", "L", "I", "F", "W", "M", "P"),
+    "Polar, uncharged" = c("S", "T", "C", "Y", "N", "Q"),
+    "Polar, acidic" = c("D", "E"),
+    "Polar, basic" = c("K", "R", "H")),
+    color = c("yellow", "green", "red", "blue"))
+
+# Physicochemical Properties
+Zappo_AA <- list(properties = list(
+    Hydrophobic = c("I", "L", "V", "A", "M"), # `Aliphatic/Hydrophobic`
+    Aromatic = c("F", "W", "Y"),
+    Positive = c("K", "R", "H"),
+    Negative = c("E", "D"),
+    Hydrophilic = c("S", "T", "N", "Q"),
+    Conformational = c("P", "G"), # `Conformationally special`
+    Cysteine = "C"),
+    color= c("#ff7979", "#f89f56", "#0070c0", "#c00000", "#08c81a", "#cc00cc",
+             "#ffff00")
+)
+
+Transmembrane_tendency <- list(properties = list(
+    Lys = "K",
+    Asp = "D",
+    Glu = "E",
+    Arg = "R",
+    Gln = "Q",
+    Asn = "N",
+    Pro = "P",
+    His = "H",
+    Ser = "S",
+    Thr = "T",
+    Cys = "C",
+    Gly = "G",
+    Ala = "A",
+    Tyr = "Y",
+    Met = "M",
+    Val = "V",
+    Trp = "W",
+    Leu = "L",
+    Ile = "I",
+    Phe = "F"
+), color=c("#0000FF", "#0D00F1", "#1A00E4", "#2800D6", "#3500C9", "#4300BB",
+           "#5000AE", "#5D00A1", "#6B0093", "#780086", "#860078", "#93006B",
+           "#A1005D", "#AE0050", "#BB0043", "#C90035", "#D60028", "#E4001A",
+           "#F1000D", "#FF0000"))
+
+
+image.worker <-
+    function(x, what, col, bg = "white", xlab = "", ylab = "",
+             show.labels = TRUE, cex.lab = 1, legend = TRUE,
+             grid = FALSE, show.bases = FALSE, base.cex = 1,
+             base.font = 1, base.col = "black", scheme=NULL, bs=NULL, cs=NULL,...)
+{
+#    what <-
+#        if (missing(what)) c("a", "g", "c", "t", "n", "-") else tolower(what)
+    if (missing(col))
+            col <- c("red", "yellow", "green", "blue", "grey", "black")
+        x <- as.matrix(x) # tests if all sequences have the same length
+        n <- (dx <- dim(x))[1] # number of sequences
+        s <- dx[2] # number of sites
+        y <- integer(N <- length(x))
+        ncl <- length(what)
+        col <- rep(col, length.out = ncl)
+        brks <- 0.5:(ncl + 0.5)
+        sm <- 0L
+        for (i in ncl:1) {
+            k <- bs[match(what[[i]], cs)]
+            sel <- which(unclass(x) %in% k)
+            if (L <- length(sel)) {
+                y[sel] <- i
+                sm <- sm + L
+            } #else {
+#                what <- what[-i]
+#                col <- col[-i]
+#                brks <- brks[-i]
+#            }
+        }
+        dim(y) <- dx
+        ## if there's no 0 in y, must drop 'bg' from the cols passed to image:
+        if (sm == N) {
+            leg.co <- co <- col
+            leg.txt <- toupper(names(what))
+        } else {
+            co <- c(bg, col)
+            leg.txt <- c(toupper(names(what)), "others")
+            leg.co <- c(col, bg)
+            brks <- c(-0.5, brks)
+        }
+        yaxt <- if (show.labels) "n" else "s"
+        image.default(1:s, 1:n, t(y[n:1, , drop = FALSE]), col = co, xlab = xlab,
+                      ylab = ylab, yaxt = yaxt, breaks = brks, ...)
+        if (show.labels)
+            mtext(rownames(x), side = 2, line = 0.1, at = n:1,
+                  cex = cex.lab, adj = 1, las = 1)
+        if (legend) {
+            psr <- par("usr")
+            xx <- psr[2]/2
+            yy <- psr[4] * (0.5 + 0.5/par("plt")[4])
+            n_col <- length(leg.txt)
+            if(n_col > 6) n_col <- ceiling(n_col/2)
+            legend(xx, yy, legend = leg.txt, pch = 22, pt.bg = leg.co,
+                   pt.cex = 2, bty = "n", xjust = 0.5, yjust = 0.5,
+                   horiz = FALSE, ncol=n_col, xpd = TRUE)
+        }
+        if (grid) {
+            if (is.logical(grid)) grid <- 3L
+            if (grid %in% 2:3) abline(v = seq(1.5, s - 0.5, 1), lwd = 0.33, xpd = FALSE)
+            if (grid %in% c(1, 3)) abline(h = seq(1.5, n - 0.5, 1), lwd = 0.33, xpd = FALSE)
+        }
+        if (show.bases) {
+            x <- toupper(as.character(x))
+            xx <- rep(1:s, each = n)
+            yy <- rep(n:1, s)
+            text(xx, yy, x, cex = base.cex, font = base.font, col = base.col)
+        }
+    }
+
 image.AAbin <-
     function(x, what, col, bg = "white", xlab = "", ylab = "",
              show.labels = TRUE, cex.lab = 1, legend = TRUE,
              grid = FALSE, show.aa = FALSE, aa.cex = 1,
-             aa.font = 1, aa.col = "black", ...)
+             aa.font = 1, aa.col = "black", scheme="Ape_AA", ...)
 {
-    if (missing(what))
-        what <- c("Hydrophobic", "Small", "Hydrophilic")
-    if (missing(col)) col <- c("red", "yellow", "blue")
-    n <- (dx <- dim(x))[1]
-    s <- dx[2]
-    y <- integer(N <- length(x))
-    ncl <- length(what)
-    col <- rep(col, length.out = ncl)
-    brks <- 0.5:(ncl + 0.5)
-    sm <- 0L
-    for (i in ncl:1) {
-        k <- .AA_3cat[[i]]
-        sel <- which(x %in% k)
-        if (L <- length(sel)) {
-            y[sel] <- i
-            sm <- sm + L
-        }
-        else {
-            what <- what[-i]
-            col <- col[-i]
-            brks <- brks[-i]
-        }
+    scheme <- match.arg(scheme, c("Ape_AA", "Clustal", "Zappo_AA",
+                                  "Polarity", "Transmembrane_tendency"))
+    scheme <- get(scheme, environment(image.AAbin))
+    if (missing(what)){
+        if(!is.null(scheme)) what <- scheme$properties
+        else what <- Ape_AA$properties
     }
-    dim(y) <- dx
-    if (sm == N) {
-        leg.co <- co <- col
-        leg.txt <- what
-    } else {
-        co <- c(bg, col)
-        leg.txt <- c(what, "Unknown")
-        leg.co <- c(col, bg)
-        brks <- c(-0.5, brks)
+    if (missing(col)){
+        if(!is.null(scheme)) col <- scheme$color
+        else col <- c("red", "yellow", "blue")
     }
-    yaxt <- if (show.labels) "n" else "s"
-    image.default(1:s, 1:n, t(y[n:1, ]), col = co, xlab = xlab, ylab = ylab,
-                  yaxt = yaxt, breaks = brks, ...)
-    if (length(poly <- AAsubst(x))) {
-        rect(poly - 0.5, n + 0.5, poly + 0.5, n + 0.5 + yinch(0.2),
-             col = "slategrey", border = NA, xpd = TRUE)
-        ##rect(0.5, n + 0.5, s + 0.5, n + 0.5 + yinch(0.2), lwd = 0.5)
-    }
-    if (show.labels)
-        mtext(rownames(x), side = 2, line = 0.1, at = n:1, cex = cex.lab,
-              adj = 1, las = 1)
-    if (legend) {
-        psr <- par("usr")
-        xx <- psr[2]/2
-        yy <- psr[4] * (0.5 + 0.5/par("plt")[4])
-        legend(xx, yy, legend = leg.txt, pch = 22, pt.bg = leg.co,
-               pt.cex = 2, bty = "n", xjust = 0.5, yjust = 0.5,
-               horiz = TRUE, xpd = TRUE)
-    }
-    if (grid) {
-        if (is.logical(grid)) grid <- 3L
-        if (grid %in% 2:3) abline(v = seq(1.5, s - 0.5, 1), lwd = 0.33, xpd = FALSE)
-        if (grid %in% c(1, 3)) abline(h = seq(1.5, n - 0.5, 1), lwd = 0.33, xpd = FALSE)
-    }
-    if (show.aa) {
-        x <- toupper(as.character(x))
-        xx <- rep(1:s, each = n)
-        yy <- rep(n:1, s)
-        text(xx, yy, x, cex = aa.cex, font = aa.font, col = aa.col)
-    }
+    image.worker(x, what, col, bg = bg, xlab = xlab, ylab = ylab,
+                     show.labels = show.labels, cex.lab = cex.lab,
+                     legend = legend,
+                     grid = grid, show.bases = show.aa, base.cex = aa.cex,
+                     base.font = aa.font, base.col = aa.col, scheme=scheme,
+                     bs=.AA_raw, cs=.AA_1letter,...)
 }
+
+image.DNAbin <-
+    function(x, what, col, bg = "white", xlab = "", ylab = "",
+             show.labels = TRUE, cex.lab = 1, legend = TRUE,
+             grid = FALSE, show.bases = FALSE, base.cex = 1,
+             base.font = 1, base.col = "black", scheme="Ape_NT", ...)
+{
+    scheme <- match.arg(scheme, c("Ape_NT", "RY_NT"))
+    scheme <- get(scheme, environment(image.AAbin))
+    if (missing(what)){
+        if(!is.null(scheme)) what <- scheme$properties
+        else what <- Ape_AA$properties
+    }
+    if (missing(col)){
+        if(!is.null(scheme)) col <- scheme$color
+        else col <- c("red", "yellow", "blue")
+    }
+    image.worker(x, what, col, bg = bg, xlab = xlab, ylab = ylab,
+                 show.labels = show.labels, cex.lab = cex.lab, legend = legend,
+                 grid = grid, show.bases = show.bases, base.cex = base.cex,
+                 base.font = base.font, base.col = base.col, scheme=scheme,
+                 bs=as.raw(._bs_), cs=._cs_,...)
+}
+
 
 checkAlignment <- function(x, check.gaps = TRUE, plot = TRUE, what = 1:4)
 {

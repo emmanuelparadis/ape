@@ -8,7 +8,7 @@
 \method{image}{DNAbin}(x, what, col, bg = "white", xlab = "", ylab = "",
       show.labels = TRUE, cex.lab = 1, legend = TRUE,
       grid = FALSE, show.bases = FALSE, base.cex = 1,
-      base.font = 1, base.col = "black", ...)
+      base.font = 1, base.col = "black", scheme = "Ape_NT", ...)
 }
 \arguments{
   \item{x}{a matrix of DNA sequences (class \code{"DNAbin"}).}
@@ -36,6 +36,9 @@
     (\code{FALSE} by default).}
   \item{base.cex, base.font, base.col}{control the aspect of the base
     symbols (ignored if the previous is \code{FALSE}).}
+  \item{scheme}{a predefined color scheme. For amino acid options are "Ape_AA",
+    "Zappo_AA", "Clustal", "Polarity" and "Transmembrane_tendency", for
+    nucleotides "Ape_NT" and"RY_NT".}
   \item{\dots}{further arguments passed to
     \code{\link[graphics]{image.default}} (e.g., \code{xlab},
     \code{cex.axis}).}
@@ -51,7 +54,7 @@
   distribution of alignment gaps (\code{image(x, "-")}) or missing data
   (see examples).
 }
-\author{Emmanuel Paradis}
+\author{Emmanuel Paradis, Klaus Schliep}
 \seealso{
   \code{\link{DNAbin}}, \code{\link{del.gaps}}, \code{\link{alex}},
   \code{\link{alview}}, \code{\link{all.equal.DNAbin}},
@@ -74,6 +77,10 @@ image(woodmouse[11:15, 1:50], c("a", "n"), c("blue", "grey"))
 grid(50, 5, col = "black")
 ### see the guanines on a black background:
 image(woodmouse, "g", "yellow", "black")
+### Amino acid
+X <- trans(woodmouse, 2)
+image(X) # default ape colors
+image(X, scheme="Clustal") # Clustal coloring
 }
 \keyword{hplot}
 
