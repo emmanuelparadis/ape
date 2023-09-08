@@ -1,4 +1,4 @@
-## dist.topo.R (2023-03-22)
+## dist.topo.R (2023-09-08)
 
 ##      Topological Distances, Tree Bipartitions,
 ##   Consensus Trees, and Bootstrapping Phylogenies
@@ -72,7 +72,7 @@ dist.topo <- function(x, y = NULL, method = "PH85", mc.cores = 1)
         NTIP <- Ntip(x)
         x <- unroot(x)
 
-        foo <- function(phy) {
+        fooscore <- function(phy) {
             if (is.null(phy$edge.length))
                 stop("trees must have branch lengths for the branch score distance.")
             ntip <- length(phy$tip.label)
@@ -82,7 +82,7 @@ dist.topo <- function(x, y = NULL, method = "PH85", mc.cores = 1)
         }
 
         if (mc.cores > 1) {
-            BP <- mclapply(x, foo, mc.cores = mc.cores)
+            BP <- mclapply(x, fooscore, mc.cores = mc.cores)
             bar <- function(i) {
                 tr <- x[[i]]
                 bp <- BP[[i]]
@@ -95,7 +95,7 @@ dist.topo <- function(x, y = NULL, method = "PH85", mc.cores = 1)
             res_list <- mclapply(1:(n - 1), bar, mc.cores = mc.cores)
             res <- unlist(res_list)
         } else {
-            BP <- lapply(x, foo)
+            BP <- lapply(x, fooscore)
             k <- 0L
             res <- numeric(n * (n - 1) /2)
             for (i in 1:(n - 1)) {
