@@ -2,7 +2,7 @@
 \alias{del.gaps}
 \alias{del.colgapsonly}
 \alias{del.rowgapsonly}
-\title{Delete Alignment Gaps in DNA Sequences}
+\title{Delete Alignment Gaps in DNA or AA Sequences}
 \description{
   These functions remove gaps (\code{"-"}) in a sample of DNA sequences.
 }
@@ -12,7 +12,7 @@ del.colgapsonly(x, threshold = 1, freq.only = FALSE)
 del.rowgapsonly(x, threshold = 1, freq.only = FALSE)
 }
 \arguments{
-  \item{x}{a matrix, a list, or a vector containing the DNA
+  \item{x}{a matrix, a list, or a vector containing the DNA or AA
     sequences; only matrices for \code{del.colgapsonly} and for
     \code{del.rowgapsonly}.}
   \item{threshold}{the largest gap proportion to delete the column or row.}
@@ -28,15 +28,16 @@ del.rowgapsonly(x, threshold = 1, freq.only = FALSE)
   only are removed (useful when a small matrix is extracted from a large
   alignment). \code{del.rowgapsonly} does the same for the rows.
 
-  The sequences can be either in \code{"DNAbin"} or in another format,
-  but the returned object is always of class \code{"DNAbin"}.
+  The class of the input sequences is respected and kept unchanged,
+  unless it contains neither \code{"DNAbin"} nor \code{"AAbin"} in which
+  case the object is first converted into the class \code{"DNAbin"}.
 }
 \value{
   \code{del.gaps} returns a vector (if there is only one input sequence)
-  or a list of class \code{"DNAbin"}; \code{del.colgapsonly} and
-  \code{del.rowgapsonly} return a matrix of class \code{"DNAbin"} or a
-  numeric vector (with names for the second function) if \code{freq.only
-  = TRUE}.
+  or a list of sequences; \code{del.colgapsonly} and
+  \code{del.rowgapsonly} return a matrix of sequences or a numeric
+  vector (with names for the second function) if \code{freq.only =
+  TRUE}.
 }
 \author{Emmanuel Paradis}
 \seealso{

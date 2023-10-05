@@ -1,4 +1,4 @@
-## DNA.R (2023-02-13)
+## DNA.R (2023-10-05)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
@@ -30,12 +30,24 @@ labels.DNAbin <- function(object, ...)
 
 del.gaps <- function(x)
 {
-    deleteGaps <- function(x) {
-        i <- which(x == 4)
+    deleteGaps <- function(x, gapcode) {
+        i <- which(x == gapcode)
         if (length(i)) x[-i] else x
     }
 
-    if (!inherits(x, "DNAbin")) x <- as.DNAbin(x)
+    if (inherits(x, "DNAbin")) {
+        gapcode <- 4
+    } else {
+        if (inherits(x, "AAbin")) {
+            gapcode <- 45
+        } else {
+            x <- as.DNAbin(x)
+            gapcode <- 4
+        }
+    }
+
+    cl <- class(x)
+
     if (is.matrix(x)) {
         n <- dim(x)[1]
         y <- vector("list", n)
@@ -44,17 +56,27 @@ del.gaps <- function(x)
         x <- y
         rm(y)
     }
-    if (!is.list(x)) return(deleteGaps(x))
-    x <- lapply(x, deleteGaps)
-    class(x) <- "DNAbin"
+    if (!is.list(x)) return(deleteGaps(x, gapcode = gapcode))
+    x <- lapply(x, deleteGaps, gapcode = gapcode)
+    class(x) <- cl
     x
 }
 
 del.rowgapsonly <- function(x, threshold = 1, freq.only = FALSE)
 {
-    if (!inherits(x, "DNAbin")) x <- as.DNAbin(x)
-    if (!is.matrix(x)) stop("DNA sequences not in a matrix")
-    foo <- function(x) sum(x == 4)
+    if (inherits(x, "DNAbin")) {
+        gapcode <- 4
+    } else {
+        if (inherits(x, "AAbin")) {
+            gapcode <- 45
+        } else {
+            x <- as.DNAbin(x)
+            gapcode <- 4
+        }
+    }
+
+    if (!is.matrix(x)) stop("sequences not in a matrix")
+    foo <- function(x) sum(x == gapcode)
     g <- apply(x, 1, foo)
     if (freq.only) return(g)
     i <- which(g / ncol(x) >= threshold)
@@ -64,9 +86,19 @@ del.rowgapsonly <- function(x, threshold = 1, freq.only = FALSE)
 
 del.colgapsonly <- function(x, threshold = 1, freq.only = FALSE)
 {
-    if (!inherits(x, "DNAbin")) x <- as.DNAbin(x)
-    if (!is.matrix(x)) stop("DNA sequences not in a matrix")
-    foo <- function(x) sum(x == 4)
+    if (inherits(x, "DNAbin")) {
+        gapcode <- 4
+    } else {
+        if (inherits(x, "AAbin")) {
+            gapcode <- 45
+        } else {
+            x <- as.DNAbin(x)
+            gapcode <- 4
+        }
+    }
+
+    if (!is.matrix(x)) stop("sequences not in a matrix")
+    foo <- function(x) sum(x == gapcode)
     g <- apply(x, 2, foo)
     if (freq.only) return(g)
     i <- which(g / nrow(x) >= threshold)

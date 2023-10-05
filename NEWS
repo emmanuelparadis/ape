@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.7-1.2
+		CHANGES IN APE VERSION 5.7-1.5
 
 
 NEW FEATURES
@@ -17,6 +17,11 @@ NEW FEATURES
     o nj() can now handle distances stored in long vectors. There was
       previously an implicit limit to 46,341 observations (see PR #97
       on GitHub).
+
+    o del.gaps(), del.colgapsonly(), and del.rowgapsonly() now accepts
+      objects of class "AAbin". Besides, the class of the input object
+      is always respected (it used to be "DNAbin" only even if it had
+      several elements).
 
 
 BUG FIXES
