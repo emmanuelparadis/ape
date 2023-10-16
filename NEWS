@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.7-1.5
+		CHANGES IN APE VERSION 5.7-1.6
 
 
 NEW FEATURES
@@ -34,6 +34,9 @@ BUG FIXES
 
     o nodelabels(, frame = "circle") used to ignore the argument
       'adj'. This is fixed (issue #85 on GitHub).
+
+    o write.tree() ignored tree names. This bug was introduced in ape
+      5.7 (see issue #101 on GitHub).
 
 
 OTHER CHANGES
