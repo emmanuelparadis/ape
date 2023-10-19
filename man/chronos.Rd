@@ -70,18 +70,18 @@ chronos.control(...)
   available options with their default values are:
 
   \itemize{
-    \item{tol = 1e-8: }{tolerance for the estimation of the substitution
-      rates.}
-    \item{iter.max = 1e4: }{the maximum number of iterations at each
-      optimization step.}
-    \item{eval.max = 1e4: }{the maximum number of function evaluations at
-      each optimization step.}
-    \item{nb.rate.cat = 10: }{the number of rate categories if \code{model
+    \item tol = 1e-8: tolerance for the estimation of the substitution
+      rates.
+    \item iter.max = 1e4: the maximum number of iterations at each
+      optimization step.
+    \item eval.max = 1e4: the maximum number of function evaluations at
+      each optimization step.
+    \item nb.rate.cat = 10: the number of rate categories if \code{model
 	= "discrete"} (set this parameter to 1 to fit a strict clock
-      model).}
-    \item{dual.iter.max = 20: }{the maximum number of alternative
-      iterations between rates and dates.}
-    \item{epsilon = 1e-6: }{the convergence diagnostic criterion.}
+      model).
+    \item dual.iter.max = 20: the maximum number of alternative
+      iterations between rates and dates.
+    \item epsilon = 1e-6: the convergence diagnostic criterion.
   }
 
   Using \code{model = "clock"} is actually a short-cut to \code{model =

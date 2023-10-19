@@ -23,21 +23,21 @@ makeNodeLabel(phy, method = "number", prefix = "Node", nodeList = list(), ...)
   The three methods are described below:
 
   \itemize{
-    \item{``number''}{The labels are created with 1, 2, \dots prefixed
+    \item ``number''! The labels are created with 1, 2, \dots prefixed
       with the argument \code{prefix}; thus the default is to have
-      Node1, Node2, \dots Set \code{prefix = ""} to have only numbers.}
-    \item{``md5sum''}{For each node, the labels of the tips descendant
+      Node1, Node2, \dots Set \code{prefix = ""} to have only numbers.
+    \item ``md5sum'': For each node, the labels of the tips descendant
       from this node are extracted, sorted alphabetically, and written
       into a temporary file, then the md5sum of this file is extracted
       and used as label. This results in a 32-character string which is
-      unique (even accross trees) for a given set of tip labels.}
-    \item{``user''}{the argument \code{nodeList} must be a list with
+      unique (even accross trees) for a given set of tip labels.
+    \item ``user'': the argument \code{nodeList} must be a list with
       names, the latter will be used as node labels. For each element of
       \code{nodeList}, the tip labels of the tree are searched for
       patterns present in this element: this is done using
       \code{\link[base]{grep}}. Then the most recent common ancestor of
       the matching tips is given the corresponding names as labels. This
-      is repeated for each element of \code{nodeList}.}
+      is repeated for each element of \code{nodeList}.
   }
 
   The method \code{"user"} can be used in combination with either of the

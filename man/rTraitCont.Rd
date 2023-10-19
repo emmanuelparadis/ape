@@ -32,25 +32,25 @@ rTraitCont(phy, model = "BM", sigma = 0.1, alpha = 1, theta = 0,
   There are three possibilities to specify \code{model}:
 
 \itemize{
-  \item{\code{"BM"}:}{a Browian motion model is used. If the arguments
+  \item \code{"BM"}: a Browian motion model is used. If the arguments
   \code{sigma} has more than one value, its length must be equal to the
   the branches of the tree. This allows to specify a model with variable
   rates of evolution. You must be careful that branch numbering is done
   with the tree in ``postorder'' order: to see the order of the branches
   you can use: \code{tr <- reorder(tr, "po"); plor(tr); edgelabels()}.
-  The arguments \code{alpha} and \code{theta} are ignored.}
+  The arguments \code{alpha} and \code{theta} are ignored.
 
-  \item{\code{"OU"}:}{an Ornstein-Uhlenbeck model is used. The above
+  \item \code{"OU"}: an Ornstein-Uhlenbeck model is used. The above
   indexing rule is used for the three parameters \code{sigma},
   \code{alpha}, and \code{theta}. This may be interesting for the last
   one to model varying phenotypic optima. The exact updating formula
   from Gillespie (1996) are used which are reduced to BM formula if
-  \code{alpha = 0}.}
+  \code{alpha = 0}.
 
-  \item{A function:}{it must be of the form \code{foo(x, l)} where
+  \item A function: it must be of the form \code{foo(x, l)} where
   \code{x} is the trait of the ancestor and \code{l} is the branch
   length. It must return the value of the descendant. The arguments
-  \code{sigma}, \code{alpha}, and \code{theta} are ignored.}
+  \code{sigma}, \code{alpha}, and \code{theta} are ignored.
 }}
 \value{
   A numeric vector with names taken from the tip labels of

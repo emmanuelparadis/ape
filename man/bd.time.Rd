@@ -47,14 +47,14 @@ bd.time(phy, birth, death, BIRTH = NULL, DEATH = NULL,
   A list with the following components:
 
 \itemize{
-  \item{par}{a vector of estimates with names taken from the parameters
-    in the specified functions.}
-  \item{SS}{the minimized sum of squares.}
-  \item{convergence}{output convergence criterion from
-    \code{\link[stats]{nlminb}}.}
-  \item{message}{id.}
-  \item{iterations}{id.}
-  \item{evaluations}{id.}
+  \item par: a vector of estimates with names taken from the parameters
+    in the specified functions.
+  \item SS: the minimized sum of squares.
+  \item convergence: output convergence criterion from
+    \code{\link[stats]{nlminb}}.
+  \item message: id.
+  \item iterations: id.
+  \item evaluations: id.
 }}
 \references{
   Paradis, E. (2011) Time-dependent speciation and extinction from

@@ -20,12 +20,12 @@ stree(n, type = "star", tip.label = NULL)
   The types of trees generated are:
 
   \itemize{
-    \item{``star''}{a star (or comb) tree with a single internal node.}
-    \item{``balanced''}{a fully balanced dichotomous rooted tree;
-      \code{n} must be a power of 2 (2, 4, 8, \dots).}
-    \item{``left''}{a fully unbalanced rooted tree where the largest
-      clade is on the left-hand side when the tree is plotted upwards.}
-    \item{``right''}{same than above but in the other direction.}
+    \item ``star'': a star (or comb) tree with a single internal node.
+    \item ``balanced'': a fully balanced dichotomous rooted tree;
+      \code{n} must be a power of 2 (2, 4, 8, \dots).
+    \item ``left'': a fully unbalanced rooted tree where the largest
+      clade is on the left-hand side when the tree is plotted upwards.
+    \item ``right'': same than above but in the other direction.
   }
 }
 \value{

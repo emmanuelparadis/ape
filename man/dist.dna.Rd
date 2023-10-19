@@ -44,24 +44,24 @@ dist.dna(x, model = "K80", variance = FALSE,
   references.
 
 \itemize{
-  \item{\code{raw}, \code{N}: }{This is simply the proportion or the number of
+  \item \code{raw}, \code{N}: This is simply the proportion or the number of
     sites that differ between each pair of sequences. This may be useful
     to draw ``saturation plots''. The options \code{variance} and
-    \code{gamma} have no effect, but \code{pairwise.deletion} can.}
+    \code{gamma} have no effect, but \code{pairwise.deletion} may have.
 
-  \item{\code{TS}, \code{TV}: }{These are the numbers of transitions and
-    transversions, respectively.}
+  \item \code{TS}, \code{TV}: These are the numbers of transitions and
+    transversions, respectively.
 
-  \item{\code{JC69}: }{This model was developed by Jukes and Cantor (1969). It
+  \item \code{JC69}: This model was developed by Jukes and Cantor (1969). It
     assumes that all substitutions (i.e. a change of a base by another
     one) have the same probability. This probability is the same for all
     sites along the DNA sequence. This last assumption can be relaxed by
     assuming that the substition rate varies among site following a
     gamma distribution which parameter must be given by the user. By
     default, no gamma correction is applied. Another assumption is that
-    the base frequencies are balanced and thus equal to 0.25.}
+    the base frequencies are balanced and thus equal to 0.25.
 
-  \item{\code{K80}: }{The distance derived by Kimura (1980), sometimes referred
+  \item \code{K80}: The distance derived by Kimura (1980), sometimes referred
     to as ``Kimura's 2-parameters distance'', has the same underlying
     assumptions than the Jukes--Cantor distance except that two kinds of
     substitutions are considered: transitions (A <-> G, C <-> T), and
@@ -74,61 +74,61 @@ dist.dna(x, model = "K80", variance = FALSE,
     sequence. Jin and Nei (1990) modified the Kimura model to allow for
     variation among sites following a gamma distribution. Like for the
     Jukes--Cantor model, the gamma parameter must be given by the
-    user. By default, no gamma correction is applied.}
+    user. By default, no gamma correction is applied.
 
-  \item{\code{F81}: }{Felsenstein (1981) generalized the Jukes--Cantor model
+  \item \code{F81}: Felsenstein (1981) generalized the Jukes--Cantor model
     by relaxing the assumption of equal base frequencies. The formulae
-    used in this function were taken from McGuire et al. (1999)}.
+    used in this function were taken from McGuire et al. (1999).
 
-  \item{\code{K81}: }{Kimura (1981) generalized his model (Kimura 1980) by
+  \item \code{K81}: Kimura (1981) generalized his model (Kimura 1980) by
     assuming different rates for two kinds of transversions: A <-> C and
     G <-> T on one side, and A <-> T and C <-> G on the other. This is
     what Kimura called his ``three substitution types model'' (3ST), and
-    is sometimes referred to as ``Kimura's 3-parameters distance''}.
+    is sometimes referred to as ``Kimura's 3-parameters distance''.
 
-  \item{\code{F84}: }{This model generalizes K80 by relaxing the assumption
+  \item \code{F84}: This model generalizes K80 by relaxing the assumption
     of equal base frequencies. It was first introduced by Felsenstein in
     1984 in Phylip, and is fully described by Felsenstein and Churchill
     (1996). The formulae used in this function were taken from McGuire
-    et al. (1999)}.
+    et al. (1999).
 
-  \item{\code{BH87}: }{Barry and Hartigan (1987) developed a distance based
+  \item \code{BH87}: Barry and Hartigan (1987) developed a distance based
     on the observed proportions of changes among the four bases. This
-    distance is not symmetric.}
+    distance is not symmetric.
 
-  \item{\code{T92}: }{Tamura (1992) generalized the Kimura model by relaxing
+  \item \code{T92}: Tamura (1992) generalized the Kimura model by relaxing
     the assumption of equal base frequencies. This is done by taking
     into account the bias in G+C content in the sequences. The
     substitution rates are assumed to be the same for all sites along
-    the DNA sequence.}
+    the DNA sequence.
 
-  \item{\code{TN93}: }{Tamura and Nei (1993) developed a model which assumes
+  \item \code{TN93}: Tamura and Nei (1993) developed a model which assumes
     distinct rates for both kinds of transition (A <-> G versus C <->
     T), and transversions. The base frequencies are not assumed to be
     equal and are estimated from the data. A gamma correction of the
-    inter-site variation in substitution rates is possible.}
+    inter-site variation in substitution rates is possible.
 
-  \item{\code{GG95}: }{Galtier and Gouy (1995) introduced a model where the
+  \item \code{GG95}: Galtier and Gouy (1995) introduced a model where the
     G+C content may change through time. Different rates are assumed for
-    transitons and transversions.}
+    transitons and transversions.
 
-  \item{\code{logdet}: }{The Log-Det distance, developed by Lockhart et
+  \item \code{logdet}: The Log-Det distance, developed by Lockhart et
     al. (1994), is related to BH87. However, this distance is
     symmetric. Formulae from Gu and Li (1996) are used.
     \code{dist.logdet} in \pkg{phangorn} uses a different
     implementation that gives substantially different distances for
-    low-diverging sequences.}
+    low-diverging sequences.
 
-  \item{\code{paralin}: }{Lake (1994) developed the paralinear distance which
-    can be viewed as another variant of the Barry--Hartigan distance.}
+  \item \code{paralin}: Lake (1994) developed the paralinear distance which
+    can be viewed as another variant of the Barry--Hartigan distance.
 
-  \item{\code{indel}: }{this counts the number of sites where there is an
-    insertion/deletion gap in one sequence and not in the other.}
+  \item \code{indel}: this counts the number of sites where there is an
+    insertion/deletion gap in one sequence and not in the other.
 
-  \item{\code{indelblock}: }{same than before but contiguous gaps are
+  \item \code{indelblock}: same than before but contiguous gaps are
     counted as a single unit. Note that the distance between \code{-A-} and
     \code{A--} is 3 because there are three different blocks of gaps, whereas
-    the ``indel'' distance will be 2.}
+    the ``indel'' distance will be 2.
 }}
 \note{
   If the sequences are very different, most evolutionary distances are

@@ -31,25 +31,25 @@ nexus2DNAbin(x)
   list):
 
   \itemize{
-    \item{\bold{I}}{Comments must be either on separate lines or at the
+    \item \bold{I}: Comments must be either on separate lines or at the
       end of lines. Examples:\cr
       \code{[Comment]} \bold{--- OK}\cr
       \code{Taxon ACGTACG [Comment]} \bold{--- OK}\cr
       \code{[Comment line 1}
 
       \code{Comment line 2]} \bold{--- NOT OK!}\cr
-      \code{Tax[Comment]on ACG[Comment]T} \bold{--- NOT OK!}}
-    \item{\bold{II}}{No spaces (or comments) are allowed in the
+      \code{Tax[Comment]on ACG[Comment]T} \bold{--- NOT OK!}
+    \item \bold{II}: No spaces (or comments) are allowed in the
       sequences. Examples:\cr
       \code{name ACGT} \bold{--- OK}\cr
-      \code{name AC GT} \bold{--- NOT OK!}}
-    \item{\bold{III}}{No spaces are allowed in taxon names, not even if
+      \code{name AC GT} \bold{--- NOT OK!}
+    \item \bold{III}: No spaces are allowed in taxon names, not even if
       names are in single quotes. That is, single-quoted names are not
       treated as such by the parser. Examples:\cr
       \code{Genus_species} \bold{--- OK}\cr
       \code{'Genus_species'} \bold{--- OK}\cr
-      \code{'Genus species'} \bold{--- NOT OK!}}
-    \item{\bold{IV}}{The trailing \code{end} that closes the
+      \code{'Genus species'} \bold{--- NOT OK!}
+    \item \bold{IV}: The trailing \code{end} that closes the
       \code{matrix} must be on a separate line. Examples:\cr
       \code{taxon AACCGGT}
 
@@ -57,22 +57,22 @@ nexus2DNAbin(x)
       \code{taxon AACCGGT;}
 
       \code{end;} \bold{--- OK}\cr
-      \code{taxon AACCCGT; end;} \bold{--- NOT OK!}}
-    \item{\bold{V}}{Multistate characters are not allowed. That is,
+      \code{taxon AACCCGT; end;} \bold{--- NOT OK!}
+    \item \bold{V}: Multistate characters are not allowed. That is,
       NEXUS allows you to specify multiple character states at a
       character position either as an uncertainty, \code{(XY)}, or as an
       actual appearance of multiple states, \code{\{XY\}}. This is
       information is not handled by the parser. Examples:\cr
       \code{taxon 0011?110} \bold{--- OK}\cr
       \code{taxon 0011{01}110} \bold{--- NOT OK!}\cr
-      \code{taxon 0011(01)110} \bold{--- NOT OK!}}
-    \item{\bold{VI}}{The number of taxa must be on the same line as
+      \code{taxon 0011(01)110} \bold{--- NOT OK!}
+    \item \bold{VI}: The number of taxa must be on the same line as
       \code{ntax}. The same applies to \code{nchar}. Examples:\cr
       \code{ntax = 12} \bold{--- OK}\cr
       \code{ntax =}
 
-      \code{12} \bold{--- NOT OK!}}
-    \item{\bold{VII}}{The word \dQuote{matrix} can not occur anywhere in
+      \code{12} \bold{--- NOT OK!}
+    \item \bold{VII}: The word \dQuote{matrix} can not occur anywhere in
       the file before the actual \code{matrix} command, unless it is in
       a comment. Examples:\cr
       \code{BEGIN CHARACTERS;}
@@ -95,7 +95,7 @@ nexus2DNAbin(x)
 
       \code{FORMAT DATATYPE=Protein GAP=- MISSING=?;}
 
-      \code{MATRIX}}
+      \code{MATRIX}
   }
 }
 \value{

@@ -64,29 +64,29 @@ read.fastq(file, offset = -33)
   the file. Particularities for each format are detailed below.
 
 \itemize{
-  \item{Interleaved:}{ the function starts to read the sequences after it
+  \item Interleaved: the function starts to read the sequences after it
     finds one or more spaces (or tabulations). All characters before the
     sequences are taken as the taxa names after removing the leading and
     trailing spaces (so spaces in taxa names are not allowed). It is
     assumed that the taxa names are not repeated in the subsequent
-    blocks of nucleotides.}
+    blocks of nucleotides.
 
-  \item{Sequential:}{ the same criterion than for the interleaved format
+  \item Sequential: the same criterion than for the interleaved format
     is used to start reading the sequences and the taxa names; the
     sequences are then read until the number of nucleotides specified in
-    the first line of the file is reached. This is repeated for each taxa.}
+    the first line of the file is reached. This is repeated for each taxa.
 
-  \item{Clustal:}{ this is the format output by the Clustal programs
+  \item Clustal: this is the format output by the Clustal programs
     (.aln). It is close to the interleaved format: the differences are
     that the dimensions of the data are not indicated in the file, and
-    the names of the sequences are repeated in each block.}
+    the names of the sequences are repeated in each block.
 
-  \item{FASTA:}{ this looks like the sequential format but the taxa names
+  \item FASTA: this looks like the sequential format but the taxa names
     (or a description of the sequence) are on separate lines beginning
     with a `greater than' character `>' (there may be leading spaces
     before this character). These lines are taken as taxa names after
     removing the `>' and the possible leading and trailing spaces. All
-    the data in the file before the first sequence are ignored.}
+    the data in the file before the first sequence are ignored.
 }
 
 The FASTQ format is explained in the references.

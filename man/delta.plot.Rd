@@ -29,10 +29,10 @@ delta.plot(X, k = 20, plot = TRUE, which = 1:2)
   This function returns invisibly a named list with two components:
 
   \itemize{
-    \item{counts}{the counts for the histogram of
-    \eqn{\delta_q}{delta_q} values}
-    \item{delta.bar}{the mean \eqn{\delta}{delta} value for each
-    observation}
+    \item counts: the counts for the histogram of
+    \eqn{\delta_q}{delta_q} values
+    \item delta.bar: the mean \eqn{\delta}{delta} value for each
+    observation
   }
 }
 \references{

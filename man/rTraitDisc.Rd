@@ -40,19 +40,19 @@ rTraitDisc(phy, model = "ER", k = if (is.matrix(model)) ncol(model) else 2,
   There are three possibilities to specify \code{model}:
 
 \itemize{
-  \item{A matrix:}{it must be a numeric square matrix; the diagonal is
-    always ignored. The arguments \code{k} and \code{rate} are ignored.}
+  \item A matrix: it must be a numeric square matrix; the diagonal is
+    always ignored. The arguments \code{k} and \code{rate} are ignored.
 
-  \item{A character:}{these are the same short-cuts than in the function
+  \item A character: these are the same short-cuts than in the function
   \code{\link{ace}}: \code{"ER"} is an equal-rates model, \code{"ARD"}
   is an all-rates-different model, and \code{"SYM"} is a symmetrical
   model. Note that the argument \code{rate} must be of the appropriate
   length, i.e., 1, \eqn{k(k - 1)}, or \eqn{k(k - 1)/2} for the three models,
-  respectively. The rate matrix \eqn{Q} is then filled column-wise.}
+  respectively. The rate matrix \eqn{Q} is then filled column-wise.
 
-  \item{A function:}{it must be of the form \code{foo(x, l)} where
+  \item A function: it must be of the form \code{foo(x, l)} where
     \code{x} is the trait of the ancestor and \code{l} is the branch
-    length. It must return the value of the descendant as an integer.}
+    length. It must return the value of the descendant as an integer.
 }}
 \value{
   A factor with names taken from the tip labels of \code{phy}. If
