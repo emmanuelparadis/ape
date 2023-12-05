@@ -23,6 +23,9 @@ NEW FEATURES
       is always respected (it used to be "DNAbin" only even when it
       had several elements).
 
+    o makeNodeLabel() is now generic with methods for the "phylo" and
+      "multiPhylo" classes.
+
 
 BUG FIXES
 

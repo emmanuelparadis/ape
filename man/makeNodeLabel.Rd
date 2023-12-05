@@ -1,12 +1,17 @@
 \name{makeNodeLabel}
 \alias{makeNodeLabel}
+\alias{makeNodeLabel.phylo}
+\alias{makeNodeLabel.multiPhylo}
 \title{Makes Node Labels}
 \description{
   This function makes node labels in a tree in a flexible way.
 }
-
 \usage{
-makeNodeLabel(phy, method = "number", prefix = "Node", nodeList = list(), ...)
+makeNodeLabel(phy, ...)
+\method{makeNodeLabel}{phylo}(phy, method = "number",
+                      prefix = "Node", nodeList = list(), ...)
+\method{makeNodeLabel}{multiPhylo}(phy, method = "number",
+                      prefix = "Node", nodeList = list(), ...)
 }
 \arguments{
   \item{phy}{an object of class \code{"phylo"}.}

@@ -1,8 +1,8 @@
-## makeNodeLabel.R (2023-01-09)
+## makeNodeLabel.R (2023-12-05)
 
 ##   Makes Node Labels
 
-## Copyright 2009 Emmanuel Paradis, 2023 Klaus Schliep
+## Copyright 2009-2023 Emmanuel Paradis, 2023 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -14,8 +14,11 @@
 # 2. use digest package to avoid writing files files as with md5sum
 # the node labels are the same
 
-makeNodeLabel <- function(phy, method = "number", prefix = "Node",
-                          nodeList = list(), ...)
+makeNodeLabel <- function(phy, ...) UseMethod("makeNodeLabel")
+
+makeNodeLabel.phylo <-
+    function(phy, method = "number", prefix = "Node",
+             nodeList = list(), ...)
 {
     method <- sapply(method, match.arg, c("number", "md5sum", "user"),
                      USE.NAMES = FALSE)
@@ -79,4 +82,15 @@ relabel <- function(y, ref, tip.label = TRUE)
     }
     y$tip.label <- if (tip.label) ref else NULL
     y
+}
+
+makeNodeLabel.multiPhylo <- function(phy, method = "number", prefix = "Node",
+                                     nodeList = list(), ...)
+{
+    oc <- oldClass(phy)
+    class(phy) <- NULL
+    phy <- lapply(phy, makeNodeLabel.phylo, method = method,
+                  prefix = prefix, nodeList = nodeList, ...)
+    class(phy) <- oc
+    phy
 }
