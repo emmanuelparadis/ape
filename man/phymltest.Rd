@@ -64,7 +64,7 @@ phymltest(seqfile, format = "interleaved", itree = NULL,
   presence of invariant sites and/or a gamma distribution of
   substitution rates have been specified. Thus, Kimura's model is
   denoted "K80" and not "K2P". The exception to this rule is the general
-  time-reversible model which is simple denoted "GTR" model.
+  time-reversible model which is simply denoted "GTR" model.
 
   The seven substitution models used are: "JC69", "K80", "F81", "F84",
   "HKY85", "TN93", and "GTR". These models are then altered by adding
