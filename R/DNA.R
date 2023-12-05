@@ -1491,23 +1491,3 @@ solveAmbiguousBases <- function(x, method = "columnwise", random = TRUE)
     }
     x
 }
-
-##distK80 <- function(x, pairwise.deletion = FALSE)
-##{
-##    nms <- dimnames(x)[[1]]
-##    n <- length(nms)
-##    if (!pairwise.deletion) {
-##        keep <- .Call(GlobalDeletionDNA, x)
-##        x <- x[, as.logical(keep)]
-##        d <- .Call(dist_dna_K80_short, x)
-##    } else {
-##        d <- .Call(dist_dna_K80_short_pairdel, x)
-##    }
-##    attr(d, "Size") <- n
-##    attr(d, "Labels") <- nms
-##    attr(d, "Diag") <- attr(d, "Upper") <- FALSE
-##    attr(d, "call") <- match.call()
-##    attr(d, "method") <- "K80"
-##    class(d) <- "dist"
-##    d
-##}

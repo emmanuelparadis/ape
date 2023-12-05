@@ -11,8 +11,6 @@ keep.tip <- function(phy, tip, ...) UseMethod("keep.tip")
 
 keep.tip.phylo <- function(phy, tip, ...)
 {
-###    if (!inherits(phy, "phylo"))
-###        stop("object \"phy\" is not of class \"phylo\"")
     Ntip <- length(phy$tip.label)
     ## convert to indices if strings passed in
     if (is.character(tip)) {
@@ -69,8 +67,6 @@ drop.tip.phylo <- function(phy, tip, trim.internal = TRUE, subtree = FALSE,
     root.edge = 0, rooted = is.rooted(phy), collapse.singles = TRUE,
     interactive = FALSE, ...)
 {
-###    if (!inherits(phy, "phylo"))
-###        stop('object "phy" is not of class "phylo"')
     Ntip <- length(phy$tip.label)
     ## find the tips to drop:
     if (interactive) {

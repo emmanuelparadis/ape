@@ -118,24 +118,3 @@ compar.cheverud <- function(y, W, tolerance=1e-6, gold.tol=1e-4)
   res <- y - rho * Wy
   return(list(rhohat=rho, Wnorm=Wnorm, residuals=res))
 }
-
-#For debugging:
-#W<- matrix(c(
-#  0,1,1,2,0,0,0,0,
-#  1,0,1,2,0,0,0,0,
-#  1,1,0,2,0,0,0,0,
-#  2,2,2,0,0,0,0,0,
-#  0,0,0,0,0,1,1,2,
-#  0,0,0,0,1,0,1,2,
-#  0,0,0,0,1,1,0,2,
-#  0,0,0,0,2,2,2,0
-#),8)
-#W <- 1/W
-#W[W == Inf] <- 0
-#y<-c(-0.12,0.36,-0.1,0.04,-0.15,0.29,-0.11,-0.06)
-#compar.cheverud(y,W)
-#
-#y<-c(10,8,3,4)
-#W <- matrix(c(1,1/6,1/6,1/6,1/6,1,1/2,1/2,1/6,1/2,1,1,1/6,1/2,1,1), 4)
-#compar.cheverud(y,W)
-

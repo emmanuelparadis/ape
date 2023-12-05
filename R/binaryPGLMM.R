@@ -7,7 +7,7 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NULL, 
+binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NULL,
 	tol.pql = 10^-6, maxit.pql = 200, maxit.reml = 100) {
 
 	# Begin pglmm.reml
@@ -28,25 +28,25 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
 					cholV <- chol(V)
 					logdetV <- 2 * sum(log(diag(chol(V))))
 				}
-				LL <- logdetV + t(tH) %*% invV %*% tH + determinant(t(tX) %*% 
+				LL <- logdetV + t(tH) %*% invV %*% tH + determinant(t(tX) %*%
 					invV %*% tX)$modulus[1]
 			}
 		}
 		return(LL)
 	}
 	# End pglmm.reml
-	
-	if (!inherits(phy, "phylo")) 
+
+	if (!inherits(phy, "phylo"))
 		stop("Object \"phy\" is not of class \"phylo\".")
-	if (is.null(phy$edge.length)) 
+	if (is.null(phy$edge.length))
 		stop("The tree has no branch lengths.")
-	if (is.null(phy$tip.label)) 
+	if (is.null(phy$tip.label))
 		stop("The tree has no tip labels.")
 	phy <- reorder(phy, "postorder")
 	n <- length(phy$tip.label)
 
 	mf <- model.frame(formula = formula, data = data)
-	if (nrow(mf) != length(phy$tip.label)) 
+	if (nrow(mf) != length(phy$tip.label))
 		stop("Number of rows of the design matrix does not match with length of the tree.")
 	if (is.null(rownames(mf))) {
 		warning("No tip labels, order assumed to be the same as in the tree.\n")
@@ -100,8 +100,8 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
 	iteration <- 0
 	exitflag <- 0
 	rcondflag <- 0
-	while (((t(est.s2 - oldest.s2) %*% (est.s2 - oldest.s2) > tol.pql^2) | 
-		(t(est.B - oldest.B) %*% (est.B - oldest.B)/length(B) > tol.pql^2)) & 
+	while (((t(est.s2 - oldest.s2) %*% (est.s2 - oldest.s2) > tol.pql^2) |
+		(t(est.B - oldest.B) %*% (est.B - oldest.B)/length(B) > tol.pql^2)) &
 		(iteration <= maxit.pql)) {
 
 		iteration <- iteration + 1
@@ -113,7 +113,7 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
 		iteration.m <- 0
 
 		# mean component
-		while ((t(est.B.m - oldest.B.m) %*% (est.B.m - oldest.B.m)/length(B) > 
+		while ((t(est.B.m - oldest.B.m) %*% (est.B.m - oldest.B.m)/length(B) >
 			tol.pql^2) & (iteration.m <= maxit.pql)) {
 
 			iteration.m <- iteration.m + 1
@@ -148,7 +148,7 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
 
 		# variance component
 		H <- Z - X %*% B
-		opt <- optim(fn = pglmm.reml, par = s2, tinvW = invW, tH = H, tVphy = Vphy, 
+		opt <- optim(fn = pglmm.reml, par = s2, tinvW = invW, tH = H, tVphy = Vphy,
 			tX = X, method = "BFGS", control = list(factr = 1e+12, maxit = maxit.reml))
 		s2 <- abs(opt$par)
 		C <- s2 * Vphy
@@ -183,45 +183,41 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
 	B.pvalue <- 2 * pnorm(abs(B/B.se), lower.tail = FALSE)
 
 	LL <- opt$value
-	lnlike.cond.reml <- -0.5 * (n - p) * log(2 * pi) + 0.5 * determinant(t(X) %*% 
+	lnlike.cond.reml <- -0.5 * (n - p) * log(2 * pi) + 0.5 * determinant(t(X) %*%
 		X)$modulus[1] - 0.5 * LL
 
 	LL0 <- pglmm.reml(par = 0, tinvW = invW, tH = H, tVphy = Vphy, tX = X)
-	lnlike.cond.reml0 <- -0.5 * (n - p) * log(2 * pi) + 0.5 * determinant(t(X) %*% 
+	lnlike.cond.reml0 <- -0.5 * (n - p) * log(2 * pi) + 0.5 * determinant(t(X) %*%
 		X)$modulus[1] - 0.5 * LL0
 
-	P.H0.s2 <- pchisq(2 * (lnlike.cond.reml - lnlike.cond.reml0), df = 1, 
+	P.H0.s2 <- pchisq(2 * (lnlike.cond.reml - lnlike.cond.reml0), df = 1,
 		lower.tail = F)/2
 
-	results <- list(formula = formula, B = B, B.se = B.se, B.cov = B.cov, 
-		B.zscore = B.zscore, B.pvalue = B.pvalue, s2 = s2, P.H0.s2 = P.H0.s2, 
-		mu = mu, b = b, B.init = B.init, X = X, H = H, VCV = Vphy, V = V, 
-		convergeflag = convergeflag, iteration = iteration, converge.test.s2 = converge.test.s2, 
+	results <- list(formula = formula, B = B, B.se = B.se, B.cov = B.cov,
+		B.zscore = B.zscore, B.pvalue = B.pvalue, s2 = s2, P.H0.s2 = P.H0.s2,
+		mu = mu, b = b, B.init = B.init, X = X, H = H, VCV = Vphy, V = V,
+		convergeflag = convergeflag, iteration = iteration, converge.test.s2 = converge.test.s2,
 		converge.test.B = converge.test.B, rcondflag = rcondflag)
 	class(results) <- "binaryPGLMM"
 	results
 }
 
-######################################################
-######################################################
-# binaryPGLMM.sim
-######################################################
-######################################################
+### binaryPGLMM.sim
 
-binaryPGLMM.sim <- function(formula, data = list(), phy, s2 = NULL, B = NULL, 
+binaryPGLMM.sim <- function(formula, data = list(), phy, s2 = NULL, B = NULL,
 	nrep = 1) {
 
-	if (!inherits(phy, "phylo")) 
+	if (!inherits(phy, "phylo"))
 		stop("Object \"phy\" is not of class \"phylo\".")
-	if (is.null(phy$edge.length)) 
+	if (is.null(phy$edge.length))
 		stop("The tree has no branch lengths.")
-	if (is.null(phy$tip.label)) 
+	if (is.null(phy$tip.label))
 		stop("The tree has no tip labels.")
 	phy <- reorder(phy, "postorder")
 	n <- length(phy$tip.label)
 
 	mf <- model.frame(formula = formula, data = data)
-	if (nrow(mf) != length(phy$tip.label)) 
+	if (nrow(mf) != length(phy$tip.label))
 		stop("Number of rows of the design matrix does not match with length of the tree.")
 	if (is.null(rownames(mf))) {
 		warning("No tip labels, order assumed to be the same as in the tree.\n")
@@ -237,9 +233,9 @@ binaryPGLMM.sim <- function(formula, data = list(), phy, s2 = NULL, B = NULL,
 		mf[order, ] <- tmp[1:nrow(tmp), ]
 	}
 
-	if (is.null(s2)) 
+	if (is.null(s2))
 		stop("You must specify s2")
-	if (is.null(B)) 
+	if (is.null(B))
 		stop("You must specify B")
 	X <- model.matrix(attr(mf, "terms"), data = mf)
 
@@ -268,13 +264,9 @@ binaryPGLMM.sim <- function(formula, data = list(), phy, s2 = NULL, B = NULL,
 	return(results)
 }
 
-######################################################
-######################################################
-# print.binaryPGLMM
-######################################################
-######################################################
+### print.binaryPGLMM
 
-print.binaryPGLMM <- function(x, digits = max(3, getOption("digits") - 3), 
+print.binaryPGLMM <- function(x, digits = max(3, getOption("digits") - 3),
 	...) {
 
 	cat("\n\nCall:")
@@ -286,7 +278,7 @@ print.binaryPGLMM <- function(x, digits = max(3, getOption("digits") - 3),
 	print(w, digits = digits)
 
 	cat("\nFixed effects:\n")
-	coef <- data.frame(Value = x$B, Std.Error = x$B.se, Zscore = x$B.zscore, 
+	coef <- data.frame(Value = x$B, Std.Error = x$B.se, Zscore = x$B.zscore,
 		Pvalue = x$B.pvalue)
 	printCoefmat(coef, P.values = TRUE, has.Pvalue = TRUE)
 	cat("\n")

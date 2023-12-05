@@ -73,7 +73,6 @@ chronopl <-
 
     age <- numeric(n + m)
 
-#############################################################################
 ### This bit sets 'ini.time' and should result in no negative branch lengths
 
     seq.nod <- .Call("seq_root2tip", phy$edge, n, phy$Nnode, PACKAGE = "ape")
@@ -111,7 +110,6 @@ chronopl <-
     if (any(real.edge.length <= 0))
         stop("some initial branch lengths are zero or negative;
   maybe you need to adjust the given dates -- see '?chronopl' for details")
-#############################################################################
 
     ## because if (!is.null(age.max)), 'node' is modified,
     ## so we copy it in case CV = TRUE:

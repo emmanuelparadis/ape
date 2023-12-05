@@ -98,12 +98,7 @@ calculeC <- function(type, arbre, a) {
 }
 
 
-
-
-
-#########################
-#calcul Variance
-#########################
+### calcul Variance
 
 getSumSquare <- function(value, arbre) {
  sum <- 0.

@@ -42,8 +42,6 @@ extract.popsize<-function(mcmc.out, credible.interval=0.95, time.points=200, thi
      }
   prep<-list("pos"=pos.m, "h"=h.m)
 
-####################
-
   step <- (max(prep$pos, na.rm=TRUE)-min(prep$pos, na.rm=TRUE))/(time.points-1)
   nr <- time.points
 
@@ -72,9 +70,6 @@ extract.popsize<-function(mcmc.out, credible.interval=0.95, time.points=200, thi
 
     me[i,2]<-mean(mixed.heights)
 
-    #library(MASS)
-    #me[i,2]<-huber(mixed.heights)$mu
-
     me[i,3]<-median(mixed.heights)
     me[i,4]<-quantile(mixed.heights, probs=(1-credible.interval)/2, na.rm=TRUE)
     me[i,5]<-quantile(mixed.heights, probs=(1+credible.interval)/2, na.rm=TRUE)
@@ -82,11 +77,6 @@ extract.popsize<-function(mcmc.out, credible.interval=0.95, time.points=200, thi
     p<-p+step
     i<-i+1
   }
-
-  #av.jumps<-round((length(prep$pos)-sum(is.na(prep$pos)))/length(prep$pos[,1])-2,2)
-  #print("average jumps")
-
-  #print((length(prep$pos)-sum(is.na(prep$pos)))/length(prep$pos[,1])-2)
 
   colnames(me) <- c("time", "mean", "median", "lower CI", "upper CI")
   class(me) <- "popsize"
