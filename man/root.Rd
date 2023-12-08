@@ -24,9 +24,11 @@ root(phy, ...)
      interactive = FALSE, edgelabel = FALSE, ...)
 \method{root}{multiPhylo}(phy, outgroup, ...)
 
-unroot(phy)
-\method{unroot}{phylo}(phy)
-\method{unroot}{multiPhylo}(phy)
+unroot(phy, ...)
+\method{unroot}{phylo}(phy, collapse.singles = FALSE,
+        keep.root.edge = FALSE, ...)
+\method{unroot}{multiPhylo}(phy, collapse.singles = FALSE,
+        keep.root.edge = FALSE, ...)
 
 is.rooted(phy)
 \method{is.rooted}{phylo}(phy)
@@ -45,6 +47,12 @@ is.rooted(phy)
     labels as edge labels and thus eventually switching them so that
     they are associated with the correct edges when using
     \code{\link{drawSupportOnEdges}} (see Czech et al. 2016).}
+  \item{collapse.singles}{a logical value specifying wether to call
+    \code{\link{collapse.singles}} before proceeding to unrooting the
+    tree.}
+  \item{keep.root.edge}{a logical value. If \code{TRUE}, the
+    \code{root.edge} element of the tree is added in the edge matrix as
+    a terminal edge. The default is to delete this element.}
   \item{\dots}{arguments passed among methods (e.g., when rooting lists
     of trees).}
 }
