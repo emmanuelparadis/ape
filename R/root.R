@@ -1,8 +1,8 @@
-## root.R (2023-12-08)
+## root.R (2024-11-01)
 
 ##   Roots Phylogenetic Trees
 
-## Copyright 2004-2023 Emmanuel Paradis
+## Copyright 2004-2024 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -35,7 +35,7 @@ unroot <- function(phy, ...) UseMethod("unroot")
     N <- dim(phy$edge)[1]
     if (N < 3) stop("cannot unroot a tree with less than three edges.")
 
-    dgr <- degree.phylo(phy, TRUE)
+    dgr <- tabulate(phy$edge, n + phy$Nnode)
 
     if (all(dgr < 3))
         stop("cannot unroot a tree where all nodes are singleton")
