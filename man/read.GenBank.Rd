@@ -22,6 +22,8 @@ read.GenBank(access.nb, seq.names = access.nb, species.names = TRUE,
   \item{quiet}{a logical value indicating whether to show the progress
     of the downloads. If \code{TRUE}, will also print the (full) name of
     the FASTA file containing the downloaded sequences.}
+  \item{type}{a character specifying to download "DNA" (nucleotide) or "AA"
+    (amino acid) sequences. }
 }
 \details{
   The function uses the site \url{https://www.ncbi.nlm.nih.gov/} from
