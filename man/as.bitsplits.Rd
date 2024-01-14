@@ -45,6 +45,15 @@ as.prop.part(x, ...)
   they work only with unrooted trees. The structure of the class
   \code{"bitsplits"} is described in a separate document on ape's web
   site.
+
+  This data structure has a memory requirement proportional to
+  \eqn{n^2}, so it can be inefficient with large trees (> 1000 tips),
+  particularly if they are very different (i.e., with few shared
+  splits). In any case, an error occurs if the product of the number of
+  tips by the number of nodes is greater than \eqn{2^{31}-1} (~2.1
+  billion). A warning message is given if the tree(s) has(ve) more than
+  46,341 tips. It may happen that the search for splits is interrupted
+  if the data structure is full (with a warning message).
 }
 \value{
   \code{bitsplits}, \code{as.bitsplits}, and \code{sort} return an object

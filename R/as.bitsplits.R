@@ -1,8 +1,8 @@
-## as.bitsplits.R (2021-12-27)
+## as.bitsplits.R (2024-01-13)
 
 ##   Conversion Among Split Classes
 
-## Copyright 2011-2021 Emmanuel Paradis, 2019 Klaus Schliep
+## Copyright 2011-2024 Emmanuel Paradis, 2019 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -106,6 +106,8 @@ bitsplits <- function(x)
     x <- .compressTipLabel(x)
     labs <- attr(x, "TipLabel")
     n <- length(labs)
+    if (n > 46341)
+        warning("Tree(s) with more than 46,341 tips: this is likely too large.")
     nr <- ceiling(n/8)
     ans <- .Call(bitsplits_multiPhylo, x, n, nr)
     nc <- ans[[3]]

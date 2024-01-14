@@ -1,11 +1,12 @@
-/* bitsplits.c    2021-12-27 */
+/* bitsplits.c    2024-01-13 */
 
-/* Copyright 2005-2021 Emmanuel Paradis */
+/* Copyright 2005-2024 Emmanuel Paradis */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
 
 #include "ape.h"
+#include <stdint.h>
 
 /* the following array stores the 8 mask values:
    [0] = 0000 0001
@@ -69,7 +70,7 @@ void bar_reorder2(int node, int n, int m, int Nedge, int *e, int *neworder, int 
 
 SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 {
-    int Ntip, Nnode, Nr, Ntrees, itr, Nc, *e, *e_reord, Nedge, *L, *pos, i, j, k, ispl, *newor, d, inod, y, *rfreq, new_split;
+    int Ntip, Nnode, Nr, Ntrees, itr, Nc, *e, *e_reord, Nedge, *L, *pos, i, j, k, ispl, *newor, d, inod, y, *rfreq, new_split, mat_full = 0, size_L, N_stored_splits;
     unsigned char *split, *rmat;
     SEXP mat, freq, ans, EDGE, final_nc;
 
@@ -81,6 +82,8 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
     Nr = *INTEGER(nr);
 
     Nc = (Ntip - 3) * Ntrees; /* the maximum number of splits that can be found */
+
+    if ((double) Nr * Nc > INT32_MAX) Nc = (int) trunc(INT32_MAX / Nr);
 
     PROTECT(mat = allocVector(RAWSXP, Nr * Nc));
     PROTECT(freq = allocVector(INTSXP, Nc));
@@ -106,7 +109,11 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
    column). It is used in the same way than a matrix (which is actually
    a vector) is used in R as a 2-d structure. */
 
-	L = (int*)R_alloc(Nnode * Ntip, sizeof(int)); /* safe allocation */
+	if (((double) Nnode * Ntip) > INT32_MAX)
+	    error("the product Nnode (%d) by Ntip (%d) is greater than %d", Nnode, Ntip, INT32_MAX);
+
+	size_L = Nnode * Ntip;
+	L = (int*)R_alloc(size_L, sizeof(int)); /* safe allocation */
 
 /* pos gives the position for each 'row' of L, that is the number of elements
    which have already been stored for that 'row'. */
@@ -139,7 +146,7 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 	/* the tree is now reordered */
 
 	/* reallocate L and reinitialize pos */
-	L = (int*)R_alloc(Nnode * Ntip, sizeof(int));
+	L = (int*)R_alloc(size_L, sizeof(int));
 	memset(pos, 0, Nnode * sizeof(int));
 
 	for (i = 0; i < Nedge; i++) {
@@ -163,7 +170,7 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 		j = 0; /* column of rmat */
 		k = 0; /* row */
 		y = 0; /* number of columns of rmat to shift */
-		while (j < ispl) {
+		while (j < N_stored_splits) {
 		    if (split[k] != rmat[k + y]) { /* the two splits are different so move to the next col of rmat */
 			j++;
 			k = 0;
@@ -178,12 +185,22 @@ SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr)
 		}
 	    }
 	    if (new_split) {
-                for (j = 0; j < Nr; j++) rmat[j + ispl * Nr] = split[j];
+		memcpy(rmat + ispl * Nr, split, Nr);
+                /* for (j = 0; j < Nr; j++) rmat[j + ispl * Nr] = split[j]; */
 		rfreq[ispl] = 1;
 		ispl++;
+		if (ispl > Nc) {
+		    mat_full = 1;
+		    break;
+		}
 	    }
 	}
+	N_stored_splits = ispl;
 	UNPROTECT(1);
+	if (mat_full) {
+	    warning("allocated memory full: search for splits truncated");
+	    break;
+	}
     }
     PROTECT(ans = allocVector(VECSXP, 3));
     PROTECT(final_nc = allocVector(INTSXP, 1));
