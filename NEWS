@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.7-1.6
+		CHANGES IN APE VERSION 5.7-1.8
 
 
 NEW FEATURES
@@ -6,8 +6,8 @@ NEW FEATURES
     o dist.topo() has a new option 'mc.cores'. With the default PH85
       distance, the gain of using several cores is visible with 200+
       trees. The internal code for the score distance has been
-      improved and is now twice faster with a single core, and 4-5
-      times faster with mc.cores = 2.
+      improved and is twice faster with a single core, and 4-5 times
+      faster with mc.cores = 2.
 
     o keep.tip() gains a '...' argument which is passed to drop.tip().
       The behaviour of the latter is changed so that node labels, if
@@ -20,8 +20,15 @@ NEW FEATURES
 
     o del.gaps(), del.colgapsonly(), and del.rowgapsonly() now accepts
       objects of class "AAbin". Besides, the class of the input object
-      is always respected (it used to be "DNAbin" only even if it had
-      several elements).
+      is always respected (it used to be "DNAbin" only even when it
+      had several elements).
+
+    o makeNodeLabel() is now generic with methods for the "phylo" and
+      "multiPhylo" classes.
+
+    o unroot() gains two options, 'collapse.singles' and
+      'keep.root.edge', to handle some complicated situations (see
+      issue #103 on GitHub).
 
 
 BUG FIXES
@@ -37,6 +44,15 @@ BUG FIXES
 
     o write.tree() ignored tree names. This bug was introduced in ape
       5.7 (see issue #101 on GitHub).
+
+    o read.tree() now reads correctly trees with many nodes but a
+      single tip such as "(());" (see issue #104 on GitHub).
+
+    o bitsplits() failed with large trees. There are now checks on
+      memory requirements; some explanations have been in the help
+      page.
+
+    o comparePhylo() failed with two large trees. This is now fixed.
 
 
 OTHER CHANGES

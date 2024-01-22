@@ -32,5 +32,5 @@ arecompatible <-function(x, y, n)
     }
 
     nE <- foo(x & y) + foo(x & !y) + foo(!x & y) + foo(!x & !y)
-    if (nE >= 1) TRUE else FALSE
+    nE >= 1
 }

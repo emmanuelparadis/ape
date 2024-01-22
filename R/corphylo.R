@@ -7,7 +7,7 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method = c("Nelder-Mead", "SANN"), 
+corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method = c("Nelder-Mead", "SANN"),
 	constrain.d = FALSE, reltol = 10^-6, maxit.NM = 1000, maxit.SA = 1000, temp.SA = 1, tmax.SA = 1, verbose = FALSE) {
 
 	# Begin corphylo.LL
@@ -23,12 +23,12 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 
 		if (constrain.d == TRUE) {
 			logit.d <- par[(p + p * (p - 1)/2 + 1):length(par)]
-			if (max(abs(logit.d)) > 10) 
+			if (max(abs(logit.d)) > 10)
 				return(10^10)
 			d <- 1/(1 + exp(-logit.d))
 		} else {
 			d <- par[(p + p * (p - 1)/2 + 1):length(par)]
-			if (max(d) > 10) 
+			if (max(d) > 10)
 				return(10^10)
 		}
 
@@ -41,12 +41,12 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 
 		V <- C + diag(as.numeric(MM))
 		if (anyNA(V)) return(10^10)
-		if (is.nan(rcond(V)) || rcond(V) < 10^-10) 
+		if (is.nan(rcond(V)) || rcond(V) < 10^-10)
 			return(10^10)
 		iV <- solve(V)
 		denom <- t(UU) %*% iV %*% UU
 		if (anyNA(denom)) return(10^10)
-		if (is.nan(rcond(denom)) || rcond(denom) < 10^-10) 
+		if (is.nan(rcond(denom)) || rcond(denom) < 10^-10)
 			return(10^10)
 		num <- t(UU) %*% iV %*% XX
 		B <- solve(denom, num)
@@ -54,35 +54,35 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 		H <- XX - UU %*% B
 
 		logdetV <- -determinant(iV)$modulus[1]
-		if (is.infinite(logdetV)) 
+		if (is.infinite(logdetV))
 			return(10^10)
 
 		if (REML == TRUE) {
-			# REML likelihood function		
+			# REML likelihood function
 			LL <- 0.5 * (logdetV + determinant(t(UU) %*% iV %*% UU)$modulus[1] + t(H) %*% iV %*% H)
 		} else {
 			# ML likelihood function
 			LL <- 0.5 * (logdetV + t(H) %*% iV %*% H)
 		}
 
-		if (verbose == T) 
+		if (verbose == T)
 			show(c(as.numeric(LL), par))
 		return(as.numeric(LL))
 	}
 	# End corphylo.LL
-	
+
 	# Main program
-	if (!inherits(phy, "phylo")) 
+	if (!inherits(phy, "phylo"))
 		stop("Object \"phy\" is not of class \"phylo\".")
-	if (is.null(phy$edge.length)) 
+	if (is.null(phy$edge.length))
 		stop("The tree has no branch lengths.")
-	if (is.null(phy$tip.label)) 
+	if (is.null(phy$tip.label))
 		stop("The tree has no tip labels.")
 	phy <- reorder(phy, "postorder")
 	n <- length(phy$tip.label)
 
 	# Input X
-	if (dim(X)[1] != n) 
+	if (dim(X)[1] != n)
 		stop("Number of rows of the data matrix does not match the length of the tree.")
 	if (is.null(rownames(X))) {
 		warning("No tip labels on X; order assumed to be the same as in the tree.\n")
@@ -101,7 +101,7 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 
 	# Input SeM
 	if (!is.null(SeM)) {
-		if (dim(SeM)[1] != n) 
+		if (dim(SeM)[1] != n)
 			stop("Number of rows of the SeM matrix does not match the length of the tree.")
 		if (is.null(rownames(SeM))) {
 			warning("No tip labels on SeM; order assumed to be the same as in the tree.\n")
@@ -122,12 +122,12 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 
 	# Input U
 	if (length(U) > 0) {
-		if (length(U) != p) 
+		if (length(U) != p)
 			stop("Number of elements of list U does not match the number of columns in X.")
 
 		for (i in 1:p) {
 			if (!is.null(U[[i]])){
-				if (dim(U[[i]])[1] != n) 
+				if (dim(U[[i]])[1] != n)
 					stop("Number of rows of an element of U does not match the tree.")
 				if (is.null(rownames(U[[i]]))) {
 					warning("No tip labels on U; order assumed to be the same as in the tree.\n")
@@ -184,7 +184,7 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 			dd <- zeros
 			dd[i] <- 1
 			u <- kronecker(dd, as.matrix(Us[[i]]))
-			for (j in 1:dim(u)[2]) if (sd(u[, j]) > 0) 
+			for (j in 1:dim(u)[2]) if (sd(u[, j]) > 0)
 				UU <- cbind(UU, u[, j])
 		}
 	}
@@ -210,16 +210,16 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 
 	tau <- matrix(1, nrow = n, ncol = 1) %*% diag(Vphy) - Vphy
 
-	if (method == "Nelder-Mead") 
+	if (method == "Nelder-Mead")
 		opt <- optim(fn = corphylo.LL, par = par, XX = XX, UU = UU, MM = MM, tau = tau, Vphy = Vphy, REML = REML, verbose = verbose, constrain.d = constrain.d, method = "Nelder-Mead", control = list(maxit = maxit.NM, reltol = reltol))
 
 	if (method == "SANN") {
-		opt <- optim(fn = corphylo.LL, par = par, XX = XX, UU = UU, MM = MM, tau = tau, Vphy = Vphy, REML = REML, 
-			verbose = verbose, constrain.d = constrain.d, method = "SANN", control = list(maxit = maxit.SA, 
+		opt <- optim(fn = corphylo.LL, par = par, XX = XX, UU = UU, MM = MM, tau = tau, Vphy = Vphy, REML = REML,
+			verbose = verbose, constrain.d = constrain.d, method = "SANN", control = list(maxit = maxit.SA,
 				temp = temp.SA, tmax = tmax.SA, reltol = reltol))
 		par <- opt$par
-		opt <- optim(fn = corphylo.LL, par = par, XX = XX, UU = UU, MM = MM, tau = tau, Vphy = Vphy, REML = REML, 
-			verbose = verbose, constrain.d = constrain.d, method = "Nelder-Mead", control = list(maxit = maxit.NM, 
+		opt <- optim(fn = corphylo.LL, par = par, XX = XX, UU = UU, MM = MM, tau = tau, Vphy = Vphy, REML = REML,
+			verbose = verbose, constrain.d = constrain.d, method = "Nelder-Mead", control = list(maxit = maxit.NM,
 				reltol = reltol))
 	}
 
@@ -284,11 +284,11 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 		B.rownames <- NULL
 		for (i in 1:p) {
 			B.rownames <- c(B.rownames, paste("B", i, ".0", sep = ""))
-			if (ncol(U[[i]]) > 0) 
+			if (ncol(U[[i]]) > 0)
 				for (j in 1:ncol(U[[i]])) if (sd(U[[i]][, j]) > 0) {
-					if (is.null(colnames(U[[i]])[j])) 
+					if (is.null(colnames(U[[i]])[j]))
 						B.rownames <- c(B.rownames, paste("B", i, ".", j, sep = ""))
-					if (!is.null(colnames(U[[i]])[j])) 
+					if (!is.null(colnames(U[[i]])[j]))
 						B.rownames <- c(B.rownames, paste("B", i, ".", colnames(U[[i]])[j], sep = ""))
 				}
 		}
@@ -314,8 +314,8 @@ corphylo <- function(X, U = list(), SeM = NULL, phy = NULL, REML = TRUE, method 
 	AIC <- -2 * logLik + 2 * k
 	BIC <- -2 * logLik + k * (log(n) - log(pi))
 
-	results <- list(cor.matrix = cor.matrix, d = d, B = B, B.se = B.se, B.cov = B.cov, B.zscore = B.zscore, 
-		B.pvalue = B.pvalue, logLik = logLik, AIC = AIC, BIC = BIC, REML = REML, constrain.d = constrain.d, 
+	results <- list(cor.matrix = cor.matrix, d = d, B = B, B.se = B.se, B.cov = B.cov, B.zscore = B.zscore,
+		B.pvalue = B.pvalue, logLik = logLik, AIC = AIC, BIC = BIC, REML = REML, constrain.d = constrain.d,
 		XX = XX, UU = UU, MM = MM, Vphy = Vphy, R = R, V = V, C = C, convcode = opt$convergence, niter = opt$counts)
 	class(results) <- "corphylo"
 	return(results)
@@ -343,7 +343,7 @@ print.corphylo <- function(x, digits = max(3, getOption("digits") - 3), ...) {
 	cat("\nfrom OU process:\n")
 	d <- data.frame(d = x$d)
 	print(d, digits = digits)
-	if (x$constrain.d == TRUE) 
+	if (x$constrain.d == TRUE)
 		cat("\nvalues of d constrained to be in [0, 1]\n")
 
 	cat("\ncoefficients:\n")
@@ -352,6 +352,6 @@ print.corphylo <- function(x, digits = max(3, getOption("digits") - 3), ...) {
 	printCoefmat(coef, P.values = TRUE, has.Pvalue = TRUE)
 	cat("\n")
 
-	if (x$convcode != 0) 
+	if (x$convcode != 0)
 		cat("\nWarning: convergence in optim() not reached\n")
 }

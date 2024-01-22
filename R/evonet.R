@@ -127,25 +127,6 @@ reorder.evonet <- function(x, order = "cladewise", index.only = FALSE, ...)
     y
 }
 
-## requires topo_sort from igraph, behaviour different from phylo
-## (postorder seems to work fine)
-## if no singletons are in edge reorder.phylo could be used
-## if (getRversion() >= "2.15.1") utils::globalVariables(c("topo_sort", "graph"))
-## reorder.evonet <- function(x, order = "cladewise", index.only = FALSE, ...)
-## {
-##     order <- match.arg(order, c("cladewise", "postorder"))
-##     if (!is.null(attr(x, "order")))
-##         if (attr(x, "order") == order) return(x)
-##     g <- graph(t(x$edge))
-##     neword <- if (order == "cladewise") topo_sort(g, "out") else topo_sort(g, "in")
-##     neworder <- order(match(x$edge[, 1], neword))
-##     if (index.only) return(neworder)
-##     x$edge <- x$edge[neworder, ]
-##     if (!is.null(x$edge.length)) x$edge.length <- x$edge.length[neworder]
-##     attr(x, "order") <- order
-##     x
-## }
-
 as.evonet <- function(x, ...)
 {
     if (inherits(x, "evonet")) return(x)

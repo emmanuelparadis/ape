@@ -10,8 +10,6 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-# public function
-
 # run rjMCMC chain
 if (getRversion() >= "2.15.1")
     utils::globalVariables(c("loglik", "b.lin", "popsize"))

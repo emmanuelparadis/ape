@@ -1,8 +1,8 @@
-## read.nexus.R (2017-07-28)
+## read.nexus.R (2023-12-05)
 
 ##   Read Tree File in Nexus Format
 
-## Copyright 2003-2017 Emmanuel Paradis and 2010-2017 Klaus Schliep
+## Copyright 2003-2023 Emmanuel Paradis and 2010-2017 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -37,11 +37,16 @@
 .treeBuild <- function(x)
 {
     if (!length(grep(",", x))) {
-        phy <- list(edge = matrix(c(2L, 1L), 1, 2), Nnode = 1L)
-        x <- unlist(strsplit(x, "[\\(\\):;]"))
-        phy$tip.label <- x[2]
-        phy$edge.length <- as.numeric(x[3])
-        phy$node.label <- x[4]
+        ## only one tip but can be several nodes (GH's issue #104)
+        Nnode <- length(gregexpr("\\)", x)[[1]])
+        edge <- if (Nnode == 1L) 2:1 else c(2L, rep(3:(Nnode + 1L), each = 2), 1L)
+        dim(edge) <- c(Nnode, 2L)
+        phy <- list(edge = edge, Nnode = Nnode)
+        labs <- unlist(strsplit(x, "[\\(\\):;]"))
+        phy$tip.label <- labs[Nnode + 1L]
+        labs <- labs[-(1:(Nnode + 1L))]
+        phy$edge.length <- as.numeric(labs[c(TRUE, FALSE)])
+        phy$node.label <- labs[c(FALSE, TRUE)]
     } else {
         phy <- .Call(treeBuild, x)
         dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
@@ -58,10 +63,14 @@
 .cladoBuild <- function(x)
 {
     if (!length(grep(",", x))) {
-        phy <- list(edge = matrix(c(2L, 1L), 1, 2), Nnode = 1L)
-        x <- unlist(strsplit(x, "[\\(\\);]"))
-        phy$tip.label <- x[2]
-        phy$node.label <- x[3]
+        ## only one tip but can be several nodes (GH's issue #104)
+        Nnode <- length(gregexpr("\\)", x)[[1]])
+        edge <- if (Nnode == 1L) 2:1 else c(2L, rep(3:(Nnode + 1L), each = 2), 1L)
+        dim(edge) <- c(Nnode, 2L)
+        phy <- list(edge = edge, Nnode = Nnode)
+        labs <- unlist(strsplit(x, "[\\(\\);]"))
+        phy$tip.label <- labs[Nnode + 1L]
+        phy$node.label <- labs[(Nnode + 2L):length(labs)]
     } else {
         phy <- .Call(cladoBuild, x)
         dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
@@ -74,94 +83,6 @@
     attr(phy, "order") <- "cladewise"
     phy
 }
-
-##clado.build <- function(tp)
-##{
-##    add.internal <- function() {
-##        edge[j, 1L] <<- current.node
-##        node <<- node + 1L
-##        edge[j, 2L] <<- current.node <<- node
-##        index[node] <<- j # set index
-##        j <<- j + 1L
-##    }
-##    add.terminal <- function() {
-##        edge[j, 1L] <<- current.node
-##        edge[j, 2L] <<- tip
-##        index[tip] <<- j # set index
-##        tip.label[tip] <<- tpc[k]
-##        k <<- k + 1L
-##        tip <<- tip + 1L
-##        j <<- j + 1L
-##    }
-##    go.down <- function() {
-##        l <- index[current.node]
-##        node.label[current.node - nb.tip] <<- tpc[k]
-##        k <<- k + 1L
-##        current.node <<- edge[l, 1L]
-##    }
-##    if (!length(grep(",", tp))) {
-##        obj <- list(edge = matrix(c(2L, 1L), 1L, 2L), Nnode = 1L)
-##        tp <- unlist(strsplit(tp, "[\\(\\);]"))
-##        obj$tip.label <- tp[2]
-##        if (tp[3] != "") obj$node.label <- tp[3]
-##        class(obj) <- "phylo"
-##        return(obj)
-##    }
-##    tsp <- unlist(strsplit(tp, NULL))
-##    tp <- gsub(")", ")NA", tp)
-##    tp <- gsub(" ", "", tp)
-##    tpc <- unlist(strsplit(tp, "[\\(\\),;]"))
-##    tpc <- tpc[tpc != ""]
-##    skeleton <- tsp[tsp == "(" | tsp == ")" | tsp == "," | tsp == ";"]
-##    nsk <- length(skeleton)
-##    nb.node <- length(skeleton[skeleton == ")"])
-##    nb.tip <- length(skeleton[skeleton == ","]) + 1L
-##    ## We will assume there is an edge at the root;
-##    ## if so, it will be removed and put in a vector
-##    nb.edge <- nb.node + nb.tip
-##    node.label <- character(nb.node)
-##    tip.label <- character(nb.tip)
-##
-##    edge <- matrix(NA_integer_, nb.edge, 2L)
-##    current.node <- node <- nb.tip + 1L # node number
-##    edge[nb.edge, 1L] <- 0L   # see comment above
-##    edge[nb.edge, 2L] <- node #
-##
-##    index <- numeric(nb.edge + 1L)
-##    index[node] <- nb.edge
-##    ## j: index of the line number of edge
-##    ## k: index of the line number of tpc
-##    ## tip: tip number
-##    j <- k <- tip <- 1L
-##    for (i in 2:nsk) {
-##        if (skeleton[i] == "(") add.internal()      # add an internal branch (on top)
-##        if (skeleton[i] == ",") {
-##            if (skeleton[i - 1] != ")") add.terminal()   # add a terminal branch
-##        }
-##        if (skeleton[i] == ")") {
-##            if (skeleton[i - 1] == ",") {   # add a terminal branch and go down one level
-##                add.terminal()
-##                go.down()
-##            }
-##            ## added by Klaus to allow singleton nodes (2017-05-26):
-##            if (skeleton[i - 1] == "(") {
-##                add.terminal()
-##                go.down()
-##            }
-##            ## end
-##            if (skeleton[i - 1] == ")") go.down()   # go down one level
-##        }
-##    }
-##    edge <- edge[-nb.edge, ]
-##    obj <- list(edge = edge, tip.label = tip.label,
-##                Nnode = nb.node, node.label = node.label)
-##    obj$node.label <-
-##        if (all(obj$node.label == "NA", na.rm = TRUE)) NULL
-##        else gsub("^NA", "", obj$node.label)
-##    class(obj) <- "phylo"
-##    attr(obj, "order") <- "cladewise"
-##    obj
-##}
 
 read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
 {
@@ -214,7 +135,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         x <- gsub("^\\s+", "", x)
         # remove the , ; symbol
         x <- gsub("[,;]", "", x)
-        # split with the first space 
+        # split with the first space
         x <- unlist(regmatches(x, regexpr("\\s+", x), invert=TRUE))
         ###############################################
         x <- x[nzchar(x)]
@@ -291,11 +212,6 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     for (i in 1:Ntree) {
         tr <- trees[[i]]
         if (!translation) n <- length(tr$tip.label)
-        ## I suppose the following is no more needed (EP 2017-07-28)
-        ##ROOT <- n + 1L
-        ##if (sum(tr$edge[, 1] == ROOT) == 1 && dim(tr$edge)[1] > 1) {
-        ##    stop(paste("The tree has apparently singleton node(s): cannot read tree file.\n  Reading NEXUS file aborted at tree no.", i, sep = ""))
-        ##}
     }
     if (Ntree == 1 && !force.multi) {
         trees <- trees[[1]]

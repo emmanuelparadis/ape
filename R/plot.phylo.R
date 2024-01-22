@@ -917,7 +917,6 @@ kronoviz <- function(x, layout = length(x), horiz = TRUE, ...)
     axisPhylo(if (horiz) 1 else 4) # better if the deepest tree is last ;)
 }
 
-### TIDY
 tidy.xy <- function(edge, Ntip, Nnode, xx, yy)
 {
     yynew <- yy # will be updated to get the new y coordinates after tidying
@@ -1019,5 +1018,3 @@ tidy.xy <- function(edge, Ntip, Nnode, xx, yy)
     ## print(paste("Compression: ", round(compression,2),"%", sep="")) #Remove?
     yynew
 }
-
-### END TIDY

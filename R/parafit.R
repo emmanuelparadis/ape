@@ -101,10 +101,10 @@ if(test.links) {
 		trace.k <- sum(mat.4.k^2)
 		stat1 <- c(stat1, (global-trace.k))
 		den <- tracemax-global
-		if(den > epsilon) { 
-			stat2 <- c(stat2, stat1[k+1]/den) 
-			} else { 
-			stat2 <- c(stat2, NA) 
+		if(den > epsilon) {
+			stat2 <- c(stat2, stat1[k+1]/den)
+			} else {
+			stat2 <- c(stat2, NA)
 			}
 		#
 		# 3. Test link statistics by permutations
@@ -124,7 +124,7 @@ if(test.links) {
 				if(!is.na(stat2[k+1])) {
 					den <- tracemax-global.perm[i]
 					if(den > epsilon) {
-						stat2.perm <- stat1.perm/den 
+						stat2.perm <- stat1.perm/den
 						if(stat2.perm >= stat2[k+1]) nGT2 <- nGT2+1
 						} else {
 						nperm2 <- nperm2-1
@@ -138,7 +138,7 @@ if(test.links) {
 				} else {
 				p.stat2 <- c(p.stat2, NA) ### Error in previous version, corrected here
 				}
-			} else { 
+			} else {
 			p.stat1 <- c(p.stat1, NA)     ### Error in previous version, corrected here
 			p.stat2 <- c(p.stat2, NA)     ### Error in previous version, corrected here
 			}

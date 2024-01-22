@@ -1,8 +1,8 @@
-## root.R (2023-02-08)
+## root.R (2024-11-01)
 
 ##   Roots Phylogenetic Trees
 
-## Copyright 2004-2023 Emmanuel Paradis
+## Copyright 2004-2024 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -12,7 +12,7 @@ is.rooted <- function(phy) UseMethod("is.rooted")
 .is.rooted_ape <- function(phy, ntips)
 {
     if (!is.null(phy$root.edge)) return(TRUE)
-    if (tabulate(phy$edge[, 1])[ntips + 1] > 2) FALSE else TRUE
+    tabulate(phy$edge[, 1])[ntips + 1] <= 2
 }
 
 is.rooted.phylo <- function (phy)
@@ -26,21 +26,67 @@ is.rooted.multiPhylo <- function(phy)
     else sapply(phy, .is.rooted_ape, ntips = length(labs))
 }
 
-unroot <- function(phy) UseMethod("unroot")
+unroot <- function(phy, ...) UseMethod("unroot")
 
-.unroot_ape <- function(phy, n)
+.unroot_ape <- function(phy, n, collapse.singles = FALSE, keep.root.edge = FALSE)
 {
+    if (collapse.singles) phy <- collapse.singles(phy)
     ## n: number of tips of phy
     N <- dim(phy$edge)[1]
-    if (N < 3)
-        stop("cannot unroot a tree with less than three edges.")
+    if (N < 3) stop("cannot unroot a tree with less than three edges.")
 
-    ## delete FIRST the root.edge (in case this is sufficient to
+    dgr <- tabulate(phy$edge, n + phy$Nnode)
+
+    if (all(dgr < 3))
+        stop("cannot unroot a tree where all nodes are singleton")
+
+    ## delete first the root.edge (in case this is sufficient to
     ## unroot the tree, i.e. there is a multichotomy at the root)
-    if (!is.null(phy$root.edge)) phy$root.edge <- NULL
+    if (is.null(phy$root.edge)) {
+        keep.root.edge <- FALSE
+    } else {
+        if (!keep.root.edge) phy$root.edge <- NULL
+    }
     if (!.is.rooted_ape(phy, n)) return(phy)
 
+    wbl <- !is.null(phy$edge.length)
     ROOT <- n + 1L
+    basal <- dgr[ROOT] == 1
+    if (keep.root.edge) basal <- FALSE
+
+    if (keep.root.edge) {
+        ## add a terminal edge
+        nds <- phy$edge > n
+        ## increment node #s since we add a tip
+        phy$edge[nds] <- phy$edge[nds] + 1L
+        ROOT <- ROOT + 1L
+        phy$edge <- rbind(phy$edge, c(ROOT, n + 1L))
+        if (wbl)
+            phy$edge.length <- c(phy$edge.length, phy$root.edge)
+        phy$root.edge <- NULL
+        phy$tip.label <- c(phy$tip.label, "[ROOT]")
+        n <- n + 1L
+        N <- N + 1L
+    } else {
+        if (basal) {
+            ## make the most basal edge terminal
+            i <- which(phy$edge[, 1L] == ROOT)
+            NEWROOT <- phy$edge[i, 2L]
+            ROOT <- ROOT + 1L
+            phy$edge[phy$edge == NEWROOT] <- ROOT
+            n <- n + 1L
+            phy$edge[i, 1L] <- ROOT
+            phy$edge[i, 2L] <- n
+            if (!is.null(phy$node.label)) {
+                newlab <- phy$node.label[1L]
+                phy$node.label <- phy$node.label[-1L]
+            } else {
+                newlab <- "[ROOT]"
+            }
+            phy$tip.label <- c(phy$tip.label, newlab)
+            phy$Nnode <- phy$Nnode - 1L
+        }
+    }
 
 ### EDGEROOT[1]: the edge to be deleted
 ### EDGEROOT[2]: the target where to stick the edge to be deleted
@@ -86,7 +132,7 @@ unroot <- function(phy) UseMethod("unroot")
     s <- phy$edge > NEWROOT # renumber all nodes greater than the new root
     phy$edge[s] <- phy$edge[s] - 1L
 
-    if (!is.null(phy$edge.length)) {
+    if (wbl) {
         phy$edge.length[EDGEROOT[2L]] <-
             phy$edge.length[EDGEROOT[2L]] + phy$edge.length[EDGEROOT[1L]]
         phy$edge.length <- phy$edge.length[-EDGEROOT[1L]]
@@ -107,17 +153,24 @@ unroot <- function(phy) UseMethod("unroot")
     phy
 }
 
-unroot.phylo <- function(phy)
-    .unroot_ape(phy, length(phy$tip.label))
+unroot.phylo <- function(phy, collapse.singles = FALSE, keep.root.edge = FALSE, ...)
+    .unroot_ape(phy, length(phy$tip.label),
+                collapse.singles = collapse.singles,
+                keep.root.edge = keep.root.edge)
 
-unroot.multiPhylo <- function(phy)
+unroot.multiPhylo <- function(phy, collapse.singles = FALSE, keep.root.edge = FALSE, ...)
 {
     oc <- oldClass(phy)
     class(phy) <- NULL
     labs <- attr(phy, "TipLabel")
-    if (is.null(labs)) phy <- lapply(phy, unroot.phylo)
+    if (is.null(labs))
+        phy <- lapply(phy, unroot.phylo,
+                      collapse.singles = collapse.singles,
+                      keep.root.edge = keep.root.edge)
     else {
-        phy <- lapply(phy, .unroot_ape, n = length(labs))
+        phy <- lapply(phy, .unroot_ape, n = length(labs),
+                      collapse.singles = collapse.singles,
+                      keep.root.edge = keep.root.edge)
         attr(phy, "TipLabel") <- labs
     }
     class(phy) <- oc

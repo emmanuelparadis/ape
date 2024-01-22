@@ -29,9 +29,3 @@ plot.varcomp <- function(x, xlab = "Levels", ylab = "Variance", type = "b", ...)
   return(xyplot(x ~ ordered(names(x), levels=rev(names(x))), xlab=xlab, ylab=ylab, type=type, ...))
 }
 
-# For debuging:
-#data(carnivora)
-#m <- lme(log10(SW) ~ 1, random = ~ 1|Order/SuperFamily/Family/Genus, data=carnivora)
-#v <- varcomp(m,T,T)
-#plot(v)
-
