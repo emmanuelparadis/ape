@@ -298,6 +298,16 @@ ace <-
             obj$lik.anc <- lik.anc
         }
     }
+
+    ## Adding node labels to $ace and $CI95 (if available)
+    if(!is.null(phy$node.label)) {
+        ordered_node_labels <- phy$node.label[c(as.integer(names(obj$ace))- Ntip(phy))]
+        names(obj$ace) <- ordered_node_labels
+        if(!is.null(obj$CI95)) {
+            rownames(obj$CI95) <- ordered_node_labels
+        }
+    }
+    
     obj$call <- match.call()
     class(obj) <- "ace"
     obj
