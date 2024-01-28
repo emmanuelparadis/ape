@@ -68,6 +68,8 @@ OTHER CHANGES
       size. The code is three times faster with small trees; twice
       faster with ~1000 tips (the gain is less with bigger trees).
 
+    o ace() now uses node labels, if available, in the output.
+
 
 
 		CHANGES IN APE VERSION 5.7-1
