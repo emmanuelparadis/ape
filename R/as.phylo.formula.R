@@ -6,9 +6,10 @@
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
-getwd()
 
+getwd()
 library(ape)
+
 as.phylo.formula <- function(x, data = parent.frame(), collapse = TRUE, ...)
 {
   ## Testing formula syntax:
@@ -55,3 +56,5 @@ as.phylo.formula <- function(x, data = parent.frame(), collapse = TRUE, ...)
   phy$tip.label <- leaves.names[as.numeric(phy$tip.label)]
   phy
 }
+
+## as.phylo.formula <- function(x, data = parent.frame(), collapse = TRUE, ...), for source/func
