@@ -7,9 +7,6 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-getwd()
-library(ape)
-
 as.phylo.formula <- function(x, data = parent.frame(), collapse = TRUE, ...)
 {
   ## Testing formula syntax:
