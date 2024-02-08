@@ -304,7 +304,7 @@ degree <- function(x, ...) UseMethod("degree")
 
 degree.phylo <- function(x, details = FALSE, ...)
 {
-    N <- length(x$tip.label) + x$Nnode
+    N <- max(x$edge)
     res <- tabulate(x$edge, N)
     if (details) return(res)
     tab <- tabulate(res)
