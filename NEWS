@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.7-1.6
+		CHANGES IN APE VERSION 5.7-1.8
 
 
 NEW FEATURES
@@ -48,6 +48,12 @@ BUG FIXES
     o read.tree() now reads correctly trees with many nodes but a
       single tip such as "(());" (see issue #104 on GitHub).
 
+    o bitsplits() failed with large trees. There are now checks on
+      memory requirements; some explanations have been in the help
+      page.
+
+    o comparePhylo() failed with two large trees. This is now fixed.
+
 
 OTHER CHANGES
 
@@ -61,6 +67,8 @@ OTHER CHANGES
     o dist.nodes() has an improved internal C code with unlimited tree
       size. The code is three times faster with small trees; twice
       faster with ~1000 tips (the gain is less with bigger trees).
+
+    o ace() now uses node labels, if available, in the output.
 
 
 

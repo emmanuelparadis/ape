@@ -1,8 +1,8 @@
-## comparePhylo.R (2021-12-12)
+## comparePhylo.R (2024-01-13)
 
 ##   Compare Two "phylo" Objects
 
-## Copyright 2018-2021 Emmanuel Paradis, 2021 Klaus Schliep
+## Copyright 2018-2024 Emmanuel Paradis, 2021 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -115,8 +115,9 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
     }
     if (sameTips) {
         TR <- .compressTipLabel(c(x, y))
-        bs <- bitsplits(unroot(TR))
-        common.splits <- which(bs$freq == 2L)
+        TR <- root(TR, attr(TR, "TipLabel")[1])
+        pp <- prop.part(TR)
+        common.splits <- which(attr(pp, "number") == 2L)
         ncs <- length(common.splits)
         tmp <-
             if (ncs)
