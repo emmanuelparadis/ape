@@ -76,6 +76,7 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
             msg <- c(msg, paste(nk, if (nk == 1) "clade" else "clades", "in", tree1, "not in", tree2))
         }
         if (plot) {
+            def.par <- par(no.readonly = TRUE)
             layout(matrix(1:2, 1, 2))
             plot(x, use.edge.length = use.edge.length, main = tree1, ...)
             nodelabels(node = which(tmp) + n1, pch = 19, col = "blue", cex = 2)
@@ -89,6 +90,7 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
             plot(y, use.edge.length = use.edge.length, main = tree2, ...)
             nodelabels(node = which(tmp) + n2, pch = 19, col = "red", cex = 2)
             legend(location, legend = paste("Clade absent in", tree1), pch = 19, col = "red")
+            par(def.par)
         }
         nodes1 <- which(!is.na(mk12))
         nodes2 <- mk12[!is.na(mk12)]
@@ -122,6 +124,7 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
             else "No split in common"
         msg <- c(msg, tmp)
         if (plot) {
+            def.par <- par(no.readonly = TRUE)
             co <- "black"#rgb(0, 0, 1, 0.7)
             layout(matrix(1:2, 1, 2))
             edgecol1 <- rep("black", Nedge(x))
@@ -149,6 +152,7 @@ comparePhylo <- function(x, y, plot = FALSE, force.rooted = FALSE,
             legend(location, legend = text4leg, lty = 1, col = "black", lwd = 5, xpd = NA)
             plot(TR[[2]], "u", use.edge.length = use.edge.length,
                  edge.color = edgecol2, edge.width = edgew2, main = tree2, ...)
+            par(def.par)
         }
     }
     res$messages <- paste0(msg, ".")
