@@ -1,8 +1,8 @@
-## summary.phylo.R (2023-04-03)
+## summary.phylo.R (2024-02-13)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
-## Copyright 2003-2023 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016
+## Copyright 2003-2023 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016-2024
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.

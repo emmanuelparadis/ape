@@ -1,18 +1,18 @@
-## read.GenBank.R (2022-03-02)
+## read.GenBank.R (2024-02-13)
 
 ##   Read DNA Sequences and Annotations from GenBank
 
-## Copyright 2002-2022 Emmanuel Paradis
+## Copyright 2002-2022 Emmanuel Paradis and Klaus Schliep 2024
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
 read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
                          as.character = FALSE, chunk.size = 400, quiet = TRUE,
-                         type="DNA")
+                         type = "DNA")
 {
     type <- match.arg(type, c("DNA", "AA"))
-    db <- ifelse(type="DNA", "nucleotide", "protein")
+    db <- ifelse(type = "DNA", "nucleotide", "protein")
     chunk.size <- as.integer(chunk.size)
     N <- length(access.nb)
     ## if more than 400 sequences, we break down the requests
@@ -36,8 +36,7 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
         cat(" Done.\nNote: the downloaded sequences are in file:", fl)
         cat("\nReading sequences...")
     }
-    if(db=="nucleotide") res <- read.FASTA(fl, type = "DNA")
-    else res <- read.FASTA(fl, type = "AA")
+    res <- read.FASTA(fl, type = type)
     if (is.null(res)) return(NULL)
     attr(res, "description") <- names(res)
     if (length(access.nb) != length(res)) {

@@ -1,8 +1,8 @@
-## comparePhylo.R (2024-01-13)
+## comparePhylo.R (2024-02-13)
 
 ##   Compare Two "phylo" Objects
 
-## Copyright 2018-2024 Emmanuel Paradis, 2021 Klaus Schliep
+## Copyright 2018-2024 Emmanuel Paradis, 2021-2024 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.

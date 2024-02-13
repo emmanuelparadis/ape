@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.7-1.8
+		CHANGES IN APE VERSION 5.7-1.9
 
 
 NEW FEATURES
@@ -29,6 +29,10 @@ NEW FEATURES
     o unroot() gains two options, 'collapse.singles' and
       'keep.root.edge', to handle some complicated situations (see
       issue #103 on GitHub).
+
+    o read.GenBank() has a new argument 'type' to download AA
+      sequences. The default is type = "DNA", and the other choice is
+      type = "AA".
 
 
 BUG FIXES
@@ -69,6 +73,9 @@ OTHER CHANGES
       faster with ~1000 tips (the gain is less with bigger trees).
 
     o ace() now uses node labels, if available, in the output.
+
+    o comparePhylo() now restores the graphical window in its previous
+      state (i.e., after calling layout() if plot = TRUE).
 
 
 
