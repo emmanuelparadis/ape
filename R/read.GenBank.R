@@ -8,8 +8,11 @@
 ## See the file ../COPYING for licensing issues.
 
 read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
-                         as.character = FALSE, chunk.size = 400, quiet = TRUE)
+                         as.character = FALSE, chunk.size = 400, quiet = TRUE,
+                         type="DNA")
 {
+    type <- match.arg(type, c("DNA", "AA"))
+    db <- ifelse(type="DNA", "nucleotide", "protein")
     chunk.size <- as.integer(chunk.size)
     N <- length(access.nb)
     ## if more than 400 sequences, we break down the requests
@@ -20,7 +23,7 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
         cat("Note: chunk.size =", chunk.size, "(max nb of sequences downloaded together)\n")
     repeat {
         if (!quiet) cat("\rDownloading sequences:", b, "/", N, "...")
-        URL <- paste0("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=",
+        URL <- paste0("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=", db, "&id=",
                       paste(access.nb[a:b], collapse = ","), "&rettype=fasta&retmode=text")
         X <- scan(file = URL, what = "", sep = "\n", quiet = TRUE)
         cat(X, sep = "\n", file = fl, append = TRUE)
@@ -33,7 +36,8 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
         cat(" Done.\nNote: the downloaded sequences are in file:", fl)
         cat("\nReading sequences...")
     }
-    res <- read.FASTA(fl)
+    if(db=="nucleotide") res <- read.FASTA(fl, type = "DNA")
+    else res <- read.FASTA(fl, type = "AA")
     if (is.null(res)) return(NULL)
     attr(res, "description") <- names(res)
     if (length(access.nb) != length(res)) {
@@ -50,7 +54,7 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
         sp <- character(0)
         repeat {
             if (!quiet) cat("\rDownloading species names:", b, "/", N)
-            URL <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=",
+            URL <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=", db, "&id=",
                      paste(access.nb[a:b], collapse = ","), "&rettype=gb&retmode=text", sep = "")
             X <- scan(file = URL, what = "", sep = "\n", quiet = TRUE, n = -1)
             sp <- c(sp, gsub(" +ORGANISM +", "", grep("ORGANISM", X, value = TRUE)))
