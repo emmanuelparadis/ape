@@ -1,8 +1,8 @@
-## read.tree.R (2021-05-28)
+## read.tree.R (2024-03-28)
 
 ##   Read Tree Files in Parenthetic Format
 
-## Copyright 2002-2021 Emmanuel Paradis, Daniel Lawson and Klaus Schliep
+## Copyright 2002-2024 Emmanuel Paradis, Daniel Lawson and Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -56,6 +56,10 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     if (SINGLE.QUOTES.FOUND) tmp_label <- single_quotes(tree)
 
     y <- unlist(gregexpr(";", tree))
+    if (all(y == -1))  {
+        warning("no semicolon(s) [end(s) of tree] found")
+        return(NULL)
+    }
 
     ## if one tree per line much faster
     if (identical(y, nchar(tree))) { # check if always one tree per line

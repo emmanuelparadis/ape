@@ -143,9 +143,9 @@ same number of labeled cases: there are 12 for the unbalanced
 topologies, and 3 for the balanced one. Thus, if we
 sample the unlabeled topologies with equal probabilities, the labeled
 ones will not be represented in equal frequencies. However, we have
-seen above that the probability to draw twice the topology is very
+seen above that the probability to draw twice the same topology is very
 small if $n$ is sufficiently large, but this will also depend on the
-number of trees samples, denoted here as $K$.
+number of trees sampled, denoted here as $K$.
 
 What is the probability $P$ to have at least twice the same unlabeled
 topology when drawing $K$ trees assuming equal probability of

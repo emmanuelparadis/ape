@@ -40,7 +40,7 @@ BUG FIXES
     o rtt() was fixed when dates include NAs (issue #73 on GitHub).
 
     o njs(), bionj(), bionjs(), fastme.bal(), and fastme.ols() now
-      check that there are least three observations in the distance
+      check that there are at least three observations in the distance
       matrix (issue #84 on GitHub).
 
     o nodelabels(, frame = "circle") used to ignore the argument
@@ -53,10 +53,10 @@ BUG FIXES
       single tip such as "(());" (see issue #104 on GitHub).
 
     o bitsplits() failed with large trees. There are now checks on
-      memory requirements; some explanations have been in the help
-      page.
+      memory requirements; some explanations have been added in the
+      help page.
 
-    o comparePhylo() failed with two large trees. This is now fixed.
+    o comparePhylo() failed with two large trees. This is fixed.
 
 
 OTHER CHANGES
@@ -76,6 +76,9 @@ OTHER CHANGES
 
     o comparePhylo() now restores the graphical window in its previous
       state (i.e., after calling layout() if plot = TRUE).
+
+    o read.tree() now gives a warning (still returning NULL) if there
+      is no semicolon (end of tree) in the Newick string.
 
 
 

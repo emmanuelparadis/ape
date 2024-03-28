@@ -18,7 +18,7 @@ LargeNumber <- function(a, b)
 print.LargeNumber <- function(x, latex = FALSE, digits = 1, ...)
 {
     if (latex) {
-        cat("\\approx ", round(x["x"], digits), " \\times 10^{", x["n"], "}$\n", sep = "")
+        cat("$\\approx ", round(x["x"], digits), " \\times 10^{", x["n"], "}$\n", sep = "")
     } else {
         cat("approximately ", x["x"], " * 10^", x["n"], "\n", sep = "")
     }
