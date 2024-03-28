@@ -69,7 +69,12 @@ write.tree <-
     brl <- !is.null(phy$edge.length)
     nodelab <- !is.null(phy$node.label)
     if (check_tips) phy$tip.label <- checkLabel(phy$tip.label)
-    if (nodelab) phy$node.label <- checkLabel(phy$node.label)
+    if (nodelab) {
+        if (length(phy[["node.label"]]) != phy[["Nnode"]]) {
+            warning("Length of node.label does not match number of nodes.")
+        }
+        phy$node.label <- checkLabel(phy$node.label)
+    }
     f.d <- paste0(":%.", digits, "g")
     n <- length(phy$tip.label)
 
