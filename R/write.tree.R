@@ -1,8 +1,8 @@
-## write.tree.R (2023-10-16)
+## write.tree.R (2024-04-07)
 
 ##   Write Tree File in Parenthetic Format
 
-## Copyright 2002-2023 Emmanuel Paradis, Daniel Lawson, and Klaus Schliep
+## Copyright 2002-2024 Emmanuel Paradis, Daniel Lawson, and Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -70,6 +70,7 @@ write.tree <-
     nodelab <- !is.null(phy$node.label)
     if (check_tips) phy$tip.label <- checkLabel(phy$tip.label)
     if (nodelab) {
+        ## fix by Martin Smith (2024-04-07)
         if (length(phy[["node.label"]]) != phy[["Nnode"]]) {
             warning("Length of node.label does not match number of nodes.")
         }
