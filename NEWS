@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.7-1.9
+		CHANGES IN APE VERSION 5.8
 
 
 NEW FEATURES
@@ -78,7 +78,10 @@ OTHER CHANGES
       state (i.e., after calling layout() if plot = TRUE).
 
     o read.tree() now gives a warning (still returning NULL) if there
-      is no semicolon (end of tree) in the Newick string.
+      is (are) no semicolon(s) [end of tree(s)] in the Newick string.
+
+    o write.tree() now gives a warning if the length of the node
+      labels does not match the number of nodes given by '$Nnode'.
 
 
 

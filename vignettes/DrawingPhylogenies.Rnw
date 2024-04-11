@@ -528,7 +528,7 @@ positions where the annotations should be printed or drawn. If these
 functions are used without any argument, they print the numbers of the
 nodes, tips, or edges, respectively, used in the \code{"phylo"}
 object:\footnote{The structure of objects of class \code{"phylo"} is
-  described on \ape's web site: \texttt{http://ape-package.ird.fr/ape\_development.html}}
+  described on \ape's web site: \texttt{https://emmanuelparadis.github.io/ape\_development.html}}
 
 \begin{center}
   \setkeys{Gin}{width=.5\textwidth}

@@ -12,7 +12,7 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
                          type = "DNA")
 {
     type <- match.arg(type, c("DNA", "AA"))
-    db <- ifelse(type = "DNA", "nucleotide", "protein")
+    db <- ifelse(type == "DNA", "nucleotide", "protein")
     chunk.size <- as.integer(chunk.size)
     N <- length(access.nb)
     ## if more than 400 sequences, we break down the requests

@@ -81,7 +81,7 @@
 }
 \references{
   Paradis, E. (2007) A Bit-Level Coding Scheme for Nucleotides.
-  \url{http://ape-package.ird.fr/misc/BitLevelCodingScheme_20April2007.pdf}
+  \url{https://emmanuelparadis.github.io/misc/BitLevelCodingScheme_20April2007.pdf}
 
   Paradis, E. (2012) \emph{Analysis of Phylogenetics and Evolution with
   R (Second Edition).} New York: Springer.

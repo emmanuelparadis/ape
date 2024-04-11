@@ -288,6 +288,7 @@ S3method(as.DNAbin, PairwiseAlignmentsSingleSubject)
 
 S3method(as.evonet, phylo)
 
+S3method(as.phylo, default)
 S3method(as.phylo, formula)
 S3method(as.phylo, hclust)
 S3method(as.phylo, matching)
