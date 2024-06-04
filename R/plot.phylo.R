@@ -250,8 +250,7 @@ plot.phylo <-
 
     if (show.tip.label) nchar.tip.label <- nchar(x$tip.label)
     max.yy <- max(yy)
-
-    if (is.null(x.lim)) {
+#    if (is.null(x.lim)) {
         if (phyloORclado) {
             if (horizontal) {
                 ## 1.04 comes from that we are using a regular axis system
@@ -263,29 +262,33 @@ plot.phylo <-
                     tmp <- getLimit(xx.tips, x$tip.label, pin1, cex)
                     tmp <- tmp + label.offset
                 } else tmp <- max(xx.tips)
-                x.lim <- c(0, tmp)
+                x_lim <- c(0, tmp)
+                if (direction == "leftwards") x_lim <- x_lim - (tmp - max(xx.tips))
             } else {
                 ### TIDY
                 ## x.lim <- c(1, Ntip) # Not true anymore with tidy trees
-                x.lim <- c(1, max(xx[1:Ntip])) # add offset?
+                x_lim <- c(1, max(xx[1:Ntip])) # add offset?
                 ### END TIDY
             }
         } else switch(type, "fan" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.018 * max.yy * cex)
-                x.lim <- range(xx) + c(-offset, offset)
-            } else x.lim <- range(xx)
+                x_lim <- range(xx) + c(-offset, offset)
+            } else x_lim <- range(xx)
         }, "unrooted" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.018 * max.yy * cex)
-                x.lim <- c(0 - offset, max(xx) + offset)
-            } else x.lim <- c(0, max(xx))
+                x_lim <- c(0 - offset, max(xx) + offset)
+            } else x_lim <- c(0, max(xx))
         }, "radial" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.03 * cex)
-                x.lim <- c(-1 - offset, 1 + offset)
-            } else x.lim <- c(-1, 1)
+                x_lim <- c(-1 - offset, 1 + offset)
+            } else x_lim <- c(-1, 1)
         })
+#    }
+    if (is.null(x.lim)){
+        x.lim <- x_lim
     } else if (length(x.lim) == 1) {
         x.lim <- c(0, x.lim)
         if (phyloORclado && !horizontal) x.lim[1] <- 1
@@ -297,13 +300,13 @@ plot.phylo <-
                 else -1
     }
     ## mirror the xx:
-    if (phyloORclado && direction == "leftwards") xx <- x.lim[2] - xx
-    if (is.null(y.lim)) {
+    if (phyloORclado && direction == "leftwards") xx <- x_lim[2] - xx
+#    if (is.null(y.lim)) {
         if (phyloORclado) {
             if (horizontal) {
                 ### TIDY
                 ## y.lim <- c(1, Ntip) # Not true anymore with tidy trees
-                y.lim <- c(1, max(yy[1:Ntip]))
+                y_lim <- c(1, max(yy[1:Ntip]))
                 ### END TIDY
             } else {
                 pin2 <- par("pin")[2] # height of the device in inches
@@ -315,24 +318,27 @@ plot.phylo <-
                     tmp <- getLimit(yy.tips, x$tip.label, pin2, cex)
                     tmp <- tmp + label.offset
                 } else tmp <- max(yy.tips)
-                y.lim <- c(0, tmp)
+                y_lim <- c(0, tmp)
+                if (direction == "downwards") y_lim <- y_lim - (tmp - max(yy.tips))
             }
         } else switch(type, "fan" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.018 * max.yy * cex)
-                y.lim <- c(min(yy) - offset, max.yy + offset)
-            } else y.lim <- c(min(yy), max.yy)
+                y_lim <- c(min(yy) - offset, max.yy + offset)
+            } else y_lim <- c(min(yy), max.yy)
         }, "unrooted" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.018 * max.yy * cex)
-                y.lim <- c(0 - offset, max.yy + offset)
-            } else y.lim <- c(0, max.yy)
+                y_lim <- c(0 - offset, max.yy + offset)
+            } else y_lim <- c(0, max.yy)
         }, "radial" = {
             if (show.tip.label) {
                 offset <- max(nchar.tip.label * 0.03 * cex)
-                y.lim <- c(-1 - offset, 1 + offset)
-            } else y.lim <- c(-1, 1)
+                y_lim <- c(-1 - offset, 1 + offset)
+            } else y_lim <- c(-1, 1)
         })
+    if (is.null(y.lim)) {
+        y.lim <- y_lim
     } else if (length(y.lim) == 1) {
         y.lim <- c(0, y.lim)
         if (phyloORclado && horizontal) y.lim[1] <- 1
@@ -342,7 +348,7 @@ plot.phylo <-
             y.lim[1] <- if (show.tip.label) -1 - max(nchar.tip.label * 0.018 * max.yy * cex) else -1
     }
     ## mirror the yy:
-    if (phyloORclado && direction == "downwards") yy <- y.lim[2] - yy # fix by Klaus
+    if (phyloORclado && direction == "downwards") yy <- y_lim[2] - yy # fix by Klaus
     if (phyloORclado && root.edge) {
         if (direction == "leftwards") x.lim[2] <- x.lim[2] + x$root.edge
         if (direction == "downwards") y.lim[2] <- y.lim[2] + x$root.edge
