@@ -40,7 +40,7 @@ write.nexus(..., file = "", translate = TRUE)
 \seealso{
   \code{\link{read.nexus}}, \code{\link{read.tree}},
   \code{\link{write.tree}}, \code{\link{read.nexus.data}},
-  \code{\link{write.nexus.data}}
+  \code{\link{write.nexus.data}}, \code{\link{write.phyloXML}}
 }
 \keyword{manip}
 \keyword{IO}

@@ -57,7 +57,7 @@ write.tree(phy, file = "", append = FALSE,
   \email{kschliep@snv.jussieu.fr}}
 \seealso{
   \code{\link{read.tree}}, \code{\link{read.nexus}},
-  \code{\link{write.nexus}}
+  \code{\link{write.nexus}}, \code{\link{write.phyloXML}}
 }
 \keyword{manip}
 \keyword{IO}
