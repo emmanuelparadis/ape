@@ -1,8 +1,8 @@
-## read.nexus.R (2023-12-05)
+## read.nexus.R (2024-07-22)
 
 ##   Read Tree File in Nexus Format
 
-## Copyright 2003-2023 Emmanuel Paradis and 2010-2017 Klaus Schliep
+## Copyright 2003-2024 Emmanuel Paradis and 2010-2017 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -37,16 +37,24 @@
 .treeBuild <- function(x)
 {
     if (!length(grep(",", x))) {
-        ## only one tip but can be several nodes (GH's issue #104)
+        ## only one tip but can be several nodes (GH's issues #104 and #124)
         Nnode <- length(gregexpr("\\)", x)[[1]])
         edge <- if (Nnode == 1L) 2:1 else c(2L, rep(3:(Nnode + 1L), each = 2), 1L)
-        dim(edge) <- c(Nnode, 2L)
+        edge <- matrix(edge, Nnode, 2L, TRUE)
         phy <- list(edge = edge, Nnode = Nnode)
         labs <- unlist(strsplit(x, "[\\(\\):;]"))
-        phy$tip.label <- labs[Nnode + 1L]
-        labs <- labs[-(1:(Nnode + 1L))]
-        phy$edge.length <- as.numeric(labs[c(TRUE, FALSE)])
-        phy$node.label <- labs[c(FALSE, TRUE)]
+        nt <- Nnode + 1L
+        phy$tip.label <- labs[nt]
+        labs <- labs[-(1:nt)]
+        s <- c(TRUE, FALSE)
+        tmp <- as.numeric(labs[s])
+        if (length(tmp) == Nnode) {
+            phy$edge.length <- tmp
+        } else { # length(tmp) == Nnode + 1L (not checked)
+            phy$edge.length <- tmp[-length(tmp)]
+            phy$root.edge <- tmp[length(tmp)]
+        }
+        phy$node.label <- labs[!s]
     } else {
         phy <- .Call(treeBuild, x)
         dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)

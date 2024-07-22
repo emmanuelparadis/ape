@@ -1,3 +1,17 @@
+		CHANGES IN APE VERSION 5.8-0.2
+
+
+BUG FIXES
+
+    o plot.phylo() shifted the coordinates when the tree was plotted
+      left- or downwards (see PR #119 on GitHub).
+
+    o Newick strings with a single tip and multiple nodes were not
+      correctly parsed. Also, if a root edge was present it was not
+      correctly decoded (see issue #124 on GitHub).
+
+
+
 		CHANGES IN APE VERSION 5.8
 
 

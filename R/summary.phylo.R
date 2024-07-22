@@ -1,8 +1,8 @@
-## summary.phylo.R (2024-02-13)
+## summary.phylo.R (2024-07-22)
 
 ##   Print Summary of a Phylogeny, "multiPhylo" operators, node degrees
 
-## Copyright 2003-2023 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016-2024
+## Copyright 2003-2024 Emmanuel Paradis, 2006 Ben Bolker, and Klaus Schliep 2016-2024
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -87,16 +87,17 @@ print.phylo <- function(x, printlen = 6,...)
 {
     nb.tip <- length(x$tip.label)
     nb.node <- x$Nnode
-    cat(paste("\nPhylogenetic tree with", nb.tip, "tips and", nb.node,
-              "internal nodes.\n\n"))
-    cat("Tip labels:\n")
+    NT <- if (nb.tip == 1L) "tip and" else "tips and"
+    NN <- if (nb.node == 1L) "internal node.\n\n" else "internal nodes.\n\n"
+    cat("\nPhylogenetic tree with", nb.tip, NT, nb.node, NN)
+    if (nb.tip == 1L) cat("Tip label:\n") else cat("Tip labels:\n")
     if (nb.tip > printlen) {
         cat("  ", paste(x$tip.label[1:printlen], collapse=", "), ", ...\n", sep = "")
     } else {
         cat("  ", paste(x$tip.label, collapse=", "), "\n", sep = "")
     }
     if (!is.null(x$node.label)) {
-        cat("Node labels:\n")
+        if (nb.node == 1L) cat("Node label:\n") else cat("Node labels:\n")
         if (nb.node > printlen) {
             cat("  ", paste(x$node.label[1:printlen], collapse=", "), ", ...\n", sep = "")
         } else {
@@ -106,8 +107,8 @@ print.phylo <- function(x, printlen = 6,...)
     rlab <- if (is.rooted(x)) "Rooted" else "Unrooted"
     cat("\n", rlab, "; ", sep="")
 
-    blen <- if (is.null(x$edge.length)) "no branch lengths." else
-    "includes branch lengths."
+    blen <- if (is.null(x$edge.length)) "no branch length." else
+    "includes branch length(s)."
     cat(blen, "\n", sep = "")
 }
 
