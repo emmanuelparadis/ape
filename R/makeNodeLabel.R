@@ -20,14 +20,6 @@ makeNodeLabel.phylo <-
     function(phy, method = "number", prefix = "Node",
              nodeList = list(), ...)
 {
-    ## multiPhylo
-    if(is(phy, "multiPhylo")) {
-        phy <- lapply(phy, makeNodeLabel, method, prefix, nodeList, ...)
-        class(phy) <- "multiPhylo"
-        return(phy)
-    }
-
-    ## phylo
     method <- sapply(method, match.arg, c("number", "md5sum", "user"),
                      USE.NAMES = FALSE)
 
