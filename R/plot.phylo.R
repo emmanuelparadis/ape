@@ -752,10 +752,12 @@ circular.plot <- function(edge, Ntip, Nnode, xx, yy, theta,
     for (k in 1:Nnode) {
         i <- start[k]
         j <- end[k]
-        X <- rep(r[edge[i, 1]], 100)
-        Y <- seq(theta[edge[i, 2]], theta[edge[j, 2]], length.out = 100)
+        # make number of segments dependent on the angle
+        n_segments <- as.integer(2 + (theta[edge[j, 2]] - theta[edge[i, 2]]) / 0.03)
+        X <- rep(r[edge[i, 1]], n_segments)
+        Y <- seq(theta[edge[i, 2]], theta[edge[j, 2]], length.out = n_segments)
         x <- X * cos(Y); y <- X * sin(Y)
-        x0 <- x[-100]; y0 <- y[-100]; x1 <- x[-1]; y1 <- y[-1]
+        x0 <- x[-n_segments]; y0 <- y[-n_segments]; x1 <- x[-1]; y1 <- y[-1]
         segments(x0, y0, x1, y1, col = co[[k]], lwd = lw[[k]], lty = ly[[k]])
     }
 }
