@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.8-0.2
+		CHANGES IN APE VERSION 5.8-0.3
 
 
 BUG FIXES
@@ -9,6 +9,11 @@ BUG FIXES
     o Newick strings with a single tip and multiple nodes were not
       correctly parsed. Also, if a root edge was present it was not
       correctly decoded (see issue #124 on GitHub).
+
+
+OTHER CHANGES
+
+    o Plotting circular trees has been improved (see PR #129 on GitHub).
 
 
 

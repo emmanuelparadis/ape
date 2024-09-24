@@ -1,4 +1,4 @@
-## ace.R (2024-01-28)
+## ace.R (2024-09-24)
 
 ##   Ancestral Character Estimation
 
@@ -298,11 +298,14 @@ ace <-
             obj$lik.anc <- lik.anc
         }
     }
-    ## edited from Thomas G (PR #106):
+    ## edited from Thomas G (PR #106 and PR #127):
     if (!is.null(phy$node.label)) {
-        names(obj$ace) <- phy$node.label
+        if (!is.null(obj$ace))
+            names(obj$ace) <- phy$node.label
         if (!is.null(obj$CI95))
             rownames(obj$CI95) <- phy$node.label
+        if (!is.null(obj$lik.anc)) 
+            rownames(obj$lik.anc) <- phy$node.label
     }
     obj$call <- match.call()
     class(obj) <- "ace"
