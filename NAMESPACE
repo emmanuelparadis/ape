@@ -75,6 +75,7 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        varcomp, varCompPhylip, vcv, vcv.corPhyl, vcv.phylo, vcv2phylo,
        weight.taxo, weight.taxo2, where, which.edge, write.dna,
        write.evonet, write.FASTA, write.nexus, write.nexus.data,
+       write.phyloXML,
        write.tree, Xplor, Xplorefiles, yule, yule.cov, yule.time,
        zoom, node_depth, node_depth_edgelength, node_height,
        node_height_clado, seq_root2tip)
