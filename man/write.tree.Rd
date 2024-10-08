@@ -14,7 +14,7 @@ write.tree(phy, file = "", append = FALSE,
     without erasing the data possibly existing in the file, otherwise
     the file (if it exists) is overwritten (\code{FALSE} the default).}
   \item{digits}{a numeric giving the number of digits used for printing
-    branch lengths.}
+    branch lengths. For negative numbers no branch lengths are printed.}
   \item{tree.names}{either a logical or a vector of mode character. If
     \code{TRUE} then any tree names will be written prior to the tree on
     each line. If character, specifies the name of \code{"phylo"}
@@ -54,7 +54,7 @@ write.tree(phy, file = "", append = FALSE,
 
 \author{Emmanuel Paradis, Daniel Lawson
   \email{dan.lawson@bristol.ac.uk}, and Klaus Schliep
-  \email{kschliep@snv.jussieu.fr}}
+  \email{klaus.schliep@gmail.com}}
 \seealso{
   \code{\link{read.tree}}, \code{\link{read.nexus}},
   \code{\link{write.nexus}}, \code{\link{write.phyloXML}}
