@@ -6,7 +6,8 @@
   same scale.
 }
 \usage{
-kronoviz(x, layout = length(x), horiz = TRUE, ...)
+kronoviz(x, layout = length(x), horiz = TRUE, ..., 
+         direction = ifelse(horiz, "rightwards", "upwards"), side=2) 
 }
 \arguments{
   \item{x}{a list of (rooted) trees of class \code{"phylo"}.}
@@ -18,7 +19,7 @@ kronoviz(x, layout = length(x), horiz = TRUE, ...)
   \item{direction}{a character string specifying the direction of the tree. Four
   values are possible: "rightwards" (the default), "leftwards", "upwards", and 
   "downwards".}
-  \item{side} {Where to put the axis, see example.} 
+  \item{side}{Where to put the axis, see example.} 
 }
 \details{
   The size of the individual plots is proportional to the size of the
