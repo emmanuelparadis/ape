@@ -66,7 +66,7 @@ write.tree <-
 
 .write.tree2 <- function(phy, digits = 10, tree.prefix = "", check_tips)
 {
-    brl <- !is.null(phy$edge.length)
+    brl <- (!is.null(phy$edge.length) && digits >= 0)
     nodelab <- !is.null(phy$node.label)
     if (check_tips) phy$tip.label <- checkLabel(phy$tip.label)
     if (nodelab) {

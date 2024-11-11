@@ -2,7 +2,7 @@
 \alias{write.nexus}
 \title{Write Tree File in Nexus Format}
 \usage{
-write.nexus(..., file = "", translate = TRUE)
+write.nexus(..., file = "", translate = TRUE, digits=10)
 }
 \arguments{
   \item{\dots}{either (i) a single object of class \code{"phylo"}, (ii) a
@@ -14,6 +14,8 @@ write.nexus(..., file = "", translate = TRUE)
   \item{translate}{a logical, if \code{TRUE} (the default) a translation
     of the tip labels is done which are replaced in the parenthetic
     representation with tokens.}
+  \item{digits}{a numeric giving the number of digits used for printing
+    branch lengths. For negative numbers no branch lengths are printed.}
 }
 \description{
   This function writes trees in a file with the NEXUS format.

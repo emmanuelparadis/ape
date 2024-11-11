@@ -7,7 +7,7 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-write.nexus <- function(..., file = "", translate = TRUE)
+write.nexus <- function(..., file = "", translate = TRUE, digits=10)
 {
     obj <- .getTreesFromDotdotdot(...)
     ntree <- length(obj)
@@ -59,7 +59,7 @@ write.nexus <- function(..., file = "", translate = TRUE)
         if (!inherits(obj[[i]], "phylo")) next
         root.tag <- if (is.rooted(obj[[i]])) "= [&R] " else "= [&U] "
         cat("\tTREE *", title[i], root.tag, file = file, append = TRUE)
-        cat(write.tree(obj[[i]], file = ""),
+        cat(write.tree(obj[[i]], file = "", digits=digits),
             "\n", sep = "", file = file, append = TRUE)
     }
     cat("END;\n", file = file, append = TRUE)

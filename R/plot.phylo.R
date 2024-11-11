@@ -893,12 +893,26 @@ trex <- function(phy, title = TRUE, subbg = "lightyellow3",
     }
 }
 
-kronoviz <- function(x, layout = length(x), horiz = TRUE, ...)
+kronoviz <- function(x, layout = length(x), horiz = TRUE, ..., 
+                     direction = ifelse(horiz, "rightwards", "upwards"), side=2)
 {
+    op <- par(no.readonly = TRUE)
+    on.exit({
+      par(op)
+      devAskNewPage(FALSE)
+    })
     par(mar = rep(0.5, 4), oma = rep(2, 4))
+    direction <- match.arg(direction, c("rightwards", "leftwards",
+                                          "upwards", "downwards"))
+    horiz <- ifelse(direction %in% c("rightwards", "leftwards"), TRUE, FALSE) 
+
     rts <- sapply(x, function(x) branching.times(x)[1])
     maxrts <- max(rts)
     lim <- cbind(rts - maxrts, rts)
+    if(direction %in% c("leftwards", "downwards")){
+      lim[,1] <- 0
+      lim[,2] <- maxrts  
+    }
     Ntree <- length(x)
     Ntips <- sapply(x, Ntip)
     if (horiz) {
@@ -913,16 +927,20 @@ kronoviz <- function(x, layout = length(x), horiz = TRUE, ...)
     layout(matrix(1:layout, nrow), widths = w, heights = h)
     if (layout < Ntree && !devAskNewPage() && interactive()) {
         devAskNewPage(TRUE)
-        on.exit(devAskNewPage(FALSE))
     }
     if (horiz) {
-        for (i in 1:Ntree)
-            plot(x[[i]], x.lim = lim[i, ], ...)
+        for (i in 1:Ntree){
+            plot(x[[i]], x.lim = lim[i, ], direction = direction, ...)
+            if(i == 1 && 1 %in% side) axisPhylo(side=3)
+        }
     } else {
-        for (i in 1:Ntree)
-            plot(x[[i]], y.lim = lim[i, ], direction = "u", ...)
+        for (i in 1:Ntree){
+            plot(x[[i]], y.lim = lim[i, ], direction = direction, ...)
+            if(i == 1 && 1 %in% side) axisPhylo(side=2)
+        }
     }
-    axisPhylo(if (horiz) 1 else 4) # better if the deepest tree is last ;)
+    if(2 %in% side)axisPhylo(if (horiz) 1 else 4)
+    invisible(x)
 }
 
 tidy.xy <- function(edge, Ntip, Nnode, xx, yy)
