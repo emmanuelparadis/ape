@@ -27,7 +27,7 @@ getAnnotationsGenBank(access.nb, quiet = TRUE)
   A warning is given if some accession numbers are not found on GenBank.
 }
 \value{
-  On of the followings: (i) a data frame if \code{access.nb} contains a
+  One of the followings: (i) a data frame if \code{access.nb} contains a
   single accession number; (ii) a list of data frames if
   \code{access.nb} contains several accession numbers, the names are set
   with \code{access.nb} (if some accession numbers are not found on

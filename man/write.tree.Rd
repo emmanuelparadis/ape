@@ -13,8 +13,9 @@ write.tree(phy, file = "", append = FALSE,
   \item{append}{a logical, if \code{TRUE} the tree is appended to the file
     without erasing the data possibly existing in the file, otherwise
     the file (if it exists) is overwritten (\code{FALSE} the default).}
-  \item{digits}{a numeric giving the number of digits used for printing
-    branch lengths. For negative numbers no branch lengths are printed.}
+  \item{digits}{a numeric giving the number of (significant) digits used
+    for printing branch lengths (see details). For negative numbers no
+    branch lengths are printed.}
   \item{tree.names}{either a logical or a vector of mode character. If
     \code{TRUE} then any tree names will be written prior to the tree on
     each line. If character, specifies the name of \code{"phylo"}
@@ -43,6 +44,10 @@ write.tree(phy, file = "", append = FALSE,
   and trailing right parentheses are deleted; the other spaces are
   replaced by underscores; the commas, colons, semicolons, and the other
   parentheses are replaced with dashes.
+
+  The argument \code{digits} gives the number of \emph{significant}
+  digits (not rounding). For instance, if \code{digits = 2} the branch
+  length 1.234e-7 is printed as 1.23e-7 (not 0).
 }
 \references{
   Felsenstein, J. The Newick tree format.

@@ -2,7 +2,7 @@
 \alias{write.nexus}
 \title{Write Tree File in Nexus Format}
 \usage{
-write.nexus(..., file = "", translate = TRUE, digits=10)
+write.nexus(..., file = "", translate = TRUE, digits = 10)
 }
 \arguments{
   \item{\dots}{either (i) a single object of class \code{"phylo"}, (ii) a
