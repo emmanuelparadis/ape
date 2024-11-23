@@ -1,13 +1,13 @@
-## write.nexus.R (2017-09-08)
+## write.nexus.R (2017-11-11)
 
 ##   Write Tree File in Nexus Format
 
-## Copyright 2003-2017 Emmanuel Paradis
+## Copyright 2003-2024 Emmanuel Paradis
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-write.nexus <- function(..., file = "", translate = TRUE, digits=10)
+write.nexus <- function(..., file = "", translate = TRUE, digits = 10)
 {
     obj <- .getTreesFromDotdotdot(...)
     ntree <- length(obj)
@@ -59,7 +59,7 @@ write.nexus <- function(..., file = "", translate = TRUE, digits=10)
         if (!inherits(obj[[i]], "phylo")) next
         root.tag <- if (is.rooted(obj[[i]])) "= [&R] " else "= [&U] "
         cat("\tTREE *", title[i], root.tag, file = file, append = TRUE)
-        cat(write.tree(obj[[i]], file = "", digits=digits),
+        cat(write.tree(obj[[i]], file = "", digits = digits),
             "\n", sep = "", file = file, append = TRUE)
     }
     cat("END;\n", file = file, append = TRUE)

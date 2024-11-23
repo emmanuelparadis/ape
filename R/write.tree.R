@@ -1,4 +1,4 @@
-## write.tree.R (2024-04-07)
+## write.tree.R (2024-11-11)
 
 ##   Write Tree File in Parenthetic Format
 
@@ -66,7 +66,7 @@ write.tree <-
 
 .write.tree2 <- function(phy, digits = 10, tree.prefix = "", check_tips)
 {
-    brl <- (!is.null(phy$edge.length) && digits >= 0)
+    brl <- (!is.null(phy$edge.length) && digits > 0)
     nodelab <- !is.null(phy$node.label)
     if (check_tips) phy$tip.label <- checkLabel(phy$tip.label)
     if (nodelab) {
