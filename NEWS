@@ -1,4 +1,14 @@
-		CHANGES IN APE VERSION 5.8-0.3
+		CHANGES IN APE VERSION 5.8-0.5
+
+
+NEW FEATURES
+
+    o write.nexus() has a new option, digitis = 10, similar to the one
+      with the same name in write.tree(). The help page of the latter
+      has been clarified (see PR #130 on GitHub).
+
+    o kronoviz() has two new options, 'direction' and 'side', to add
+      more flexibbility to the plot.
 
 
 BUG FIXES
@@ -14,6 +24,9 @@ BUG FIXES
 OTHER CHANGES
 
     o Plotting circular trees has been improved (see PR #129 on GitHub).
+
+    o axisPhylo(): the new default is axisPhylo(side = NULL) instead
+      of axisPhylo(side = 1).
 
 
 
