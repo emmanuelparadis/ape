@@ -1,8 +1,8 @@
-## plot.phylo.R (2024-11-11)
+## plot.phylo.R (2022-01-17)
 
 ##   Plot Phylogenies
 
-## Copyright 2002-2024 Emmanuel Paradis, 2021 Martin Smith, 2022 Damien de Vienne, 2024 Klaus Schliep
+## Copyright 2002-2021 Emmanuel Paradis, 2021 Martin Smith, 2022 Damien de Vienne
 ## colouring of segments by MS
 ## tidy trees by DdV
 
@@ -753,7 +753,7 @@ circular.plot <- function(edge, Ntip, Nnode, xx, yy, theta,
         i <- start[k]
         j <- end[k]
         # make number of segments dependent on the angle
-        n_segments <- as.integer(2 + (theta[edge[j, 2]] - theta[edge[i, 2]]) / 0.03)
+        n_segments <- abs(as.integer(2 + abs(theta[edge[j, 2]] - theta[edge[i, 2]]) / 0.03))
         X <- rep(r[edge[i, 1]], n_segments)
         Y <- seq(theta[edge[i, 2]], theta[edge[j, 2]], length.out = n_segments)
         x <- X * cos(Y); y <- X * sin(Y)
@@ -893,7 +893,7 @@ trex <- function(phy, title = TRUE, subbg = "lightyellow3",
     }
 }
 
-kronoviz <- function(x, layout = length(x), horiz = TRUE, ...,
+kronoviz <- function(x, layout = length(x), horiz = TRUE, ..., 
                      direction = ifelse(horiz, "rightwards", "upwards"), side=2)
 {
     op <- par(no.readonly = TRUE)
@@ -904,14 +904,14 @@ kronoviz <- function(x, layout = length(x), horiz = TRUE, ...,
     par(mar = rep(0.5, 4), oma = rep(2, 4))
     direction <- match.arg(direction, c("rightwards", "leftwards",
                                           "upwards", "downwards"))
-    horiz <- ifelse(direction %in% c("rightwards", "leftwards"), TRUE, FALSE)
+    horiz <- ifelse(direction %in% c("rightwards", "leftwards"), TRUE, FALSE) 
 
     rts <- sapply(x, function(x) branching.times(x)[1])
     maxrts <- max(rts)
     lim <- cbind(rts - maxrts, rts)
     if(direction %in% c("leftwards", "downwards")){
       lim[,1] <- 0
-      lim[,2] <- maxrts
+      lim[,2] <- maxrts  
     }
     Ntree <- length(x)
     Ntips <- sapply(x, Ntip)
@@ -939,7 +939,7 @@ kronoviz <- function(x, layout = length(x), horiz = TRUE, ...,
             if(i == 1 && 1 %in% side) axisPhylo(side=2)
         }
     }
-    if (2 %in% side) axisPhylo(if (horiz) 1 else 4)
+    if(2 %in% side)axisPhylo(if (horiz) 1 else 4)
     invisible(x)
 }
 
