@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.8-0.5
+		CHANGES IN APE VERSION 5.8-1
 
 
 NEW FEATURES
@@ -19,6 +19,12 @@ BUG FIXES
     o Newick strings with a single tip and multiple nodes were not
       correctly parsed. Also, if a root edge was present it was not
       correctly decoded (see issue #124 on GitHub).
+
+    o dist.nodes() returned a (meaningless) result for trees with no
+      branch lengths (sometimes a segfault occurred). This function
+      has now the option 'fail.if.no.length = FALSE' so that branch
+      lengths, if absent in the tree, are fixed to one (with a
+      warning). An error is returned if this option is set to FALSE.
 
 
 OTHER CHANGES
