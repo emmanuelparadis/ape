@@ -1,4 +1,14 @@
-		CHANGES IN APE VERSION 5.8-1
+		CHANGES IN APE VERSION 5.8-1.1
+
+
+BUG FIXES
+
+    o print.DNAbin() did not work well with a single vector (a quite
+      rare situation in practice).
+
+
+
+      		CHANGES IN APE VERSION 5.8-1
 
 
 NEW FEATURES
