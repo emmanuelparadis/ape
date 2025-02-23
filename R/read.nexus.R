@@ -149,6 +149,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         x <- x[nzchar(x)]
         TRANS <- matrix(x, ncol = 2, byrow = TRUE)
         TRANS[, 2] <- gsub("['\"]", "", TRANS[, 2])
+        transl <- setNames(TRANS[,2],TRANS[,1])
         n <- dim(TRANS)[1]
     }
     start <-
@@ -191,9 +192,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     if (!length(colon)) {
         trees <- lapply(STRING, .cladoBuild)
     } else if (length(colon) == Ntree) {
-        trees <-
-            if (translation) lapply(STRING, .treeBuildWithTokens)
-            else lapply(STRING, .treeBuild)
+        trees <- lapply(STRING, .treeBuild)
     } else {
         trees <- vector("list", Ntree)
         trees[colon] <- lapply(STRING[colon], .treeBuild)
@@ -202,10 +201,14 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         if (translation) {
             for (i in 1:Ntree) {
                 tr <- trees[[i]]
-                for (j in 1:n) {
-                    ind <- which(tr$tip.label[j] == TRANS[, 1])
-                    tr$tip.label[j] <- TRANS[ind, 2]
-                }
+                # test if tip label matches arbitrary labels in TRANS
+                ind <- tr$tip.label %in% names(transl)
+                # if not, test if it is a integer
+                ind2 <- !ind & grepl("\\d+",tr$tip.label)
+                # filter out those that are out of the range of the TRANS table
+                ind2[suppressWarnings(as.numeric(tr$tip.label[ind2]) > n)] <- FALSE
+                tr$tip.label[ind] <- transl[tr$tip.label[ind]]
+                tr$tip.label[ind2] <- transl[as.numeric(tr$tip.label[ind2])]
                 if (!is.null(tr$node.label)) {
                     for (j in 1:length(tr$node.label)) {
                         ind <- which(tr$node.label[j] == TRANS[, 1])
@@ -222,12 +225,19 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         if (!translation) n <- length(tr$tip.label)
     }
     if (Ntree == 1 && !force.multi) {
-        trees <- trees[[1]]
+        tr <- trees[[1]]
         if (translation) {
-            trees$tip.label <-
-                if (length(colon)) TRANS[, 2] else
-                TRANS[, 2][as.numeric(trees$tip.label)]
+            tr <- trees[[i]]
+            # test if tip label matches arbitrary labels in TRANS
+            ind <- tr$tip.label %in% names(transl)
+            # if not, test if it is a integer
+            ind2 <- !ind & grepl("\\d+",tr$tip.label)
+            # filter out those that are out of the range of the TRANS table
+            ind2[suppressWarnings(as.numeric(tr$tip.label[ind2]) > n)] <- FALSE
+            tr$tip.label[ind] <- transl[tr$tip.label[ind]]
+            tr$tip.label[ind2] <- transl[as.numeric(tr$tip.label[ind2])]
         }
+        trees <- tr
     } else {
         if (!is.null(tree.names)) names(trees) <- tree.names
         if (translation) {
