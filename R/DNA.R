@@ -1,8 +1,8 @@
-## DNA.R (2023-10-05)
+## DNA.R (2025-02-06)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
-## Copyright 2002-2023 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
+## Copyright 2002-2025 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -275,11 +275,12 @@ print.DNAbin <- function(x, printlen = 6, digits = 3, ...)
                 cat("All sequences of same length:", nd[2], "\n")
             }
         } else {
+            n <- 1
             cat("1 DNA sequence in binary format stored in a vector.\n\n")
             cat("Sequence length:", nTot, "\n\n")
         }
     }
-    if (exists("nms")) {
+    if (exists("nms", inherits = FALSE)) {
         HEAD <- if (n == 1) "\nLabel:" else "\nLabels:"
         TAIL <- ""
         if (printlen < n) {

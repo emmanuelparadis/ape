@@ -1,4 +1,24 @@
-		CHANGES IN APE VERSION 5.8-0.3
+		CHANGES IN APE VERSION 5.8-1.1
+
+
+BUG FIXES
+
+    o print.DNAbin() did not work well with a single vector (a quite
+      rare situation in practice).
+
+
+
+      		CHANGES IN APE VERSION 5.8-1
+
+
+NEW FEATURES
+
+    o write.nexus() has a new option, digitis = 10, similar to the one
+      with the same name in write.tree(). The help page of the latter
+      has been clarified (see PR #130 on GitHub).
+
+    o kronoviz() has two new options, 'direction' and 'side', to add
+      more flexibbility to the plot.
 
 
 BUG FIXES
@@ -10,10 +30,19 @@ BUG FIXES
       correctly parsed. Also, if a root edge was present it was not
       correctly decoded (see issue #124 on GitHub).
 
+    o dist.nodes() returned a (meaningless) result for trees with no
+      branch lengths (sometimes a segfault occurred). This function
+      has now the option 'fail.if.no.length = FALSE' so that branch
+      lengths, if absent in the tree, are fixed to one (with a
+      warning). An error is returned if this option is set to FALSE.
+
 
 OTHER CHANGES
 
     o Plotting circular trees has been improved (see PR #129 on GitHub).
+
+    o axisPhylo(): the new default is axisPhylo(side = NULL) instead
+      of axisPhylo(side = 1).
 
 
 
