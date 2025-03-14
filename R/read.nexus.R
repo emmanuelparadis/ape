@@ -129,7 +129,8 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     semico <- grep(";", X)
     i1 <- grep("BEGIN TREES;", X, ignore.case = TRUE)
     i2 <- grep("TRANSLATE", X, ignore.case = TRUE)
-    translation <- if (length(i2) == 1 && i2 > i1) TRUE else FALSE
+    translation <- if (length(i2) == 1 && i2 > i1) TRUE
+    else FALSE
     if (translation) {
         end <- semico[semico > i2][1]
         x <- X[(i2 + 1):end] # assumes there's a 'new line' after "TRANSLATE"
@@ -150,8 +151,8 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         TRANS <- matrix(x, ncol = 2, byrow = TRUE)
         TRANS[, 2] <- gsub("['\"]", "", TRANS[, 2])
         n <- dim(TRANS)[1]
+        trans_vec <- setNames(TRANS[,2], TRANS[,1])
     }
-    trans_vec <- setNames(TRANS[,2], TRANS[,1])
     start <-
         if (translation) semico[semico > i2][1] + 1
         else i1 + 1 # semico[semico > i1][1] ## fix done on 2014-08-25
