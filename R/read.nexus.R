@@ -129,7 +129,8 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     semico <- grep(";", X)
     i1 <- grep("BEGIN TREES;", X, ignore.case = TRUE)
     i2 <- grep("TRANSLATE", X, ignore.case = TRUE)
-    translation <- if (length(i2) == 1 && i2 > i1) TRUE else FALSE
+    translation <- if (length(i2) == 1 && i2 > i1) TRUE
+    else FALSE
     if (translation) {
         end <- semico[semico > i2][1]
         x <- X[(i2 + 1):end] # assumes there's a 'new line' after "TRANSLATE"
@@ -150,6 +151,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         TRANS <- matrix(x, ncol = 2, byrow = TRUE)
         TRANS[, 2] <- gsub("['\"]", "", TRANS[, 2])
         n <- dim(TRANS)[1]
+        trans_vec <- setNames(TRANS[,2], TRANS[,1])
     }
     start <-
         if (translation) semico[semico > i2][1] + 1
@@ -188,11 +190,15 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     STRING <- sub("^.*= *", "", STRING) # delete title and 'TREE' command with 'sub'
     STRING <- gsub(" ", "", STRING) # delete all white spaces
     colon <- grep(":", STRING)
+    
+    with_token <- FALSE
+    
     if (!length(colon)) {
         trees <- lapply(STRING, .cladoBuild)
     } else if (length(colon) == Ntree) {
+        if (translation) with_token <- all(lengths(gregexpr("\\,", STRING)) == (length(trans_vec)-1L) )
         trees <-
-            if (translation) lapply(STRING, .treeBuildWithTokens)
+            if (with_token) lapply(STRING, .treeBuildWithTokens)
             else lapply(STRING, .treeBuild)
     } else {
         trees <- vector("list", Ntree)
@@ -224,20 +230,23 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     if (Ntree == 1 && !force.multi) {
         trees <- trees[[1]]
         if (translation) {
-            trees$tip.label <-
-                if (length(colon)) TRANS[, 2] else
-                TRANS[, 2][as.numeric(trees$tip.label)]
+          trees$tip.label <- as.vector(trans_vec[trees$tip.label])
+#            trees$tip.label <-
+#                if (length(colon)) TRANS[, 2] else
+#                TRANS[, 2][as.numeric(trees$tip.label)]
         }
     } else {
         if (!is.null(tree.names)) names(trees) <- tree.names
         if (translation) {
-            if (length(colon) == Ntree) # .treeBuildWithTokens() was used
+            if (with_token) # && length(colon) == Ntree) # .treeBuildWithTokens() was used
                 attr(trees, "TipLabel") <- TRANS[, 2]
             else { # reassign the tip labels then compress
                 for (i in 1:Ntree)
-                    trees[[i]]$tip.label <-
-                        TRANS[, 2][as.numeric(trees[[i]]$tip.label)]
-                trees <- .compressTipLabel(trees)
+                    trees[[i]]$tip.label <- as.vector(trans_vec[trees[[i]]$tip.label]) 
+#                    trees[[i]]$tip.label <-
+#                        TRANS[, 2][as.numeric(trees[[i]]$tip.label)]
+                class(trees) <- "multiPhylo"
+                if(all(Ntip(trees)==length(trans_vec))) trees <- .compressTipLabel(trees)
             }
         }
         class(trees) <- "multiPhylo"
