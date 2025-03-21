@@ -211,8 +211,14 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
             for (i in 1:Ntree) {
                 tr <- trees[[i]]
                 for (j in 1:n) {
-                    ind <- which(tr$tip.label[j] == TRANS[, 1])
-                    tr$tip.label[j] <- TRANS[ind, 2]
+                    # test if tip label matches arbitrary labels in TRANS
+                    ind <- tr$tip.label %in% names(trans_vec)
+                    # if not, test if it is a integer
+                    ind2 <- !ind & grepl("\\d+",tr$tip.label)
+                    # filter out those that are out of the range of the TRANS table
+                    ind2[suppressWarnings(as.numeric(tr$tip.label[ind2]) > length(trans_vec))] <- FALSE
+                    tr$tip.label[ind] <- trans_vec[tr$tip.label[ind]]
+                    tr$tip.label[ind2] <- trans_vec[as.numeric(tr$tip.label[ind2])]
                 }
                 if (!is.null(tr$node.label)) {
                     for (j in 1:length(tr$node.label)) {
@@ -230,21 +236,39 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         if (!translation) n <- length(tr$tip.label)
     }
     if (Ntree == 1 && !force.multi) {
-        trees <- trees[[1]]
+        tr <- trees[[1]]
         if (translation) {
-          trees$tip.label <- as.vector(trans_vec[trees$tip.label])
+            # test if tip label matches arbitrary labels in TRANS
+            ind <- tr$tip.label %in% names(trans_vec)
+            # if not, test if it is a integer
+            ind2 <- !ind & grepl("\\d+",tr$tip.label)
+            # filter out those that are out of the range of the TRANS table
+            ind2[suppressWarnings(as.numeric(tr$tip.label[ind2]) > length(trans_vec))] <- FALSE
+            tr$tip.label[ind] <- trans_vec[tr$tip.label[ind]]
+            tr$tip.label[ind2] <- trans_vec[as.numeric(tr$tip.label[ind2])]
 #            trees$tip.label <-
 #                if (length(colon)) TRANS[, 2] else
 #                TRANS[, 2][as.numeric(trees$tip.label)]
         }
+        trees <- tr
     } else {
         if (!is.null(tree.names)) names(trees) <- tree.names
         if (translation) {
             if (with_token) # && length(colon) == Ntree) # .treeBuildWithTokens() was used
                 attr(trees, "TipLabel") <- TRANS[, 2]
             else { # reassign the tip labels then compress
-                for (i in 1:Ntree)
-                    trees[[i]]$tip.label <- as.vector(trans_vec[trees[[i]]$tip.label]) 
+                for (i in 1:Ntree) {
+                    tr <- trees[[i]]
+                    # test if tip label matches arbitrary labels in TRANS
+                    ind <- tr$tip.label %in% names(trans_vec)
+                    # if not, test if it is a integer
+                    ind2 <- !ind & grepl("\\d+",tr$tip.label)
+                    # filter out those that are out of the range of the TRANS table
+                    ind2[suppressWarnings(as.numeric(tr$tip.label[ind2]) > length(trans_vec))] <- FALSE
+                    tr$tip.label[ind] <- trans_vec[tr$tip.label[ind]]
+                    tr$tip.label[ind2] <- trans_vec[as.numeric(tr$tip.label[ind2])]
+                    trees[[i]] <- tr
+                }
 #                    trees[[i]]$tip.label <-
 #                        TRANS[, 2][as.numeric(trees[[i]]$tip.label)]
                 class(trees) <- "multiPhylo"
