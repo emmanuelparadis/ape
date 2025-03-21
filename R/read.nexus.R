@@ -196,7 +196,9 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     if (!length(colon)) {
         trees <- lapply(STRING, .cladoBuild)
     } else if (length(colon) == Ntree) {
-        if (translation) with_token <- all(lengths(gregexpr("\\,", STRING)) == (length(trans_vec)-1L) )
+        if (translation) with_token <- # .treeBuildWithTokens can be used if
+            all(lengths(gregexpr("\\,", STRING)) == (length(trans_vec)-1L) ) && # 1. all trees have the same number of nodes as the translation table
+            all(TRANS[,1]==1:nrow(TRANS)) # 2. the first column of the translation table is consecutive integers
         trees <-
             if (with_token) lapply(STRING, .treeBuildWithTokens)
             else lapply(STRING, .treeBuild)
