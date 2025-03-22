@@ -19,19 +19,16 @@ read.nexus(file, tree.names = NULL, force.multi = FALSE)
 }
 \details{
   The present implementation tries to follow as much as possible the
-  NEXUS standard (but see the restriction below on TRANSLATION
-  tables). Only the block ``TREES'' is read; the other data can be read
-  with other functions (e.g., \code{\link{read.dna}},
+  NEXUS standard. Only the block ``TREES'' is read; the other data can
+  be read with other functions (e.g., \code{\link{read.dna}},
   \code{\link[utils]{read.table}}, \dots).
 
-  If a TRANSLATION table is present it is assumed that only the tip
-  labels are translated and they are all translated with integers
-  without gap. Consequently, if nodes have labels in the tree(s) they
-  are read as they are and not looked for in the translation table. The
-  logic behind this is that in the vast majority of cases, node labels
-  will be support values rather than proper taxa names. This is
-  consistent with \code{\link{write.nexus}} which translates only the
-  tip labels.
+  Until \pkg{ape} version 5.8-1, if a TRANSLATION table was present it
+  was assumed that only the tip labels are translated with integers
+  without gap and nodes labels were not looked for in the translation
+  table. Recent versions of \pkg{ape} now conforms more closely to the
+  NEXUS standard as described in Maddison \emph{et al} (1997). Note that
+  \code{\link{write.nexus}} translates only the tip labels.
 
   Using \code{force.multi = TRUE} when the file contains a single tree
   makes possible to keep the tree name (as names of the list).

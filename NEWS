@@ -1,10 +1,20 @@
-		CHANGES IN APE VERSION 5.8-1.1
+		CHANGES IN APE VERSION 5.8-1.2
+
+
+NEW FEATURES
+
+    o read.nexus() now translates between tokens and labels so that
+      this feature conforms to the NEXUS standard (see issue #133 on
+      GitHub).
 
 
 BUG FIXES
 
     o print.DNAbin() did not work well with a single vector (a quite
       rare situation in practice).
+
+    o plot.phylo() now avoids plotting badly conformed trees that
+      could lead to a crash (issue #133 on GitHub).
 
 
 

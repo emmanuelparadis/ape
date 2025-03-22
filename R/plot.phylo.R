@@ -1,8 +1,8 @@
-## plot.phylo.R (2024-11-23)
+## plot.phylo.R (2025-03-17)
 
 ##   Plot Phylogenies
 
-## Copyright 2002-2024 Emmanuel Paradis, 2021 Martin Smith, 2022 Damien de Vienne, 2024 Klaus Schliep
+## Copyright 2002-2025 Emmanuel Paradis, 2021 Martin Smith, 2022 Damien de Vienne, 2024 Klaus Schliep
 ## colouring of segments by MS
 ## tidy trees by DdV
 
@@ -42,8 +42,14 @@ plot.phylo <-
 
     Nedge <- dim(x$edge)[1]
     Nnode <- x$Nnode
+    msg_err <- "tree badly conformed. Check the edge matrix."
     if (any(x$edge < 1) || any(x$edge > Ntip + Nnode))
-        stop("tree badly conformed; cannot plot. Check the edge matrix.")
+        stop(msg_err)
+    ## new tests to avoid crash (issue #133)
+    Ntmp <- Ntip + Nnode
+    if (max(x$edge) != Ntmp) stop(msg_err)
+    if (any(tabulate(x$edge, Ntmp) == 0)) stop(msg_err)
+
     ROOT <- Ntip + 1
     type <- match.arg(type, c("phylogram", "cladogram", "fan",
                               "unrooted", "radial", "tidy"))

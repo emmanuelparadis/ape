@@ -1,8 +1,8 @@
-## read.nexus.R (2024-07-22)
+## read.nexus.R (2025-03-20)
 
 ##   Read Tree File in Nexus Format
 
-## Copyright 2003-2024 Emmanuel Paradis and 2010-2017 Klaus Schliep
+## Copyright 2003-2025 Emmanuel Paradis and 2010-2017 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -92,6 +92,84 @@
     phy
 }
 
+.decodeTRANSLATE <- function(x)
+{
+    z <- paste(x, collapse = " ")
+    ## delete the ending semicolon:
+    z <- sub("[[:space:]]*;[[:space:]]*$", "", z)
+    z <- gsub("^[[:space:]]*TRANSLATE[[:space:]]*", "",
+              z, ignore.case = TRUE)
+    dq <- gregexpr('"', z)[[1]] # find double quotes
+    sq <- gregexpr("'", z)[[1]] # find single quotes
+    DQ <- SQ <- FALSE
+    if (dq[1] > -1) {
+        DQ <- TRUE
+        if (!length(dq) %% 2)
+            warning("found an odd number of double quotes in TRANSLATE command of NEXUS file")
+    }
+    if (sq[1] > -1) {
+        SQ <- TRUE
+        if (!length(sq) %% 2)
+            warning("found an odd number of single quotes in TRANSLATE command of NEXUS file")
+    }
+    s <- c(TRUE, FALSE)
+    if (DQ && SQ) {
+        nDQ <- length(DQ)
+        nSQ <- length(SQ)
+        if (DQ[1] < SQ[1] && DQ[nDQ] > SQ[nSQ]) {
+            start <- DQ[s]; stop <- DQ[!s]
+            SQ <- FALSE
+        } else {
+            if (DQ[1] > SQ[1] && DQ[nDQ] < SQ[nSQ]) {
+                start <- SQ[s]; stop <- SQ[!s]
+                DQ <- FALSE
+            }
+        }
+    }
+    if (DQ && SQ)
+        stop("inconsistent use of single and double quotes in TRANSLATE command of NEXUS file")
+    if (DQ || SQ) {
+        Z <- list(x = z)
+        n <- length(stop)
+        labs <- mapply(substr, start, stop, MoreArgs = Z)
+        start2 <- c(1L, stop[-n] + 1L)
+        stop2 <- start[-n] - 1L
+        tokens <- mapply(substr, start2, stop2, MoreArgs = Z)
+        tokens <- gsub("[[:space:]]*,*[[:space:]]*", "", tokens)
+        if (grepl("[:space:]", tokens))
+            warning("spaces found in tokens of NEXUS file")
+        res <- cbind(tokens, labs)
+    } else { # if no quotes at all
+        res <- unlist(strsplit(z, "[[:space:]]*,[[:space:]]*"))
+        res <- unlist(strsplit(res, "[[:space:]]+"))
+        res <- matrix(res, ncol = 2, byrow = TRUE)
+    }
+    if (anyDuplicated(res))
+        warning("found duplicates among tokens and labels")
+    res
+}
+
+.translateTOKENS <- function(x, TABLE)
+{
+    ## 1) check the tokens:
+    m <- match(x, TABLE[, 1L])
+    NAs <- is.na(m)
+    if (!any(NAs)) return(TABLE[m, 2L])
+    i <- which(!NAs)
+    if (length(i)) # in case no match at all
+        x[i] <- TABLE[m[i], 2L]
+    ## 2) check the labels:
+    m <- match(x, TABLE[, 2L])
+    i <- which(is.na(m))
+    if (!length(i)) return(x)
+    ## 3) check if this can be a taxon number....
+    suppressWarnings(test <- as.integer(x[i]))
+    valid <- !is.na(test) & test <= length(x)
+    if (any(valid))
+        x[i][valid] <- TABLE[test[valid], 2L]
+    x
+}
+
 read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
 {
     X <- scan(file = file, what = "", sep = "\n", quiet = TRUE)
@@ -99,7 +177,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     ## (this might not work if there are square brackets within the comments)
     LEFT <- grep("\\[", X)
     RIGHT <- grep("\\]", X)
-    if (length(LEFT)) { # in case there are no comments at all
+    if (length(LEFT)) { # in case there are no comments at all this block is skipped
         w <- LEFT == RIGHT
         if (any(w)) { # in case all comments use at least 2 lines
             s <- LEFT[w]
@@ -108,7 +186,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
             ## possible to delete series of comments on the same line:
             ##       ...[...]xxx[...]...
             ## without deleting the "xxx". This regexp is in three parts:
-            ##       \\[      [^]]*       \\]
+            ##       \\[   [^]]*   \\]
             ## where [^]]* means "any character, except "]", repeated zero
             ## or more times" (note that the ']' is not escaped here).
             ## The previous version was:
@@ -124,38 +202,29 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
             if (any(s < sb - 1))
                 X <- X[-unlist(mapply(":", (s + 1), (sb - 1)))]
         }
-    }
+    } # end of deleting comments
     endblock <- grep("END;|ENDBLOCK;", X, ignore.case = TRUE)
     semico <- grep(";", X)
     i1 <- grep("BEGIN TREES;", X, ignore.case = TRUE)
-    i2 <- grep("TRANSLATE", X, ignore.case = TRUE)
-    translation <- if (length(i2) == 1 && i2 > i1) TRUE
-    else FALSE
+    ## Improved detection of the "Translate" command (2025-03-16) (the
+    ## command must be preceded by at least one space OR a newline AND
+    ## followed by the same)
+    i2 <- grep("([[:space:]]+|^)TRANSLATE([[:space:]]+|$)",
+               X, ignore.case = TRUE)
+    translation <- if (length(i2) == 1 && i2 > i1) TRUE else FALSE
+    if (length(i2) > 1)
+        warning("problem translating labels in NEXUS file: is a taxon labelled \"Translate\"?")
     if (translation) {
+        ## assume there's no semicolon in the labels:
         end <- semico[semico > i2][1]
-        x <- X[(i2 + 1):end] # assumes there's a 'new line' after "TRANSLATE"
-        #x <- unlist(strsplit(x, "[,; \t]"))
-        ################################################
-        # when the label of translation contains space #
-        # 1 "tip 1 a",                                 #
-        # 2 "tip 2"                                    #
-        ################################################
-        # remove the space and tab before the string
-        x <- gsub("^\\s+", "", x)
-        # remove the , ; symbol
-        x <- gsub("[,;]", "", x)
-        # split with the first space
-        x <- unlist(regmatches(x, regexpr("\\s+", x), invert=TRUE))
-        ###############################################
-        x <- x[nzchar(x)]
-        TRANS <- matrix(x, ncol = 2, byrow = TRUE)
-        TRANS[, 2] <- gsub("['\"]", "", TRANS[, 2])
+        ## the old command:
+        ## x <- X[(i2 + 1):end] # assumes there's a 'newline' after "TRANSLATE"
+        ## the new command (doesn't assume TRANSLATE is on its own line):
+        TRANS <- .decodeTRANSLATE(X[i2:end])
         n <- dim(TRANS)[1]
-        trans_vec <- setNames(TRANS[,2], TRANS[,1])
+###        trans_vec <- setNames(TRANS[, 2], TRANS[, 1])
     }
-    start <-
-        if (translation) semico[semico > i2][1] + 1
-        else i1 + 1 # semico[semico > i1][1] ## fix done on 2014-08-25
+    start <- if (translation) semico[semico > i2][1] + 1 else i1 + 1
     end <- endblock[endblock > i1][1] - 1
     tree <- X[start:end]
     rm(X)
@@ -163,10 +232,12 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     ## check whether there are empty lines from the above manips:
     tree <- tree[tree != ""]
     semico <- grep(";", tree)
-    Ntree <- length(semico) # provisional -- some ";" may actually mark end of commands
+    Ntree <- length(semico)
     ## are some trees on several lines?
-    ## -- this actually 'packs' all characters ending with a ";" in a single string --
-    if (Ntree == 1 && length(tree) > 1) STRING <- paste(tree, collapse = "") else {
+    ## -- this 'packs' all characters ending with a ";" in a single string
+    if (Ntree == 1 && length(tree) > 1) {
+        STRING <- paste(tree, collapse = "")
+    } else {
         if (any(diff(semico) != 1)) {
             STRING <- character(Ntree)
             s <- c(1, semico[-Ntree] + 1)
@@ -190,67 +261,79 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     STRING <- sub("^.*= *", "", STRING) # delete title and 'TREE' command with 'sub'
     STRING <- gsub(" ", "", STRING) # delete all white spaces
     colon <- grep(":", STRING)
-    
-    with_token <- FALSE
-    
-    if (!length(colon)) {
-        trees <- lapply(STRING, .cladoBuild)
-    } else if (length(colon) == Ntree) {
-        if (translation) with_token <- all(lengths(gregexpr("\\,", STRING)) == (length(trans_vec)-1L) )
-        trees <-
-            if (with_token) lapply(STRING, .treeBuildWithTokens)
-            else lapply(STRING, .treeBuild)
-    } else {
+
+    withTokens <- FALSE
+### maybe add a check on the number of commas in the Newick strings...
+    if (translation) {
+        if (identical(suppressWarnings(as.integer(TRANS[, 1])), 1:n) &&
+            all(lengths(gregexpr(",", STRING)) + 1L == n))
+            withTokens <- TRUE
+    }
+
+    FUN <- NULL
+    if (length(colon) == 0) {
+        FUN <- if (withTokens) .cladoBuildWithTokens else .cladoBuild
+    }
+    if (length(colon) == Ntree) {
+        FUN <- if (withTokens) .treeBuildWithTokens else .treeBuild
+    }
+
+    if (is.null(FUN)) {
         trees <- vector("list", Ntree)
         trees[colon] <- lapply(STRING[colon], .treeBuild)
-        nocolon <- (1:Ntree)[!1:Ntree %in% colon]
+        nocolon <- (1:Ntree)[-colon]
         trees[nocolon] <- lapply(STRING[nocolon], .cladoBuild)
-        if (translation) {
-            for (i in 1:Ntree) {
-                tr <- trees[[i]]
-                for (j in 1:n) {
-                    ind <- which(tr$tip.label[j] == TRANS[, 1])
-                    tr$tip.label[j] <- TRANS[ind, 2]
-                }
-                if (!is.null(tr$node.label)) {
-                    for (j in 1:length(tr$node.label)) {
-                        ind <- which(tr$node.label[j] == TRANS[, 1])
-                        tr$node.label[j] <- TRANS[ind, 2]
-                    }
-                }
-                trees[[i]] <- tr
+    } else {
+        trees <- lapply(STRING, FUN)
+    }
+
+    if (translation) {
+        if (withTokens) {
+            if (Ntree == 1) {
+                trees[[1L]]$tip.label <- TRANS[, 2]
+            } else {
+                attr(trees, "TipLabel") <- TRANS[, 2]
             }
-            translation <- FALSE
-        }
+        } else
+            for (i in 1:Ntree) {
+                labs <- trees[[i]]$tip.label
+                trees[[i]]$tip.label <- .translateTOKENS(labs, TRANS)
+                labs <- trees[[i]]$node.label
+                if (!is.null(labs))
+                    trees[[i]]$node.label <- .translateTOKENS(labs, TRANS)
+            }
+        ## translation <- FALSE
     }
-    for (i in 1:Ntree) {
-        tr <- trees[[i]]
-        if (!translation) n <- length(tr$tip.label)
-    }
+
     if (Ntree == 1 && !force.multi) {
-        trees <- trees[[1]]
-        if (translation) {
-          trees$tip.label <- as.vector(trans_vec[trees$tip.label])
+        return(trees[[1]])
+    ##for (i in 1:Ntree) {
+    ##    tr <- trees[[i]]
+    ##    if (!translation) n <- length(tr$tip.label)
+    ##}
+    ##if (Ntree == 1 && !force.multi) {
+    ##    trees <- trees[[1]]
+    ##    if (translation) {
+    ##      trees$tip.label <- as.vector(trans_vec[trees$tip.label])
 #            trees$tip.label <-
 #                if (length(colon)) TRANS[, 2] else
 #                TRANS[, 2][as.numeric(trees$tip.label)]
-        }
+    ##    }
     } else {
         if (!is.null(tree.names)) names(trees) <- tree.names
-        if (translation) {
-            if (with_token) # && length(colon) == Ntree) # .treeBuildWithTokens() was used
-                attr(trees, "TipLabel") <- TRANS[, 2]
-            else { # reassign the tip labels then compress
-                for (i in 1:Ntree)
-                    trees[[i]]$tip.label <- as.vector(trans_vec[trees[[i]]$tip.label]) 
+        ##if (translation) {
+        ##    if (with_token) # && length(colon) == Ntree) # .treeBuildWithTokens() was used
+        ##        attr(trees, "TipLabel") <- TRANS[, 2]
+        ##    else { # reassign the tip labels then compress
+        ##        for (i in 1:Ntree)
+        ##            trees[[i]]$tip.label <- as.vector(trans_vec[trees[[i]]$tip.label])
 #                    trees[[i]]$tip.label <-
 #                        TRANS[, 2][as.numeric(trees[[i]]$tip.label)]
-                class(trees) <- "multiPhylo"
-                if(all(Ntip(trees)==length(trans_vec))) trees <- .compressTipLabel(trees)
-            }
-        }
-        class(trees) <- "multiPhylo"
-        if (!all(nms.trees == "")) names(trees) <- nms.trees
+        ##        class(trees) <- "multiPhylo"
+###                if(all(Ntip(trees)==length(trans_vec))) trees <- .compressTipLabel(trees)
+        ##    }
     }
+    class(trees) <- "multiPhylo"
+    if (!all(nms.trees == "")) names(trees) <- nms.trees
     trees
 }
