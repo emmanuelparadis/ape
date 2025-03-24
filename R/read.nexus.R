@@ -1,4 +1,4 @@
-## read.nexus.R (2025-03-20)
+## read.nexus.R (2025-03-24)
 
 ##   Read Tree File in Nexus Format
 
@@ -7,33 +7,33 @@
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
-.treeBuildWithTokens <- function(x)
-{
-    phy <- .Call(treeBuildWithTokens, x)
-    dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
-    nms <- c("edge", "edge.length", "Nnode", "node.label", "root.edge")
-    if (length(phy) == 4) nms <- nms[-5]
-    names(phy) <- nms
-    if (all(phy$node.label == "")) phy$node.label <- NULL
-    class(phy) <- "phylo"
-    attr(phy, "order") <- "cladewise"
-    phy
-}
-
-## for read.nexus clado with TRANSLATION
-.cladoBuildWithTokens <- function(x)
-{
-    phy <- .Call(cladoBuildWithTokens, x)
-    dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
-    nms <- c("edge", "Nnode", "node.label", "root.edge")
-    if (length(phy) == 3) nms <- nms[-4]
-    names(phy) <- nms
-    if (all(phy$node.label == "")) phy$node.label <- NULL
-    class(phy) <- "phylo"
-    attr(phy, "order") <- "cladewise"
-    phy
-}
-
+#.treeBuildWithTokens <- function(x)
+#{
+#    phy <- .Call(treeBuildWithTokens, x)
+#    dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
+#    nms <- c("edge", "edge.length", "Nnode", "node.label", "root.edge")
+#    if (length(phy) == 4) nms <- nms[-5]
+#    names(phy) <- nms
+#    if (all(phy$node.label == "")) phy$node.label <- NULL
+#    class(phy) <- "phylo"
+#    attr(phy, "order") <- "cladewise"
+#    phy
+#}
+#
+### for read.nexus clado with TRANSLATION
+#.cladoBuildWithTokens <- function(x)
+#{
+#    phy <- .Call(cladoBuildWithTokens, x)
+#    dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
+#    nms <- c("edge", "Nnode", "node.label", "root.edge")
+#    if (length(phy) == 3) nms <- nms[-4]
+#    names(phy) <- nms
+#    if (all(phy$node.label == "")) phy$node.label <- NULL
+#    class(phy) <- "phylo"
+#    attr(phy, "order") <- "cladewise"
+#    phy
+#}
+#
 .treeBuild <- function(x)
 {
     if (!length(grep(",", x))) {
@@ -255,27 +255,29 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     ## exclude the possible command lines ending with ";":
     STRING <- STRING[grep("^[[:blank:]]*tree.*= *", STRING, ignore.case = TRUE)]
     Ntree <- length(STRING) # update Ntree
-    ## get the tree names:
-    nms.trees <- sub(" *= *.*", "", STRING) # only the first occurence of "="
-    nms.trees <- sub("^[[:blank:]]*tree[[:blank:]\\*]*", "", nms.trees, ignore.case = TRUE) # fix by Graham Gower (2014-10-20)
+    if (is.null(tree.names)) {
+        ## get the tree names:
+        nms.trees <- sub(" *= *.*", "", STRING) # only the first occurence of "="
+        nms.trees <- sub("^[[:blank:]]*tree[[:blank:]\\*]*", "", nms.trees, ignore.case = TRUE) # fix by Graham Gower (2014-10-20)
+    }
     STRING <- sub("^.*= *", "", STRING) # delete title and 'TREE' command with 'sub'
     STRING <- gsub(" ", "", STRING) # delete all white spaces
     colon <- grep(":", STRING)
 
-    withTokens <- FALSE
-### maybe add a check on the number of commas in the Newick strings...
-    if (translation) {
-        if (identical(suppressWarnings(as.integer(TRANS[, 1])), 1:n) &&
-            all(lengths(gregexpr(",", STRING)) + 1L == n))
-            withTokens <- TRUE
-    }
+#    withTokens <- FALSE
+#### maybe add a check on the number of commas in the Newick strings...
+#    if (translation) {
+#        if (identical(suppressWarnings(as.integer(TRANS[, 1])), 1:n) &&
+#            all(lengths(gregexpr(",", STRING)) + 1L == n))
+#            withTokens <- TRUE
+#    }
 
     FUN <- NULL
     if (length(colon) == 0) {
-        FUN <- if (withTokens) .cladoBuildWithTokens else .cladoBuild
+        FUN <- .cladoBuild #if (withTokens) .cladoBuildWithTokens else .cladoBuild
     }
     if (length(colon) == Ntree) {
-        FUN <- if (withTokens) .treeBuildWithTokens else .treeBuild
+        FUN <- .treeBuild #if (withTokens) .treeBuildWithTokens else .treeBuild
     }
 
     if (is.null(FUN)) {
@@ -288,25 +290,24 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     }
 
     if (translation) {
-        if (withTokens) {
-            if (Ntree == 1) {
-                trees[[1L]]$tip.label <- TRANS[, 2]
-            } else {
-                attr(trees, "TipLabel") <- TRANS[, 2]
-            }
-        } else
-            for (i in 1:Ntree) {
-                labs <- trees[[i]]$tip.label
-                trees[[i]]$tip.label <- .translateTOKENS(labs, TRANS)
-                labs <- trees[[i]]$node.label
-                if (!is.null(labs))
-                    trees[[i]]$node.label <- .translateTOKENS(labs, TRANS)
-            }
+#        if (withTokens) {
+#            if (Ntree == 1) {
+#                trees[[1L]]$tip.label <- TRANS[, 2]
+#            } else {
+#                attr(trees, "TipLabel") <- TRANS[, 2]
+#            }
+#        } else
+        for (i in 1:Ntree) {
+            labs <- trees[[i]]$tip.label
+            trees[[i]]$tip.label <- .translateTOKENS(labs, TRANS)
+            labs <- trees[[i]]$node.label
+            if (!is.null(labs))
+                trees[[i]]$node.label <- .translateTOKENS(labs, TRANS)
+        }
         ## translation <- FALSE
     }
 
-    if (Ntree == 1 && !force.multi) {
-        return(trees[[1]])
+    if (Ntree == 1 && !force.multi) return(trees[[1]])
     ##for (i in 1:Ntree) {
     ##    tr <- trees[[i]]
     ##    if (!translation) n <- length(tr$tip.label)
@@ -319,8 +320,13 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
 #                if (length(colon)) TRANS[, 2] else
 #                TRANS[, 2][as.numeric(trees$tip.label)]
     ##    }
+#    } else {
+    if (is.null(tree.names)) {
+        if (!all(nms.trees == ""))
+            names(trees) <- nms.trees
     } else {
-        if (!is.null(tree.names)) names(trees) <- tree.names
+        names(trees) <- tree.names
+    }
         ##if (translation) {
         ##    if (with_token) # && length(colon) == Ntree) # .treeBuildWithTokens() was used
         ##        attr(trees, "TipLabel") <- TRANS[, 2]
@@ -332,8 +338,9 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         ##        class(trees) <- "multiPhylo"
 ###                if(all(Ntip(trees)==length(trans_vec))) trees <- .compressTipLabel(trees)
         ##    }
-    }
+#    }
     class(trees) <- "multiPhylo"
-    if (!all(nms.trees == "")) names(trees) <- nms.trees
+    tmp <- try(.compressTipLabel(trees), silent = TRUE)
+    if (class(tmp) == "multiPhylo") return(tmp)
     trees
 }

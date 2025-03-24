@@ -75,9 +75,9 @@ SEXP GlobalDeletionDNA(SEXP DNASEQ);
 SEXP C_where(SEXP DNASEQ, SEXP PAT);
 SEXP rawStreamToDNAorAAbin(SEXP x, SEXP DNA);
 SEXP seq_root2tip(SEXP edge, SEXP nbtip, SEXP nbnode);
-SEXP treeBuildWithTokens(SEXP nwk);
+/* SEXP treeBuildWithTokens(SEXP nwk); */
 SEXP treeBuild(SEXP nwk);
-SEXP cladoBuildWithTokens(SEXP nwk);
+/* SEXP cladoBuildWithTokens(SEXP nwk); */
 SEXP cladoBuild(SEXP nwk);
 SEXP bitsplits_multiPhylo(SEXP x, SEXP n, SEXP nr);
 SEXP CountBipartitionsFromSplits(SEXP split, SEXP SPLIT);
@@ -125,9 +125,9 @@ static R_CallMethodDef Call_entries[] = {
     {"GlobalDeletionDNA", (DL_FUNC) &GlobalDeletionDNA, 1},
     {"rawStreamToDNAorAAbin", (DL_FUNC) &rawStreamToDNAorAAbin, 2},
     {"seq_root2tip", (DL_FUNC) &seq_root2tip, 3},
-    {"treeBuildWithTokens", (DL_FUNC) &treeBuildWithTokens, 1},
+    /* {"treeBuildWithTokens", (DL_FUNC) &treeBuildWithTokens, 1}, */
     {"treeBuild", (DL_FUNC) &treeBuild, 1},
-    {"cladoBuildWithTokens", (DL_FUNC) &cladoBuildWithTokens, 1},
+    /* {"cladoBuildWithTokens", (DL_FUNC) &cladoBuildWithTokens, 1}, */
     {"cladoBuild", (DL_FUNC) &cladoBuild, 1},
     {"bitsplits_multiPhylo", (DL_FUNC) &bitsplits_multiPhylo, 3},
     {"CountBipartitionsFromSplits", (DL_FUNC) &CountBipartitionsFromSplits, 2},

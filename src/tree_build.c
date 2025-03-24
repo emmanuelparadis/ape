@@ -1,6 +1,6 @@
-/* tree_build.c    2023-02-25 */
+/* tree_build.c    2025-03-24 */
 
-/* Copyright 2008-2023 Emmanuel Paradis, 2017 Klaus Schliep */
+/* Copyright 2008-2025 Emmanuel Paradis, 2017 Klaus Schliep */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
@@ -63,15 +63,13 @@ void decode_internal_edge(const char *x, int a, int b, char *lab, double *w)
 
 void decode_terminal_edge_token_clado(const char *x, int a, int b, int *node)
 {
-	char str[MAX_STR_LENGTH];  // *endstr,
-
+	char str[MAX_STR_LENGTH];
 	extract_portion_Newick(x, a, b, str);
 	*node = str2int(str, b + 1 - a);
 }
 
 void decode_internal_edge_clado(const char *x, int a, int b, char *lab)
 {
-//	char *endstr, str[MAX_STR_LENGTH];
 	if (a > b) lab[0] = '\0'; /* if no node label */
 	else extract_portion_Newick(x, a, b, lab);
 }
@@ -101,12 +99,12 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
     stack_internal[k++] = j;         \
     j++
 
-#define ADD_TERMINAL_EDGE                                        \
-    e[j] = curnode;                                              \
-    decode_terminal_edge_token(x, pr + 1, ps - 1, &tmpi, &tmpd); \
-    e[j + nedge] = tmpi;                                         \
-    el[j] = tmpd;                                                \
-    j++
+/* #define ADD_TERMINAL_EDGE                                        \ */
+/*     e[j] = curnode;                                              \ */
+/*     decode_terminal_edge_token(x, pr + 1, ps - 1, &tmpi, &tmpd); \ */
+/*     e[j + nedge] = tmpi;                                         \ */
+/*     el[j] = tmpd;                                                \ */
+/*     j++ */
 
 #define GO_DOWN                                                  \
     decode_internal_edge(x, ps + 1, pt - 1, lab, &tmpd);         \
@@ -115,11 +113,11 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
     el[l] = tmpd;                                                \
     curnode = e[l]
 
-#define ADD_TERMINAL_EDGE_CLADO                                  \
-    e[j] = curnode;                                              \
-    decode_terminal_edge_token_clado(x, pr + 1, ps - 1, &tmpi);  \
-    e[j + nedge] = tmpi;                                         \
-    j++
+/* #define ADD_TERMINAL_EDGE_CLADO                                  \ */
+/*     e[j] = curnode;                                              \ */
+/*     decode_terminal_edge_token_clado(x, pr + 1, ps - 1, &tmpi);  \ */
+/*     e[j + nedge] = tmpi;                                         \ */
+/*     j++ */
 
 #define GO_DOWN_CLADO                                            \
     decode_internal_edge_clado(x, ps + 1, pt - 1, lab);          \
@@ -170,7 +168,7 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
 	    nnode++;				 \
 	}					 \
     }						 \
-    if (nleft != nright) error("numbers of left and right parentheses in Newick string not equal\n"); \
+    if (nleft != nright) error("numbers of left and right parentheses in Newick string are not equal\n"); \
     nedge = ntip + nnode - 1
 
 /*
@@ -180,174 +178,176 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
 
 */
 
-SEXP treeBuildWithTokens(SEXP nwk)
-{
-	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE];
-	double *el, tmpd;
-	char lab[MAX_LABEL_LENGTH];
-	SEXP edge, edge_length, Nnode, node_label, phy;
+/* NEW (2025-03-24: the 2 functions *WithTokens() are now disabled */
 
-	/* first pass on the Newick string to localize parentheses and commas */
-	INITIALIZE_SKELETON;
+/* SEXP treeBuildWithTokens(SEXP nwk) */
+/* { */
+/* 	const char *x; */
+/* 	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE]; */
+/* 	double *el, tmpd; */
+/* 	char lab[MAX_LABEL_LENGTH]; */
+/* 	SEXP edge, edge_length, Nnode, node_label, phy; */
 
-	PROTECT(Nnode = allocVector(INTSXP, 1));
-	PROTECT(edge = allocVector(INTSXP, nedge*2));
-	PROTECT(edge_length = allocVector(REALSXP, nedge));
-	PROTECT(node_label = allocVector(STRSXP, nnode));
-	INTEGER(Nnode)[0] = nnode;
+/* 	/\* first pass on the Newick string to localize parentheses and commas *\/ */
+/* 	INITIALIZE_SKELETON; */
 
-	e = INTEGER(edge);
-	el = REAL(edge_length);
+/* 	PROTECT(Nnode = allocVector(INTSXP, 1)); */
+/* 	PROTECT(edge = allocVector(INTSXP, nedge*2)); */
+/* 	PROTECT(edge_length = allocVector(REALSXP, nedge)); */
+/* 	PROTECT(node_label = allocVector(STRSXP, nnode)); */
+/* 	INTEGER(Nnode)[0] = nnode; */
 
-	curnode = node = ntip + 1;
-	k = j = 0;
-/* j: index of the current position in the edge matrix */
-/* k: index of the current position in stack_internal */
-/* stack_internal is a simple array storing the indices of the
-   successive internal edges from the root; it's a stack so it is
-   incremented every time an internal edge is added, and decremented
-   every GO_DOWN step. This makes easy to find the index of the
-   subtending edge. */
+/* 	e = INTEGER(edge); */
+/* 	el = REAL(edge_length); */
 
-/* second pass on the Newick string to build the "phylo" object elements */
-	for (i = 1; i < nsk - 1; i++) {
-		ps = skeleton[i];
-		if (x[ps] == '(') {
-			ADD_INTERNAL_EDGE;
-			continue;
-		}
-		pr = skeleton[i - 1];
-		if (x[ps] == ',') {
-			if (x[pr] != ')') {
-				/* !!! accolades indispensables !!! */
-				ADD_TERMINAL_EDGE;
-			}
-			continue;
-		}
-		if (x[ps] == ')') {
-			pt = skeleton[i + 1]; // <- utile ???
-			if (x[pr] == ',') {
-				ADD_TERMINAL_EDGE;
- 				GO_DOWN;
-				continue;
-			}
-			/* added by Klaus to allow singleton nodes (2017-05-28): */
-			if (x[pr] == '(') {
-			    ADD_TERMINAL_EDGE;
-			    GO_DOWN;
-			    continue;
-			} /* end */
-			if (x[pr] == ')') {
-				GO_DOWN;
-			}
-		}
-	}
+/* 	curnode = node = ntip + 1; */
+/* 	k = j = 0; */
+/* /\* j: index of the current position in the edge matrix *\/ */
+/* /\* k: index of the current position in stack_internal *\/ */
+/* /\* stack_internal is a simple array storing the indices of the */
+/*    successive internal edges from the root; it's a stack so it is */
+/*    incremented every time an internal edge is added, and decremented */
+/*    every GO_DOWN step. This makes easy to find the index of the */
+/*    subtending edge. *\/ */
 
-	pr = skeleton[nsk - 2];
-	ps = skeleton[nsk - 1];
-/* is the last edge terminal? */
-	if (x[pr] == ',' && x[ps] == ')') {
-		ADD_TERMINAL_EDGE;
-	}
+/* /\* second pass on the Newick string to build the "phylo" object elements *\/ */
+/* 	for (i = 1; i < nsk - 1; i++) { */
+/* 		ps = skeleton[i]; */
+/* 		if (x[ps] == '(') { */
+/* 			ADD_INTERNAL_EDGE; */
+/* 			continue; */
+/* 		} */
+/* 		pr = skeleton[i - 1]; */
+/* 		if (x[ps] == ',') { */
+/* 			if (x[pr] != ')') { */
+/* 				/\* !!! accolades indispensables !!! *\/ */
+/* 				ADD_TERMINAL_EDGE; */
+/* 			} */
+/* 			continue; */
+/* 		} */
+/* 		if (x[ps] == ')') { */
+/* 			pt = skeleton[i + 1]; // <- utile ??? */
+/* 			if (x[pr] == ',') { */
+/* 				ADD_TERMINAL_EDGE; */
+/*  				GO_DOWN; */
+/* 				continue; */
+/* 			} */
+/* 			/\* added by Klaus to allow singleton nodes (2017-05-28): *\/ */
+/* 			if (x[pr] == '(') { */
+/* 			    ADD_TERMINAL_EDGE; */
+/* 			    GO_DOWN; */
+/* 			    continue; */
+/* 			} /\* end *\/ */
+/* 			if (x[pr] == ')') { */
+/* 				GO_DOWN; */
+/* 			} */
+/* 		} */
+/* 	} */
 
-/* is there a root edge and/or root label? */
-	if (ps < n - 2) {
-		i = ps + 1;
-		while (i < n - 2 && x[i] != ':') i++;
-		if (i < n - 2) {
-			PROTECT(phy = allocVector(VECSXP, 5));
-			SEXP root_edge;
-			decode_internal_edge(x, ps + 1, n - 2, lab, &tmpd);
-			PROTECT(root_edge = allocVector(REALSXP, 1));
-			REAL(root_edge)[0] = tmpd;
-			SET_VECTOR_ELT(phy, 4, root_edge);
-			UNPROTECT(1);
-			SET_STRING_ELT(node_label, 0, mkChar(lab));
-		} else {
-			extract_portion_Newick(x, ps + 1, n - 2, lab);
-			SET_STRING_ELT(node_label, 0, mkChar(lab));
-			PROTECT(phy = allocVector(VECSXP, 4));
-		}
-	} else PROTECT(phy = allocVector(VECSXP, 4));
+/* 	pr = skeleton[nsk - 2]; */
+/* 	ps = skeleton[nsk - 1]; */
+/* /\* is the last edge terminal? *\/ */
+/* 	if (x[pr] == ',' && x[ps] == ')') { */
+/* 		ADD_TERMINAL_EDGE; */
+/* 	} */
 
-	SET_VECTOR_ELT(phy, 0, edge);
-	SET_VECTOR_ELT(phy, 1, edge_length);
-	SET_VECTOR_ELT(phy, 2, Nnode);
-	SET_VECTOR_ELT(phy, 3, node_label);
+/* /\* is there a root edge and/or root label? *\/ */
+/* 	if (ps < n - 2) { */
+/* 		i = ps + 1; */
+/* 		while (i < n - 2 && x[i] != ':') i++; */
+/* 		if (i < n - 2) { */
+/* 			PROTECT(phy = allocVector(VECSXP, 5)); */
+/* 			SEXP root_edge; */
+/* 			decode_internal_edge(x, ps + 1, n - 2, lab, &tmpd); */
+/* 			PROTECT(root_edge = allocVector(REALSXP, 1)); */
+/* 			REAL(root_edge)[0] = tmpd; */
+/* 			SET_VECTOR_ELT(phy, 4, root_edge); */
+/* 			UNPROTECT(1); */
+/* 			SET_STRING_ELT(node_label, 0, mkChar(lab)); */
+/* 		} else { */
+/* 			extract_portion_Newick(x, ps + 1, n - 2, lab); */
+/* 			SET_STRING_ELT(node_label, 0, mkChar(lab)); */
+/* 			PROTECT(phy = allocVector(VECSXP, 4)); */
+/* 		} */
+/* 	} else PROTECT(phy = allocVector(VECSXP, 4)); */
 
-	UNPROTECT(6);
-	return phy;
-}
+/* 	SET_VECTOR_ELT(phy, 0, edge); */
+/* 	SET_VECTOR_ELT(phy, 1, edge_length); */
+/* 	SET_VECTOR_ELT(phy, 2, Nnode); */
+/* 	SET_VECTOR_ELT(phy, 3, node_label); */
 
-SEXP cladoBuildWithTokens(SEXP nwk)
-{
-	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE];
-	char lab[MAX_LABEL_LENGTH];
-	SEXP edge, Nnode, node_label, phy;
+/* 	UNPROTECT(6); */
+/* 	return phy; */
+/* } */
 
-	INITIALIZE_SKELETON;
+/* SEXP cladoBuildWithTokens(SEXP nwk) */
+/* { */
+/* 	const char *x; */
+/* 	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE]; */
+/* 	char lab[MAX_LABEL_LENGTH]; */
+/* 	SEXP edge, Nnode, node_label, phy; */
 
-	PROTECT(Nnode = allocVector(INTSXP, 1));
-	PROTECT(edge = allocVector(INTSXP, nedge*2));
-	PROTECT(node_label = allocVector(STRSXP, nnode));
-	INTEGER(Nnode)[0] = nnode;
+/* 	INITIALIZE_SKELETON; */
 
-	e = INTEGER(edge);
+/* 	PROTECT(Nnode = allocVector(INTSXP, 1)); */
+/* 	PROTECT(edge = allocVector(INTSXP, nedge*2)); */
+/* 	PROTECT(node_label = allocVector(STRSXP, nnode)); */
+/* 	INTEGER(Nnode)[0] = nnode; */
 
-	curnode = node = ntip + 1;
-	k = j = 0;
+/* 	e = INTEGER(edge); */
 
-	for (i = 1; i < nsk - 1; i++) {
-		ps = skeleton[i];
-		if (x[ps] == '(') {
-			ADD_INTERNAL_EDGE;
-			continue;
-		}
-		pr = skeleton[i - 1];
-		if (x[ps] == ',') {
-			if (x[pr] != ')') {
-				ADD_TERMINAL_EDGE_CLADO;
-			}
-			continue;
-		}
-		if (x[ps] == ')') {
-			pt = skeleton[i + 1];
-			if (x[pr] == ',') {
-				ADD_TERMINAL_EDGE_CLADO;
- 				GO_DOWN_CLADO;
-				continue;
-			}
-			if (x[pr] == '(') {
-			    ADD_TERMINAL_EDGE_CLADO;
-			    GO_DOWN_CLADO;
-			    continue;
-			}
-			if (x[pr] == ')') {
-				GO_DOWN_CLADO;
-			}
-		}
-	}
+/* 	curnode = node = ntip + 1; */
+/* 	k = j = 0; */
 
-	pr = skeleton[nsk - 2];
-	ps = skeleton[nsk - 1];
-	if (x[pr] == ',' && x[ps] == ')') {
-		ADD_TERMINAL_EDGE_CLADO;
-	}
-	if (ps < n - 2) {
-	    extract_portion_Newick(x, ps + 1, n - 2, lab);
-	    SET_STRING_ELT(node_label, 0, mkChar(lab));
-	    PROTECT(phy = allocVector(VECSXP, 3));
-	} else PROTECT(phy = allocVector(VECSXP, 3));
+/* 	for (i = 1; i < nsk - 1; i++) { */
+/* 		ps = skeleton[i]; */
+/* 		if (x[ps] == '(') { */
+/* 			ADD_INTERNAL_EDGE; */
+/* 			continue; */
+/* 		} */
+/* 		pr = skeleton[i - 1]; */
+/* 		if (x[ps] == ',') { */
+/* 			if (x[pr] != ')') { */
+/* 				ADD_TERMINAL_EDGE_CLADO; */
+/* 			} */
+/* 			continue; */
+/* 		} */
+/* 		if (x[ps] == ')') { */
+/* 			pt = skeleton[i + 1]; */
+/* 			if (x[pr] == ',') { */
+/* 				ADD_TERMINAL_EDGE_CLADO; */
+/*  				GO_DOWN_CLADO; */
+/* 				continue; */
+/* 			} */
+/* 			if (x[pr] == '(') { */
+/* 			    ADD_TERMINAL_EDGE_CLADO; */
+/* 			    GO_DOWN_CLADO; */
+/* 			    continue; */
+/* 			} */
+/* 			if (x[pr] == ')') { */
+/* 				GO_DOWN_CLADO; */
+/* 			} */
+/* 		} */
+/* 	} */
 
-	SET_VECTOR_ELT(phy, 0, edge);
-	SET_VECTOR_ELT(phy, 1, Nnode);
-	SET_VECTOR_ELT(phy, 2, node_label);
+/* 	pr = skeleton[nsk - 2]; */
+/* 	ps = skeleton[nsk - 1]; */
+/* 	if (x[pr] == ',' && x[ps] == ')') { */
+/* 		ADD_TERMINAL_EDGE_CLADO; */
+/* 	} */
+/* 	if (ps < n - 2) { */
+/* 	    extract_portion_Newick(x, ps + 1, n - 2, lab); */
+/* 	    SET_STRING_ELT(node_label, 0, mkChar(lab)); */
+/* 	    PROTECT(phy = allocVector(VECSXP, 3)); */
+/* 	} else PROTECT(phy = allocVector(VECSXP, 3)); */
 
-	UNPROTECT(5);
-	return phy;
-}
+/* 	SET_VECTOR_ELT(phy, 0, edge); */
+/* 	SET_VECTOR_ELT(phy, 1, Nnode); */
+/* 	SET_VECTOR_ELT(phy, 2, node_label); */
+
+/* 	UNPROTECT(5); */
+/* 	return phy; */
+/* } */
 
 SEXP treeBuild(SEXP nwk)
 {
@@ -508,9 +508,10 @@ SEXP cladoBuild(SEXP nwk)
 	return phy;
 }
 
+#undef INITIALIZE_SKELETON
 #undef ADD_INTERNAL_EDGE
-#undef ADD_TERMINAL_EDGE
-#undef ADD_TERMINAL_EDGE_CLADO
+/* #undef ADD_TERMINAL_EDGE */
+/* #undef ADD_TERMINAL_EDGE_CLADO */
 #undef ADD_TERMINAL_EDGE_TIPLABEL
 #undef ADD_TERMINAL_EDGE_TIPLABEL_CLADO
 #undef GO_DOWN

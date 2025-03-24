@@ -41,6 +41,17 @@ read.nexus(file, tree.names = NULL, force.multi = FALSE)
   (e.g., "(((A:1,B:1):10):10);"), then the tree is not read and an error
   message is issued.
 }
+\note{
+  NEXUS is not a particularly efficient format to store very large
+  collections of trees. For 1000 trees each with 1000 tips, the NEXUS
+  file is (roughly) 30 MB, and it takes 5 sec to read it with this
+  function. The file can be  compressed with GZIP making it about twice
+  smaller for about the same time to read it (thanks to the ability of
+  \code{\link[base]{scan}} to read directly compressed files). On the
+  other hand, saving the same list of trees with
+  \code{\link[base]{saveRDS}} creates a file of about 20 MB which can be
+  read with \code{\link[base]{readRDS}} in 0.2 sec.
+}
 \value{
   an object of class \code{"phylo"} or \code{"multiPhylo"}.
 }

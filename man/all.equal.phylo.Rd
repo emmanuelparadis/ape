@@ -4,9 +4,9 @@
 \title{Global Comparison of two Phylogenies}
 \usage{
 \method{all.equal}{phylo}(target, current, use.edge.length = TRUE,
-                   use.tip.label = TRUE, index.return = FALSE,
-                   tolerance = .Machine$double.eps ^ 0.5,
-                   scale = NULL, \dots)
+          use.tip.label = TRUE, index.return = FALSE,
+          tolerance = .Machine$double.eps ^ 0.5,
+          scale = NULL, \dots)
 }
 \arguments{
   \item{target}{an object of class \code{"phylo"}.}
