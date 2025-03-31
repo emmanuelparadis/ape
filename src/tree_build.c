@@ -1,4 +1,4 @@
-/* tree_build.c    2025-03-24 */
+/* tree_build.c    2025-03-31 */
 
 /* Copyright 2008-2025 Emmanuel Paradis, 2017 Klaus Schliep */
 
@@ -99,25 +99,12 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
     stack_internal[k++] = j;         \
     j++
 
-/* #define ADD_TERMINAL_EDGE                                        \ */
-/*     e[j] = curnode;                                              \ */
-/*     decode_terminal_edge_token(x, pr + 1, ps - 1, &tmpi, &tmpd); \ */
-/*     e[j + nedge] = tmpi;                                         \ */
-/*     el[j] = tmpd;                                                \ */
-/*     j++ */
-
 #define GO_DOWN                                                  \
     decode_internal_edge(x, ps + 1, pt - 1, lab, &tmpd);         \
     SET_STRING_ELT(node_label, curnode - 1 - ntip, mkChar(lab)); \
     l = stack_internal[--k];					 \
     el[l] = tmpd;                                                \
     curnode = e[l]
-
-/* #define ADD_TERMINAL_EDGE_CLADO                                  \ */
-/*     e[j] = curnode;                                              \ */
-/*     decode_terminal_edge_token_clado(x, pr + 1, ps - 1, &tmpi);  \ */
-/*     e[j + nedge] = tmpi;                                         \ */
-/*     j++ */
 
 #define GO_DOWN_CLADO                                            \
     decode_internal_edge_clado(x, ps + 1, pt - 1, lab);          \
@@ -172,182 +159,12 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
     nedge = ntip + nnode - 1
 
 /*
-   NOTE: the four functions below use the same algorithm to build a
-   "phylo" object from a Newick string (with/without edge lengths
-   and/or with/without tokens). Only the first one is commented.
+   NOTE: the two functions below use the same algorithm to build a
+   "phylo" object from a Newick string (with/without edge lengths).
+   Only the first one is commented.
 
+   NEW (2025-03-24): the 2 functions *WithTokens() are now deleted
 */
-
-/* NEW (2025-03-24: the 2 functions *WithTokens() are now disabled */
-
-/* SEXP treeBuildWithTokens(SEXP nwk) */
-/* { */
-/* 	const char *x; */
-/* 	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE]; */
-/* 	double *el, tmpd; */
-/* 	char lab[MAX_LABEL_LENGTH]; */
-/* 	SEXP edge, edge_length, Nnode, node_label, phy; */
-
-/* 	/\* first pass on the Newick string to localize parentheses and commas *\/ */
-/* 	INITIALIZE_SKELETON; */
-
-/* 	PROTECT(Nnode = allocVector(INTSXP, 1)); */
-/* 	PROTECT(edge = allocVector(INTSXP, nedge*2)); */
-/* 	PROTECT(edge_length = allocVector(REALSXP, nedge)); */
-/* 	PROTECT(node_label = allocVector(STRSXP, nnode)); */
-/* 	INTEGER(Nnode)[0] = nnode; */
-
-/* 	e = INTEGER(edge); */
-/* 	el = REAL(edge_length); */
-
-/* 	curnode = node = ntip + 1; */
-/* 	k = j = 0; */
-/* /\* j: index of the current position in the edge matrix *\/ */
-/* /\* k: index of the current position in stack_internal *\/ */
-/* /\* stack_internal is a simple array storing the indices of the */
-/*    successive internal edges from the root; it's a stack so it is */
-/*    incremented every time an internal edge is added, and decremented */
-/*    every GO_DOWN step. This makes easy to find the index of the */
-/*    subtending edge. *\/ */
-
-/* /\* second pass on the Newick string to build the "phylo" object elements *\/ */
-/* 	for (i = 1; i < nsk - 1; i++) { */
-/* 		ps = skeleton[i]; */
-/* 		if (x[ps] == '(') { */
-/* 			ADD_INTERNAL_EDGE; */
-/* 			continue; */
-/* 		} */
-/* 		pr = skeleton[i - 1]; */
-/* 		if (x[ps] == ',') { */
-/* 			if (x[pr] != ')') { */
-/* 				/\* !!! accolades indispensables !!! *\/ */
-/* 				ADD_TERMINAL_EDGE; */
-/* 			} */
-/* 			continue; */
-/* 		} */
-/* 		if (x[ps] == ')') { */
-/* 			pt = skeleton[i + 1]; // <- utile ??? */
-/* 			if (x[pr] == ',') { */
-/* 				ADD_TERMINAL_EDGE; */
-/*  				GO_DOWN; */
-/* 				continue; */
-/* 			} */
-/* 			/\* added by Klaus to allow singleton nodes (2017-05-28): *\/ */
-/* 			if (x[pr] == '(') { */
-/* 			    ADD_TERMINAL_EDGE; */
-/* 			    GO_DOWN; */
-/* 			    continue; */
-/* 			} /\* end *\/ */
-/* 			if (x[pr] == ')') { */
-/* 				GO_DOWN; */
-/* 			} */
-/* 		} */
-/* 	} */
-
-/* 	pr = skeleton[nsk - 2]; */
-/* 	ps = skeleton[nsk - 1]; */
-/* /\* is the last edge terminal? *\/ */
-/* 	if (x[pr] == ',' && x[ps] == ')') { */
-/* 		ADD_TERMINAL_EDGE; */
-/* 	} */
-
-/* /\* is there a root edge and/or root label? *\/ */
-/* 	if (ps < n - 2) { */
-/* 		i = ps + 1; */
-/* 		while (i < n - 2 && x[i] != ':') i++; */
-/* 		if (i < n - 2) { */
-/* 			PROTECT(phy = allocVector(VECSXP, 5)); */
-/* 			SEXP root_edge; */
-/* 			decode_internal_edge(x, ps + 1, n - 2, lab, &tmpd); */
-/* 			PROTECT(root_edge = allocVector(REALSXP, 1)); */
-/* 			REAL(root_edge)[0] = tmpd; */
-/* 			SET_VECTOR_ELT(phy, 4, root_edge); */
-/* 			UNPROTECT(1); */
-/* 			SET_STRING_ELT(node_label, 0, mkChar(lab)); */
-/* 		} else { */
-/* 			extract_portion_Newick(x, ps + 1, n - 2, lab); */
-/* 			SET_STRING_ELT(node_label, 0, mkChar(lab)); */
-/* 			PROTECT(phy = allocVector(VECSXP, 4)); */
-/* 		} */
-/* 	} else PROTECT(phy = allocVector(VECSXP, 4)); */
-
-/* 	SET_VECTOR_ELT(phy, 0, edge); */
-/* 	SET_VECTOR_ELT(phy, 1, edge_length); */
-/* 	SET_VECTOR_ELT(phy, 2, Nnode); */
-/* 	SET_VECTOR_ELT(phy, 3, node_label); */
-
-/* 	UNPROTECT(6); */
-/* 	return phy; */
-/* } */
-
-/* SEXP cladoBuildWithTokens(SEXP nwk) */
-/* { */
-/* 	const char *x; */
-/* 	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, tmpi, l, k, stack_internal[STACK_SIZE]; */
-/* 	char lab[MAX_LABEL_LENGTH]; */
-/* 	SEXP edge, Nnode, node_label, phy; */
-
-/* 	INITIALIZE_SKELETON; */
-
-/* 	PROTECT(Nnode = allocVector(INTSXP, 1)); */
-/* 	PROTECT(edge = allocVector(INTSXP, nedge*2)); */
-/* 	PROTECT(node_label = allocVector(STRSXP, nnode)); */
-/* 	INTEGER(Nnode)[0] = nnode; */
-
-/* 	e = INTEGER(edge); */
-
-/* 	curnode = node = ntip + 1; */
-/* 	k = j = 0; */
-
-/* 	for (i = 1; i < nsk - 1; i++) { */
-/* 		ps = skeleton[i]; */
-/* 		if (x[ps] == '(') { */
-/* 			ADD_INTERNAL_EDGE; */
-/* 			continue; */
-/* 		} */
-/* 		pr = skeleton[i - 1]; */
-/* 		if (x[ps] == ',') { */
-/* 			if (x[pr] != ')') { */
-/* 				ADD_TERMINAL_EDGE_CLADO; */
-/* 			} */
-/* 			continue; */
-/* 		} */
-/* 		if (x[ps] == ')') { */
-/* 			pt = skeleton[i + 1]; */
-/* 			if (x[pr] == ',') { */
-/* 				ADD_TERMINAL_EDGE_CLADO; */
-/*  				GO_DOWN_CLADO; */
-/* 				continue; */
-/* 			} */
-/* 			if (x[pr] == '(') { */
-/* 			    ADD_TERMINAL_EDGE_CLADO; */
-/* 			    GO_DOWN_CLADO; */
-/* 			    continue; */
-/* 			} */
-/* 			if (x[pr] == ')') { */
-/* 				GO_DOWN_CLADO; */
-/* 			} */
-/* 		} */
-/* 	} */
-
-/* 	pr = skeleton[nsk - 2]; */
-/* 	ps = skeleton[nsk - 1]; */
-/* 	if (x[pr] == ',' && x[ps] == ')') { */
-/* 		ADD_TERMINAL_EDGE_CLADO; */
-/* 	} */
-/* 	if (ps < n - 2) { */
-/* 	    extract_portion_Newick(x, ps + 1, n - 2, lab); */
-/* 	    SET_STRING_ELT(node_label, 0, mkChar(lab)); */
-/* 	    PROTECT(phy = allocVector(VECSXP, 3)); */
-/* 	} else PROTECT(phy = allocVector(VECSXP, 3)); */
-
-/* 	SET_VECTOR_ELT(phy, 0, edge); */
-/* 	SET_VECTOR_ELT(phy, 1, Nnode); */
-/* 	SET_VECTOR_ELT(phy, 2, node_label); */
-
-/* 	UNPROTECT(5); */
-/* 	return phy; */
-/* } */
 
 SEXP treeBuild(SEXP nwk)
 {
@@ -357,6 +174,7 @@ SEXP treeBuild(SEXP nwk)
 	char lab[MAX_LABEL_LENGTH], tip[MAX_LABEL_LENGTH];
 	SEXP edge, edge_length, Nnode, node_label, tip_label, phy;
 
+	/* first pass on the Newick string to localize parentheses and commas */
 	INITIALIZE_SKELETON;
 
 	PROTECT(Nnode = allocVector(INTSXP, 1));
@@ -371,7 +189,15 @@ SEXP treeBuild(SEXP nwk)
 
 	curnode = node = ntip + 1;
 	k = j = 0;
+/* j: index of the current position in the edge matrix */
+/* k: index of the current position in stack_internal */
+/* stack_internal is a simple array storing the indices of the
+   successive internal edges from the root; it's a stack so it is
+   incremented every time an internal edge is added, and decremented
+   every GO_DOWN step. This makes easy to find the index of the
+   subtending edge. */
 
+/* second pass on the Newick string to build the "phylo" object elements */
 	for (i = 1; i < nsk - 1; i++) {
 		ps = skeleton[i];
 		if (x[ps] == '(') {
@@ -405,10 +231,12 @@ SEXP treeBuild(SEXP nwk)
 
 	pr = skeleton[nsk - 2];
 	ps = skeleton[nsk - 1];
+	/* is the last edge terminal? */
 	if (x[pr] == ',' && x[ps] == ')') {
 		ADD_TERMINAL_EDGE_TIPLABEL;
 	}
 
+	/* is there a root edge and/or root label? */
 	if (ps < n - 2) {
 		i = ps + 1;
 		while (i < n - 2 && x[i] != ':') i++;

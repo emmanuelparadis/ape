@@ -1,4 +1,4 @@
-## read.nexus.R (2025-03-24)
+## read.nexus.R (2025-03-31)
 
 ##   Read Tree File in Nexus Format
 
@@ -6,67 +6,6 @@
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
-
-#.treeBuildWithTokens <- function(x)
-#{
-#    phy <- .Call(treeBuildWithTokens, x)
-#    dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
-#    nms <- c("edge", "edge.length", "Nnode", "node.label", "root.edge")
-#    if (length(phy) == 4) nms <- nms[-5]
-#    names(phy) <- nms
-#    if (all(phy$node.label == "")) phy$node.label <- NULL
-#    class(phy) <- "phylo"
-#    attr(phy, "order") <- "cladewise"
-#    phy
-#}
-#
-### for read.nexus clado with TRANSLATION
-#.cladoBuildWithTokens <- function(x)
-#{
-#    phy <- .Call(cladoBuildWithTokens, x)
-#    dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
-#    nms <- c("edge", "Nnode", "node.label", "root.edge")
-#    if (length(phy) == 3) nms <- nms[-4]
-#    names(phy) <- nms
-#    if (all(phy$node.label == "")) phy$node.label <- NULL
-#    class(phy) <- "phylo"
-#    attr(phy, "order") <- "cladewise"
-#    phy
-#}
-#
-.treeBuild <- function(x)
-{
-    if (!length(grep(",", x))) {
-        ## only one tip but can be several nodes (GH's issues #104 and #124)
-        Nnode <- length(gregexpr("\\)", x)[[1]])
-        edge <- if (Nnode == 1L) 2:1 else c(2L, rep(3:(Nnode + 1L), each = 2), 1L)
-        edge <- matrix(edge, Nnode, 2L, TRUE)
-        phy <- list(edge = edge, Nnode = Nnode)
-        labs <- unlist(strsplit(x, "[\\(\\):;]"))
-        nt <- Nnode + 1L
-        phy$tip.label <- labs[nt]
-        labs <- labs[-(1:nt)]
-        s <- c(TRUE, FALSE)
-        tmp <- as.numeric(labs[s])
-        if (length(tmp) == Nnode) {
-            phy$edge.length <- tmp
-        } else { # length(tmp) == Nnode + 1L (not checked)
-            phy$edge.length <- tmp[-length(tmp)]
-            phy$root.edge <- tmp[length(tmp)]
-        }
-        phy$node.label <- labs[!s]
-    } else {
-        phy <- .Call(treeBuild, x)
-        dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
-        nms <- c("edge", "edge.length", "Nnode", "node.label", "tip.label", "root.edge")
-        if (length(phy) == 5) nms <- nms[-6]
-        names(phy) <- nms
-    }
-    if (all(phy$node.label == "")) phy$node.label <- NULL
-    class(phy) <- "phylo"
-    attr(phy, "order") <- "cladewise"
-    phy
-}
 
 .cladoBuild <- function(x)
 {
@@ -222,7 +161,6 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         ## the new command (doesn't assume TRANSLATE is on its own line):
         TRANS <- .decodeTRANSLATE(X[i2:end])
         n <- dim(TRANS)[1]
-###        trans_vec <- setNames(TRANS[, 2], TRANS[, 1])
     }
     start <- if (translation) semico[semico > i2][1] + 1 else i1 + 1
     end <- endblock[endblock > i1][1] - 1
@@ -264,20 +202,12 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     STRING <- gsub(" ", "", STRING) # delete all white spaces
     colon <- grep(":", STRING)
 
-#    withTokens <- FALSE
-#### maybe add a check on the number of commas in the Newick strings...
-#    if (translation) {
-#        if (identical(suppressWarnings(as.integer(TRANS[, 1])), 1:n) &&
-#            all(lengths(gregexpr(",", STRING)) + 1L == n))
-#            withTokens <- TRUE
-#    }
-
     FUN <- NULL
     if (length(colon) == 0) {
-        FUN <- .cladoBuild #if (withTokens) .cladoBuildWithTokens else .cladoBuild
+        FUN <- .cladoBuild
     }
     if (length(colon) == Ntree) {
-        FUN <- .treeBuild #if (withTokens) .treeBuildWithTokens else .treeBuild
+        FUN <- .treeBuild
     }
 
     if (is.null(FUN)) {
@@ -290,13 +220,6 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     }
 
     if (translation) {
-#        if (withTokens) {
-#            if (Ntree == 1) {
-#                trees[[1L]]$tip.label <- TRANS[, 2]
-#            } else {
-#                attr(trees, "TipLabel") <- TRANS[, 2]
-#            }
-#        } else
         for (i in 1:Ntree) {
             labs <- trees[[i]]$tip.label
             trees[[i]]$tip.label <- .translateTOKENS(labs, TRANS)
@@ -304,41 +227,16 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
             if (!is.null(labs))
                 trees[[i]]$node.label <- .translateTOKENS(labs, TRANS)
         }
-        ## translation <- FALSE
     }
 
     if (Ntree == 1 && !force.multi) return(trees[[1]])
-    ##for (i in 1:Ntree) {
-    ##    tr <- trees[[i]]
-    ##    if (!translation) n <- length(tr$tip.label)
-    ##}
-    ##if (Ntree == 1 && !force.multi) {
-    ##    trees <- trees[[1]]
-    ##    if (translation) {
-    ##      trees$tip.label <- as.vector(trans_vec[trees$tip.label])
-#            trees$tip.label <-
-#                if (length(colon)) TRANS[, 2] else
-#                TRANS[, 2][as.numeric(trees$tip.label)]
-    ##    }
-#    } else {
+
     if (is.null(tree.names)) {
         if (!all(nms.trees == ""))
             names(trees) <- nms.trees
     } else {
         names(trees) <- tree.names
     }
-        ##if (translation) {
-        ##    if (with_token) # && length(colon) == Ntree) # .treeBuildWithTokens() was used
-        ##        attr(trees, "TipLabel") <- TRANS[, 2]
-        ##    else { # reassign the tip labels then compress
-        ##        for (i in 1:Ntree)
-        ##            trees[[i]]$tip.label <- as.vector(trans_vec[trees[[i]]$tip.label])
-#                    trees[[i]]$tip.label <-
-#                        TRANS[, 2][as.numeric(trees[[i]]$tip.label)]
-        ##        class(trees) <- "multiPhylo"
-###                if(all(Ntip(trees)==length(trans_vec))) trees <- .compressTipLabel(trees)
-        ##    }
-#    }
     class(trees) <- "multiPhylo"
     tmp <- try(.compressTipLabel(trees), silent = TRUE)
     if (class(tmp) == "multiPhylo") return(tmp)
