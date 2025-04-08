@@ -1,4 +1,4 @@
-## read.nexus.R (2025-03-31)
+## read.nexus.R (2025-04-08)
 
 ##   Read Tree File in Nexus Format
 
@@ -6,6 +6,27 @@
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
+
+.treeBuild <- function(x)
+{
+    if (!length(grep(",", x))) {
+        phy <- list(edge = matrix(c(2L, 1L), 1, 2), Nnode = 1L)
+        x <- unlist(strsplit(x, "[\\(\\):;]"))
+        phy$tip.label <- x[2]
+        phy$edge.length <- as.numeric(x[3])
+        phy$node.label <- x[4]
+    } else {
+        phy <- .Call(treeBuild, x)
+        dim(phy[[1]]) <- c(length(phy[[1]])/2, 2)
+        nms <- c("edge", "edge.length", "Nnode", "node.label", "tip.label", "root.edge")
+        if (length(phy) == 5) nms <- nms[-6]
+        names(phy) <- nms
+    }
+    if (all(phy$node.label == "")) phy$node.label <- NULL
+    class(phy) <- "phylo"
+    attr(phy, "order") <- "cladewise"
+    phy
+}
 
 .cladoBuild <- function(x)
 {
