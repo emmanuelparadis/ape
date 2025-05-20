@@ -1,4 +1,4 @@
-/* tree_build.c    2025-03-31 */
+/* tree_build.c    2025-05-20 */
 
 /* Copyright 2008-2025 Emmanuel Paradis, 2017 Klaus Schliep */
 
@@ -152,10 +152,14 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
 	    skeleton[nsk] = i;			 \
 	    nsk++;				 \
 	    nright++;				 \
+	    if (nleft == nright) theCounter++;	 \
 	    nnode++;				 \
 	}					 \
     }						 \
-    if (nleft != nright) error("numbers of left and right parentheses in Newick string are not equal\n"); \
+    if (nleft != nright)			 \
+	error("numbers of left and right parentheses in Newick string are not equal\n"); \
+    if (theCounter != 1)			 \
+	error("first left parenthesis does not match with the last right parenthesis"); \
     nedge = ntip + nnode - 1
 
 /*
@@ -169,7 +173,8 @@ void decode_terminal_edge_clado(const char *x, int a, int b, char *tip)
 SEXP treeBuild(SEXP nwk)
 {
 	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[STACK_SIZE], curtip = 1;
+	int n, i, ntip = 1, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[STACK_SIZE], curtip = 1;
+	unsigned int nleft = 0, nright = 0, theCounter = 0;
 	double *el, tmpd;
 	char lab[MAX_LABEL_LENGTH], tip[MAX_LABEL_LENGTH];
 	SEXP edge, edge_length, Nnode, node_label, tip_label, phy;
@@ -268,7 +273,8 @@ SEXP treeBuild(SEXP nwk)
 SEXP cladoBuild(SEXP nwk)
 {
 	const char *x;
-	int n, i, ntip = 1, nleft = 0, nright = 0, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[STACK_SIZE], curtip = 1;
+	int n, i, ntip = 1, nnode = 0, nedge, *e, curnode, node, j, *skeleton, nsk = 0, ps, pr, pt, l, k, stack_internal[STACK_SIZE], curtip = 1;
+	unsigned int nleft = 0, nright = 0, theCounter = 0;
 	char lab[MAX_LABEL_LENGTH], tip[MAX_LABEL_LENGTH];
 	SEXP edge, Nnode, node_label, tip_label, phy;
 
