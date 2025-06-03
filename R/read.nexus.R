@@ -1,4 +1,4 @@
-## read.nexus.R (2025-04-08)
+## read.nexus.R (2025-06-03)
 
 ##   Read Tree File in Nexus Format
 
@@ -224,12 +224,8 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     colon <- grep(":", STRING)
 
     FUN <- NULL
-    if (length(colon) == 0) {
-        FUN <- .cladoBuild
-    }
-    if (length(colon) == Ntree) {
-        FUN <- .treeBuild
-    }
+    if (length(colon) == 0) FUN <- .cladoBuild
+    if (length(colon) == Ntree) FUN <- .treeBuild
 
     if (is.null(FUN)) {
         trees <- vector("list", Ntree)
@@ -240,6 +236,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         trees <- lapply(STRING, FUN)
     }
 
+    REF <- NULL
     if (translation) {
         for (i in 1:Ntree) {
             labs <- trees[[i]]$tip.label
@@ -248,9 +245,17 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
             if (!is.null(labs))
                 trees[[i]]$node.label <- .translateTOKENS(labs, TRANS)
         }
+        if (identical(as.integer(TRANS[, 1]), 1:n))
+            REF <- TRANS[, 2] # see GH's issue #141
     }
 
-    if (Ntree == 1 && !force.multi) return(trees[[1]])
+    if (Ntree == 1 && !force.multi) {
+        if (!is.null(REF)) {
+            tmp <- try(.compressTipLabel(trees, REF), silent = TRUE)
+            if (class(tmp) == "multiPhylo") trees <- tmp
+        }
+        return(trees[[1]])
+    }
 
     if (is.null(tree.names)) {
         if (!all(nms.trees == ""))
@@ -259,7 +264,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
         names(trees) <- tree.names
     }
     class(trees) <- "multiPhylo"
-    tmp <- try(.compressTipLabel(trees), silent = TRUE)
+    tmp <- try(.compressTipLabel(trees, REF), silent = TRUE)
     if (class(tmp) == "multiPhylo") return(tmp)
     trees
 }
