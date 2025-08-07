@@ -62,6 +62,7 @@ plot.evonet <- function(x, col = "blue", lty = 1, lwd = 1, alpha = 0.5,
           col = rgb(t(col2rgb(col)), alpha = 255 * alpha,
                     maxColorValue = 255),
           lty = lty, lwd = lwd, arrows = arrows, type = arrow.type)
+    invisible(x)
 }
 
 as.networx.evonet <- function(x, weight = NA, ...)
@@ -113,6 +114,7 @@ print.evonet <- function(x, ...)
     if (nr > 1) cat("s")
     cat("\n\n               --- Base tree ---")
     print.phylo(as.phylo(x))
+    invisible(x)
 }
 
 ## new stuff by Klaus (2017-05-26)
@@ -180,6 +182,7 @@ as.evonet.phylo <- function(x, ...)
 read.evonet <- function(file = "", text = NULL, comment.char = "", ...)
 {
     x <- read.tree(file = file, text = text, comment.char = comment.char, ...)
+    if(inherits(x, "multiPhylo"))  return(lapply(x, as.evonet.phylo))
     as.evonet.phylo(x)
 }
 
@@ -214,6 +217,7 @@ write.evonet <- function(x, file = "", ...)
 {
     x <- .evonet2phylo(x)
     write.tree(x, file = file, ...)
+    invisible(x)
 }
 
 Nedge.evonet <- function(phy) dim(phy$edge)[1] + dim(phy$reticulation)[1]
