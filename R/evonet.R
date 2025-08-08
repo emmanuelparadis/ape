@@ -54,10 +54,11 @@ as.phylo.evonet <- function(x, ...)
 }
 
 plot.evonet <- function(x, col = "blue", lty = 1, lwd = 1, alpha = 0.5,
-                        arrows = 0, arrow.type = "classical", ...)
+                        arrows = 0, arrow.type = "classical", node.depth = 2, 
+                        ...)
 {
     ## changed 5/24/17 by Klaus
-    plot.phylo(x, ...)
+    plot.phylo(x, node.depth = node.depth, ...)
     edges(x$reticulation[, 1], x$reticulation[, 2],
           col = rgb(t(col2rgb(col)), alpha = 255 * alpha,
                     maxColorValue = 255),
