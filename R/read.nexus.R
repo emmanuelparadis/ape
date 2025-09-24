@@ -268,7 +268,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     if (Ntree == 1 && !force.multi) {
         if (!is.null(REF)) {
             tmp <- try(.compressTipLabel(trees, REF), silent = TRUE)
-            if (class(tmp) == "multiPhylo") trees <- tmp
+            if (inherits(tmp, "multiPhylo")) trees <- tmp
         }
         return(trees[[1]])
     }
@@ -281,6 +281,6 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     }
     class(trees) <- "multiPhylo"
     tmp <- try(.compressTipLabel(trees, REF), silent = TRUE)
-    if (class(tmp) == "multiPhylo") return(tmp)
+    if (inherits(tmp, "multiPhylo")) return(tmp)
     trees
 }

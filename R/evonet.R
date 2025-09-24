@@ -219,8 +219,9 @@ extract_hybrid_info <- function(x){
     tpc <- tpc[ind]
     tmp <- strsplit(tpc, ":")
     ll <- lengths(tmp)
-    stopifnot(all(ll==ll[1]))
+    if(any(ll != ll[1]))return(NULL)
     if(all(ll<3))return(NULL)
+    
     res <- matrix(unlist(tmp), byrow = TRUE, ncol=ll[1])
     colnames(res) <- c("name", "edge.length", "support", "probability")[1:ll[1]]
     df <- as.data.frame(res)

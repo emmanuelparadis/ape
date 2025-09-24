@@ -8,7 +8,7 @@
 cophyloplot(x, y, assoc = NULL, use.edge.length = FALSE, space = 0,
        length.line = 1, gap = 2, type = "phylogram", rotate = FALSE,
        col = par("fg"), lwd = par("lwd"), lty = par("lty"),
-       show.tip.label = TRUE, font = 3, node.depth=2, \dots)
+       show.tip.label = TRUE, font = 3, \dots, node.depth=2)
 }
 
 \arguments{
