@@ -52,6 +52,22 @@
     phy
 }
 
+
+.evonetBuild <- function(x){ # , colon=TRUE){
+    colon <- grepl(":", x)
+    if (colon) {
+        info <- extract_hybrid_info(x)
+        for (i in seq_along(info$id)) x <- sub(info$name[i], info$id[i], x)
+        y <- .treeBuild(x)
+        z <- as.evonet(y, info = info)
+    } else {
+        y <- .cladoBuild(x)  
+        z <- as.evonet(y)
+    }  
+    z
+}
+
+
 .decodeTRANSLATE <- function(x)
 {
     z <- paste(x, collapse = " ")

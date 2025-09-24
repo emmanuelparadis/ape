@@ -2,6 +2,7 @@
 \alias{evonet}
 \alias{as.evonet}
 \alias{as.evonet.phylo}
+\alias{as.evonet.multiPhylo}
 \alias{read.evonet}
 \alias{write.evonet}
 \alias{print.evonet}
@@ -32,6 +33,7 @@ evonet(phy, from, to = NULL)
 
 as.evonet(x, ...)
 \method{as.evonet}{phylo}(x, ...)
+\method{as.evonet}{multiPhylo}(x, ...)
 
 read.evonet(file = "", text = NULL, comment.char = "", ...)
 write.evonet(x, file = "", ...)

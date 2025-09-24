@@ -8,15 +8,24 @@
 ## See the file ../COPYING for licensing issues.
 
 read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
-    comment.char = "", keep.multi = FALSE, ...)
+    comment.char = "", keep.multi = FALSE, ..., evonet=FALSE)
 {
+  
+#    evonet <- FALSE
+#    if( hasArg(evonet)) evonet <- list(...)$evonet
     if (!is.null(text)) {
         if (!is.character(text))
             stop("argument 'text' must be of mode character")
         tree <- text
     } else {
-        tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
-                     skip = skip, comment.char = comment.char, ...)
+#      tmp  <- as.list(match.call())[-1]
+#      tmp$evonet <- tmp$file <- NULL
+#      l <- list(file = file, what = "", sep = "\n", quiet = TRUE, skip = 0,
+#           comment.char = "")
+#      l[names(tmp)] <- tmp
+#      tree <- do.call(scan, l) 
+      tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
+                   skip = skip, comment.char = comment.char, ...)
     }
 
     ## Suggestion from Eric Durand and Nicolas Bortolussi (added 2005-08-17):
@@ -98,17 +107,21 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     if (is.null(tree.names) && any(nzchar(tmpnames))) tree.names <- tmpnames
 
     colon <- grep(":", STRING)
-    if (!length(colon)) {
-        obj <- lapply(STRING, .cladoBuild)
-    } else if (length(colon) == Ntree) {
-        obj <- lapply(STRING, .treeBuild)
-    } else {
-        obj <- vector("list", Ntree)
-        obj[colon] <- lapply(STRING[colon], .treeBuild)
-        nocolon <- (1:Ntree)[!1:Ntree %in% colon]
-        obj[nocolon] <- lapply(STRING[nocolon], .cladoBuild)
+    
+    if(evonet){
+      obj <- lapply(STRING, .evonetBuild) 
+    } else{
+        if (!length(colon)) {
+            obj <- lapply(STRING, .cladoBuild)
+        } else if (length(colon) == Ntree) {
+            obj <- lapply(STRING, .treeBuild)
+        } else {
+            obj <- vector("list", Ntree)
+            obj[colon] <- lapply(STRING[colon], .treeBuild)
+            nocolon <- (1:Ntree)[!1:Ntree %in% colon]
+            obj[nocolon] <- lapply(STRING[nocolon], .cladoBuild)
+       }
     }
-
     if (SINGLE.QUOTES.FOUND) {
         FOO <- function(x) {
             i <- gsub("^IMPROBABLEPREFIX|IMPROBABLESUFFIX$", "", x)
