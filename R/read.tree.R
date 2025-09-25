@@ -10,20 +10,11 @@
 read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     comment.char = "", keep.multi = FALSE, ..., evonet=FALSE)
 {
-  
-#    evonet <- FALSE
-#    if( hasArg(evonet)) evonet <- list(...)$evonet
     if (!is.null(text)) {
         if (!is.character(text))
             stop("argument 'text' must be of mode character")
         tree <- text
     } else {
-#      tmp  <- as.list(match.call())[-1]
-#      tmp$evonet <- tmp$file <- NULL
-#      l <- list(file = file, what = "", sep = "\n", quiet = TRUE, skip = 0,
-#           comment.char = "")
-#      l[names(tmp)] <- tmp
-#      tree <- do.call(scan, l) 
       tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
                    skip = skip, comment.char = comment.char, ...)
     }
