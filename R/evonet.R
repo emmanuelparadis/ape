@@ -138,6 +138,8 @@ as.evonet.phylo <- function(x, ...)
     else info <- NULL  
     # sort things so indexing is easier
     edge <- x$edge[order(x$edge[,2]), ]
+    if (!is.null(x$edge.length)) 
+      x$edge.length <- x$edge.length[order(x$edge[, 2])]
     label <- c(x$tip.label, x$node.label)
     label <- label[grep("#", label)]
     if (!is.null(info)) info <- info[ match(info$id, label), ]
