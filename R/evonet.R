@@ -238,10 +238,7 @@ extract_hybrid_info <- function(x){
 read.evonet <- function(file = "", text = NULL, comment.char = "", ...)
 {
     x <- read.tree(file = file, text = text, comment.char = comment.char, ..., evonet=TRUE) 
-#    if(inherits(x, "multiPhylo"))  return(lapply(x, as.evonet.phylo))
     as.evonet(x)
-#    read.tree(file = file, text = text, comment.char = comment.char, 
-#              evonet=TRUE, ...)
 }
 
 
