@@ -84,6 +84,7 @@ SEXP CountBipartitionsFromSplits(SEXP split, SEXP SPLIT);
 SEXP _ape_prop_part2(SEXP trees, SEXP nTips);
 SEXP _ape_bipartition2(SEXP orig, SEXP nTips);
 SEXP _ape_reorderRcpp(SEXP orig, SEXP nTips, SEXP root, SEXP order);
+SEXP _ape_sorted_bipartition(SEXP orig, SEXP nTips);
 SEXP writeDNAbinToFASTA(SEXP x, SEXP FILENAME, SEXP n, SEXP s, SEXP labels);
 SEXP writeAAbinToFASTA(SEXP x, SEXP FILENAME, SEXP n, SEXP s, SEXP labels);
 SEXP charVectorToDNAbinVector(SEXP x);
@@ -137,6 +138,7 @@ static R_CallMethodDef Call_entries[] = {
     {"_ape_bipartition2", (DL_FUNC) &_ape_bipartition2, 2},
     {"_ape_prop_part2", (DL_FUNC) &_ape_prop_part2, 2},
     {"_ape_reorderRcpp", (DL_FUNC) &_ape_reorderRcpp, 4},
+    {"_ape_sorted_bipartition", (DL_FUNC) &_ape_sorted_bipartition, 2},
     {"writeDNAbinToFASTA", (DL_FUNC) &writeDNAbinToFASTA, 5},
     {"writeAAbinToFASTA", (DL_FUNC) &writeAAbinToFASTA, 5},
     {"charVectorToDNAbinVector", (DL_FUNC) &charVectorToDNAbinVector, 1},
