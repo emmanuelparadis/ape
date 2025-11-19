@@ -151,16 +151,26 @@ getAnnotationsGenBank <- function(access.nb, quiet = TRUE)
 }
 
 
-read.UniProt <- function(access.nb, quiet=FALSE){
+read.UniProt <- function(access.nb, quiet=FALSE, chunk.size = 400){
   fl <- paste0(tempfile(), ".fas")
   N <- length(access.nb)
-  for(i in seq_len(N)) {
+  chunk.size <- as.integer(chunk.size)
+  ## if more than 400 sequences, we break down the requests
+  a <- 1L
+  b <- if (N > chunk.size) chunk.size else N
+  repeat {
     if (!quiet) 
-      cat("\rDownloading sequences:", i, "/", N, "...")
-    URL <- paste0("https://www.uniprot.org/uniprot/", 
-                  access.nb[i], ".fasta")
+      cat("\rDownloading sequences:", b, "/", N, "...")
+    URL <- paste0("https://rest.uniprot.org/uniprotkb/accessions?accessions=", 
+                  paste(access.nb[a:b], collapse = ","), "&format=fasta")       
+#    URL <- paste0("https://www.uniprot.org/uniprot/", 
+#                  access.nb[i], ".fasta")
     X <- scan(file = URL, what = "", sep = "\n", quiet = TRUE)
     cat(X, sep = "\n", file = fl, append = TRUE)
+    if (b == N) break
+    a <- b + 1L
+    b <- b + chunk.size
+    if (b > N) b <- N
   }
   res <- read.FASTA(fl, type = "AA")
   res

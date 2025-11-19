@@ -87,7 +87,11 @@ cbind(attr(Rampho, "species"), names(Rampho))
 Rampho[[1]]
 ## the description from each FASTA sequence:
 attr(Rampho, "description")
-ra <- read.UniProt("A0A248QE08")
+
+## read sequences from UniProt
+acc <- c("A0A248QE08", "A0A9D4Z084", "A0A2P6V0Y7", "A0AAD5DYF2", "A0A2P6U1B6", 
+   "A0AAW1P9M4", "I0YJ13", "A0ABR2Z3P8", "A0A150GC51", "A0A836BBQ2")
+ra <- read.UniProt(acc)
 ra
 }
 }
