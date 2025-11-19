@@ -5,6 +5,7 @@
 read.GenBank(access.nb, seq.names = access.nb, species.names = TRUE,
              as.character = FALSE, chunk.size = 400, quiet = TRUE,
              type = "DNA")
+read.GenBank(access.nb, quiet = FALSE)             
 }
 \description{
   This function connects to the GenBank database, and reads nucleotide
@@ -86,6 +87,8 @@ cbind(attr(Rampho, "species"), names(Rampho))
 Rampho[[1]]
 ## the description from each FASTA sequence:
 attr(Rampho, "description")
+ra <- read.UniProt("A0A248QE08")
+ra
 }
 }
 \keyword{IO}
