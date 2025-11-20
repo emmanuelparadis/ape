@@ -1,5 +1,6 @@
 \name{read.GenBank}
 \alias{read.GenBank}
+\alias{read.GenUniProt}
 \title{Read DNA Sequences from GenBank via Internet}
 \usage{
 read.GenBank(access.nb, seq.names = access.nb, species.names = TRUE,
