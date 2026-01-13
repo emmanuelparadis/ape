@@ -7,7 +7,7 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        as.bitsplits, as.bitsplits.prop.part, as.character.AAbin,
        as.character.DNAbin, as.DNAbin, as.DNAbin.alignment,
        as.DNAbin.character, as.DNAbin.list, as.evonet,
-       as.evonet.phylo, as.hclust.phylo, as.igraph.evonet,
+       as.evonet.phylo, as.evonet.multiPhylo, as.hclust.phylo, as.igraph.evonet,
        as.igraph.phylo, as.list.AAbin, as.list.DNAbin, as.matching,
        as.matching.phylo, as.matrix.DNAbin, as.network.evonet,
        as.network.phylo, as.networx.evonet, as.phyDat.AAbin, as.phylo,
@@ -60,7 +60,7 @@ export(.compressTipLabel, .PlotPhyloEnv, .uncompressTipLabel,
        polar2rect, postorder, postprocess.prop.part, print.AAbin,
        print.DNAbin, print.phylo, prop.clades, prop.part, rbdtree,
        rbind.DNAbin, rcoal, rDNAbin, read.caic, read.dna, read.evonet,
-       read.FASTA, read.fastq, read.GenBank, read.gff, read.nexus,
+       read.FASTA, read.fastq, read.GenBank, read.UniProt, read.gff, read.nexus,
        read.nexus.data, read.tree, reconstruct, rect2polar,
        reorder.evonet, reorder.multiPhylo, reorder.phylo, reorderRcpp,
        richness.yule.test, ring, rlineage, rmtree, root,
@@ -288,6 +288,7 @@ S3method(as.DNAbin, list)
 S3method(as.DNAbin, PairwiseAlignmentsSingleSubject)
 
 S3method(as.evonet, phylo)
+S3method(as.evonet, multiPhylo)
 
 S3method(as.phylo, default)
 S3method(as.phylo, formula)

@@ -8,7 +8,7 @@
 cophyloplot(x, y, assoc = NULL, use.edge.length = FALSE, space = 0,
        length.line = 1, gap = 2, type = "phylogram", rotate = FALSE,
        col = par("fg"), lwd = par("lwd"), lty = par("lty"),
-       show.tip.label = TRUE, font = 3, \dots)
+       show.tip.label = TRUE, font = 3, \dots, node.depth=2)
 }
 
 \arguments{
@@ -37,6 +37,7 @@ cophyloplot(x, y, assoc = NULL, use.edge.length = FALSE, space = 0,
   \item{font}{an integer specifying the type of font for the
     labels: 1 (plain text), 2 (bold), 3 (italic, the default), or 4
     (bold italic).}
+  \item{node.depth}{an integer value (1 or 2) used if branch lengths are not used to plot the tree; 1: the node depths are proportional to the number of tips descending from each node (the default and was the only possibility previously), 2: they are evenly spaced.}
   \item{\dots}{(unused)}
 }
 \details{

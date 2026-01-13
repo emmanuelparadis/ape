@@ -4,7 +4,7 @@
 \title{Read Tree File in Parenthetic Format}
 \usage{
 read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
-    comment.char = "", keep.multi = FALSE, ...)
+    comment.char = "", keep.multi = FALSE, ..., evonet = FALSE)
 }
 \arguments{
   \item{file}{a file name specified by either a variable of mode character,
@@ -29,6 +29,8 @@ read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
     single trees are returned in \code{"multiPhylo"} format, with any
     name that is present (see details). Default is \code{FALSE}.}
   \item{\dots}{further arguments to be passed to \code{scan()}.}
+  \item{evonet}{if \code{TRUE} reads in a network in extended newick or rich 
+  newick format.}
 }
 \description{
   This function reads a file which contains one or several trees in

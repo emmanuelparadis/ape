@@ -54,14 +54,16 @@ as.phylo.evonet <- function(x, ...)
 }
 
 plot.evonet <- function(x, col = "blue", lty = 1, lwd = 1, alpha = 0.5,
-                        arrows = 0, arrow.type = "classical", ...)
+                        arrows = 0, arrow.type = "classical", node.depth = 2, 
+                        ...)
 {
     ## changed 5/24/17 by Klaus
-    plot.phylo(x, ...)
+    plot.phylo(x, node.depth = node.depth, ...)
     edges(x$reticulation[, 1], x$reticulation[, 2],
           col = rgb(t(col2rgb(col)), alpha = 255 * alpha,
                     maxColorValue = 255),
           lty = lty, lwd = lwd, arrows = arrows, type = arrow.type)
+    invisible(x)
 }
 
 as.networx.evonet <- function(x, weight = NA, ...)
@@ -113,18 +115,14 @@ print.evonet <- function(x, ...)
     if (nr > 1) cat("s")
     cat("\n\n               --- Base tree ---")
     print.phylo(as.phylo(x))
+    invisible(x)
 }
 
 ## new stuff by Klaus (2017-05-26)
-
+## not needed???
 reorder.evonet <- function(x, order = "cladewise", index.only = FALSE, ...)
 {
-    reticulation <- x$reticulation
-    y <- reorder(as.phylo(x), order = order, index.only = index.only, ...)
-    if (index.only) return(y)
-    y$reticulation <- reticulation
-    class(y) <- c("evonet", "phylo")
-    y
+    reorder.phylo(x, order=order, index.only = index.only, ...)
 }
 
 as.evonet <- function(x, ...)
@@ -133,12 +131,32 @@ as.evonet <- function(x, ...)
     UseMethod("as.evonet")
 }
 
+
 as.evonet.phylo <- function(x, ...)
 {
+    if (hasArg(info)) info <- list(...)$info
+    else info <- NULL  
+    # sort things so indexing is easier
+    edge <- x$edge[order(x$edge[,2]), ]
+    if (!is.null(x$edge.length)) 
+      x$edge.length <- x$edge.length[order(x$edge[, 2])]
+    label <- c(x$tip.label, x$node.label)
+    label <- label[grep("#", label)]
+    if (!is.null(info)) info <- info[ match(info$id, label), ]
+    attr(x, "order") <- NULL
     pos <- grep("#", x$tip.label)
-    ind <- match(pos, x$edge[, 2])
-    reticulation <- x$edge[ind, , drop = FALSE]
-    edge <- x$edge[-ind, , drop = FALSE]
+    ind <- match(pos, edge[, 2])
+    reticulation <- edge[ind, , drop = FALSE]
+    edge <- edge[-ind, , drop = FALSE]
+    if (!is.null(info)) {
+      label <- x$tip.label[pos]
+      tmp <- match(x$tip.label[pos], info$id)
+      x$tip.label[pos] <- info$name[tmp]
+      tmp2 <- match(x$node.label, info$id)
+      pos2 <- which(!is.na(tmp2))
+      x$node.label[pos2] <- info$name[na.omit(tmp2)]
+      label <- c(x$tip.label[pos], x$node.label[pos2])
+    }
     nTips <- as.integer(length(x$tip.label))
     reticulation[, 2] <- as.integer(match(x$tip.label[pos], x$node.label) + nTips)
     for (i in sort(pos, TRUE)) {
@@ -171,17 +189,58 @@ as.evonet.phylo <- function(x, ...)
     }
     x$edge <- edge
     x$reticulation <- reticulation
+    if(!is.null(info)){
+      pos <- match( grep("#", x$node.label) + nTips, x$edge[,2])
+      label <- c(label <- x$node.label[grep("#", x$node.label)])
+      info <- info[, -c(1, ncol(info)), drop=FALSE]
+      info <- cbind(rbind(reticulation, x$edge[pos, ]), info)
+      colnames(info) <- c("parent",  "node", colnames(info)[-c(1,2)])
+    }    
+    x$df_edge <- info
     if (!is.null(x$edge.length)) x$edge.length <- x$edge.length[-ind]
     class(x) <- c("evonet", "phylo")
+    reorder(x)
     x
 }
 
-## requires new version of clado.build and tree.build
+
+as.evonet.multiPhylo <- function(x, ...){
+  res <- lapply(x, as.evonet)
+  class(res) <- "multiPhylo"
+  res
+}
+
+
+extract_hybrid_info <- function(x){
+  tpc <- unlist(strsplit(x, "[\\(\\),;]"))
+  tpc <- tpc[tpc != ""]
+  ind <- grep("#", tpc)
+  l <- length(ind)
+  if(l > 0){
+    res <- matrix(NA, l, 4)
+    tpc <- tpc[ind]
+    tmp <- strsplit(tpc, ":")
+    ll <- lengths(tmp)
+    if(any(ll != ll[1]))return(NULL)
+    if(all(ll<3))return(NULL)
+    
+    res <- matrix(unlist(tmp), byrow = TRUE, ncol=ll[1])
+    colnames(res) <- c("name", "edge.length", "support", "probability")[1:ll[1]]
+    df <- as.data.frame(res)
+    for(i in 2:ll[1]) df[, i] <- as.numeric(df[, i])
+    df <- cbind(df, id = paste0("#", sapply(make.unique(df$name), digest)))
+    return(df)
+  }
+  NULL
+}
+
+
 read.evonet <- function(file = "", text = NULL, comment.char = "", ...)
 {
-    x <- read.tree(file = file, text = text, comment.char = comment.char, ...)
-    as.evonet.phylo(x)
+    x <- read.tree(file = file, text = text, comment.char = comment.char, ..., evonet=TRUE) 
+    as.evonet(x)
 }
+
 
 .evonet2phylo <-  function(x)
 {
@@ -214,6 +273,7 @@ write.evonet <- function(x, file = "", ...)
 {
     x <- .evonet2phylo(x)
     write.tree(x, file = file, ...)
+    invisible(x)
 }
 
 Nedge.evonet <- function(phy) dim(phy$edge)[1] + dim(phy$reticulation)[1]

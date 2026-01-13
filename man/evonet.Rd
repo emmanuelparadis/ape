@@ -2,6 +2,7 @@
 \alias{evonet}
 \alias{as.evonet}
 \alias{as.evonet.phylo}
+\alias{as.evonet.multiPhylo}
 \alias{read.evonet}
 \alias{write.evonet}
 \alias{print.evonet}
@@ -22,7 +23,7 @@
 evonet(phy, from, to = NULL)
 \method{print}{evonet}(x, ...)
 \method{plot}{evonet}(x, col = "blue", lty = 1, lwd = 1, alpha = 0.5,
-              arrows = 0, arrow.type = "classical", ...)
+              arrows = 0, arrow.type = "classical", node.depth = 2, ...)
 \method{Nedge}{evonet}(phy)
 \method{reorder}{evonet}(x, order = "cladewise", index.only = FALSE, ...)
 \method{as.phylo}{evonet}(x, ...)
@@ -32,6 +33,7 @@ evonet(phy, from, to = NULL)
 
 as.evonet(x, ...)
 \method{as.evonet}{phylo}(x, ...)
+\method{as.evonet}{multiPhylo}(x, ...)
 
 read.evonet(file = "", text = NULL, comment.char = "", ...)
 write.evonet(x, file = "", ...)
@@ -42,8 +44,9 @@ write.evonet(x, file = "", ...)
   \item{from}{a vector (or a matrix if \code{to = NULL}) giving the node
     or tip numbers involved in the reticulations.}
   \item{to}{a vector of the same length than \code{from}.}
-  \item{col, lty, lwd}{colors, line type and width of the reticulations
-    (recycled if necessary).}
+  \item{col, lty, lwd, node.depth}{colors, line type and width of the 
+    reticulations (recycled if necessary). These are passed to 
+    \code{\link{plot.phylo}}.}
   \item{alpha}{a value between 0 and 1 specifying the transparency of
     the reticulations.}
   \item{arrows, arrow.type}{see \code{\link{fancyarrows}}.}

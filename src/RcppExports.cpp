@@ -34,6 +34,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sorted_bipartition
+std::vector< std::vector<int> > sorted_bipartition(IntegerMatrix orig, int nTips);
+RcppExport SEXP _ape_sorted_bipartition(SEXP origSEXP, SEXP nTipsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type orig(origSEXP);
+    Rcpp::traits::input_parameter< int >::type nTips(nTipsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sorted_bipartition(orig, nTips));
+    return rcpp_result_gen;
+END_RCPP
+}
 // reorderRcpp
 IntegerVector reorderRcpp(IntegerMatrix orig, int nTips, int root, int order);
 RcppExport SEXP _ape_reorderRcpp(SEXP origSEXP, SEXP nTipsSEXP, SEXP rootSEXP, SEXP orderSEXP) {

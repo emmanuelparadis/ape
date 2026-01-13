@@ -80,6 +80,7 @@ summary.phylo <- function(object, ...)
 
         }
     }
+    invisible(object)
 }
 
 ### by BB:
@@ -110,6 +111,7 @@ print.phylo <- function(x, printlen = 6,...)
     blen <- if (is.null(x$edge.length)) "no branch length." else
     "includes branch length(s)."
     cat(blen, "\n", sep = "")
+    invisible(x)
 }
 
 print.multiPhylo <- function(x, details = FALSE, ...)
@@ -119,6 +121,7 @@ print.multiPhylo <- function(x, details = FALSE, ...)
     if (details)
       for (i in 1:N)
         cat("tree", i, ":", length(x[[i]]$tip.label), "tips\n")
+    invisible(x)
 }
 
 "[[.multiPhylo" <- function(x, i)
@@ -145,6 +148,7 @@ str.multiPhylo <- function(object, ...)
     class(object) <- NULL
     cat('Class "multiPhylo"\n')
     str(object, ...)
+    invisible(object)
 }
 
 .c_phylo_single <- function(phy) structure(list(phy), class = "multiPhylo")

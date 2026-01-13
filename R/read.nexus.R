@@ -52,6 +52,22 @@
     phy
 }
 
+
+.evonetBuild <- function(x){ # , colon=TRUE){
+    colon <- grepl(":", x)
+    if (colon) {
+        info <- extract_hybrid_info(x)
+        for (i in seq_along(info$id)) x <- sub(info$name[i], info$id[i], x)
+        y <- .treeBuild(x)
+        z <- as.evonet(y, info = info)
+    } else {
+        y <- .cladoBuild(x)  
+        z <- as.evonet(y)
+    }  
+    z
+}
+
+
 .decodeTRANSLATE <- function(x)
 {
     z <- paste(x, collapse = " ")
@@ -252,7 +268,7 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     if (Ntree == 1 && !force.multi) {
         if (!is.null(REF)) {
             tmp <- try(.compressTipLabel(trees, REF), silent = TRUE)
-            if (class(tmp) == "multiPhylo") trees <- tmp
+            if (inherits(tmp, "multiPhylo")) trees <- tmp
         }
         return(trees[[1]])
     }
@@ -265,6 +281,6 @@ read.nexus <- function(file, tree.names = NULL, force.multi = FALSE)
     }
     class(trees) <- "multiPhylo"
     tmp <- try(.compressTipLabel(trees, REF), silent = TRUE)
-    if (class(tmp) == "multiPhylo") return(tmp)
+    if (inherits(tmp, "multiPhylo")) return(tmp)
     trees
 }

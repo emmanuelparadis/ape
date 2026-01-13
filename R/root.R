@@ -206,7 +206,7 @@ root.phylo <- function(phy, outgroup, node = NULL, resolve.root = FALSE,
         if (node <= n)
             stop("incorrect node#: should be greater than the number of taxa")
         outgroup <- NULL
-        newroot <- node
+        newroot <- as.integer(node)
     } else {
         if (is.numeric(outgroup)) {
             if (any(outgroup > n))

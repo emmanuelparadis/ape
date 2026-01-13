@@ -66,3 +66,38 @@ List prop_part2(SEXP trees, int nTips){
     output.attr("class") = "prop.part";
     return output;
 }
+
+
+// [[Rcpp::export]]
+std::vector< std::vector<int> > sorted_bipartition(IntegerMatrix orig, int nTips) {
+  int j=0;
+  std::vector< std::vector<int> > tmp=bipartition2(orig, nTips);
+  std::vector< std::vector<int> > out(tmp.size()-1L) ;
+  std::vector<int> y;
+  std::vector<int> x=tmp[0];
+  size_t half = nTips / 2;
+  bool even = (nTips % 2 == 0);
+  for(auto i = 1U; i<tmp.size(); i++){
+    y = tmp[i];
+    if(y.size() < half){
+      out[j].insert( out[j].begin(), y.begin(), y.end() );
+    }
+    if(y.size() > half){
+      std::vector<int> z;
+      std::set_difference (x.begin(), x.end(), y.begin(), y.end(), inserter(z, begin(z)));
+      out[j].insert( out[j].begin(), z.begin(), z.end() );
+    }
+    if((y.size() == half)){
+      if((y[0] > 1L)  && even){
+        std::vector<int> z;
+        std::set_difference (x.begin(), x.end(), y.begin(), y.end(), inserter(z, begin(z)));
+        out[j].insert( out[j].begin(), z.begin(), z.end() );
+      }
+      else out[j].insert( out[j].begin(), y.begin(), y.end() );
+    }
+    j++;
+  }
+  std::sort(out.begin(), out.end());
+  return out;
+}
+

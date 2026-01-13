@@ -9,6 +9,10 @@ prop_part2 <- function(trees, nTips) {
     .Call(`_ape_prop_part2`, trees, nTips)
 }
 
+sorted_bipartition <- function(orig, nTips) {
+    .Call(`_ape_sorted_bipartition`, orig, nTips)
+}
+
 reorderRcpp <- function(orig, nTips, root, order) {
     .Call(`_ape_reorderRcpp`, orig, nTips, root, order)
 }

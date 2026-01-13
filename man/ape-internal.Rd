@@ -19,6 +19,8 @@
 \alias{node_height}
 \alias{node_height_clado}
 \alias{seq_root2tip}
+\alias{bipartition2}
+\alias{sorted_bipartition}
 \title{Internal Ape Functions}
 \description{
   Internal \pkg{ape} functions which are undocumented but still exported
