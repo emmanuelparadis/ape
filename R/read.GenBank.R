@@ -172,6 +172,7 @@ read.UniProt <- function(access.nb, quiet = FALSE, chunk.size = 400)
         b <- b + chunk.size
         if (b > N) b <- N
     }
+    if (!quiet) cat("\n")
     res <- read.FASTA(fl, type = "AA")
     res
 }
