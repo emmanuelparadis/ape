@@ -1,0 +1,277 @@
+---
+title: "The `\"phylo\"` object in `R`"
+author: "Thomas Guillerme (t.guillerme@sheffield.ac.uk)"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+library(ape)
+```
+
+This markdown is an overview of the `"phylo"` object, an internal `R` object from the `ape` package that contains all information to build a phylogenetic tree in `R`.
+Here we will dissect a `"phylo"` object into its core components and see how they work together.
+Note however that **most of the time, you don't need to tinker with the `"phylo"` object** if you read it or generated it using a function from the `ape` package.
+This tutorial is mostly written for curious people or people developping packages using the `"phylo"` object.
+
+## Glossary
+
+Here are some definitions of the terms used below referring to phylogenetics:
+
+ * tree: a phylogenetic tree (a non-cyclical conex graph);
+ * node: an internal element in a tree connecting different elements (e.g. an ancestor and a descendant);
+ * tip: a specific node on a tree which has no descendants (e.g. a species, a genus, an observation, etc...);
+ * root: a specific node on a tree which has no ancestor (e.g. the first ancestor of the whole tree);
+
+# The basic structure
+
+## The essentials
+
+Here is the very basic structure of a `"phylo"` object.
+First let's create one:
+
+```{r}
+## A very basic tree in newick format
+## (A is related to B, A and B are related to C)
+phy <- read.tree(text = "((A, B), C);")
+```
+
+This tree is in `"phylo"` format from `ape` and can be printed and plotted showing the tree's structure:
+
+```{r}
+## What class is the tree?
+class(phy)
+## Printing the tree
+phy
+## Plotting it:
+plot(phy)
+```
+
+You can also visualise what's actually in it in `R` using the `str` function:
+
+```{r}
+## What's in it?
+str(phy)
+```
+
+We can see that `phy` is actually a list of three elements (`$edge`, `$Nnode` and `$tip.label`) with two attributes (one being the class `"phylo"` - the other one we'll see later).
+
+### `$edge`: the edges table
+
+This is the essential core (and elegance!) of the `"phylo"` object, it's a table summarising the relation between each element in the tree.
+
+```{r}
+## The edge table
+phy$edge
+```
+
+The edge table is always a matrix of 2 columns with integers.
+The number of rows depends on the number of edges connecting the tips and nodes in the tree.
+The way to read this table is that each row correspond to one edge and each column corresponds respectively to the ancestor (column 1) and the descendant (column 2).
+For example here, the first edge is connecting element 4 to element 5.
+The second edge, connects 5 to 1, the third: 5 to 2, and the fourth: 4 to 3.
+
+Here is a way to visualise this with the elements in blue (nodes) or yellow (tips) and the edges in green:
+
+```{r}
+plot(phy, show.tip.label = FALSE)
+edgelabels()
+nodelabels()
+tiplabels()
+```
+
+To make this clearer you can use this simple function to translate everything in something more human readable: {#edge.to.table}
+
+```{r}
+# @param phy a "phylo" object
+# @returns a matrix with human readable information about the "phylo" edge table
+edge.to.table <- function(phy) {
+    edge_table <- phy$edge
+    ## Renaming the columns
+    colnames(edge_table) <- c("ancestor (from)", "descendant (to)")
+    ## Replacing the elements where possible:
+    ## Tips
+    edge_table[match(1:Ntip(phy), edge_table[, 2]), 2] <- phy$tip.label
+    ## Nodes
+    if(!is.null(phy$node.label)) {
+        ## Replace all nodes
+        nodes <- phy$node.label
+        counter <- 0
+        while(length(nodes) > 0) {
+            counter  <- counter + 1
+            edge_table <- gsub(as.character(Ntip(phy)+counter), nodes[1], edge_table)
+            nodes <- nodes[-1]
+        }
+    }
+    ## Add the row names
+    rownames(edge_table) <- paste0("edge", 1:Nedge(phy))
+
+    ## Edges
+    if(!is.null(phy$edge.length)) {
+        edge_table <- cbind(edge_table, "edge lengths" = phy$edge.length)
+    }
+
+    return(edge_table)
+}
+
+## The edge table to be read by a human
+edge.to.table(phy)
+```
+
+And we can visualise it like this:
+
+```{r}
+plot(phy, show.tip.label = FALSE)
+edgelabels(rownames(edge.to.table(phy)))
+nodelabels()
+tiplabels(phy$tip.label)
+```
+
+If the tree had node labels (see [below](#nodelabels)), you could replace the node labels by specific names, for example 4 would be the root of the tree and 5 would be the ancestor of A and B.
+Also note that the elements are numbered always in the following order:
+  
+  * The tips: from 1 to the number of tips (`1:Ntip(phy)`);
+  * The first node (the root of the tree): the next integer (`Ntip(phy)+1`)
+  * All the nodes: the number of tips + 1 (the root) to the total of elements (`(Ntip(phy)+1):(Ntip(phy)+Nnode(phy))`)
+
+> Note that the order of the rows in the edge table does not matter regarding the structure of the tree. It can however be used to change the structure of the plot. The `"phylo"` object comes with an [attribute](https://stat.ethz.ch/R-manual/R-devel/library/base/html/attr.html) (`order`). By default the edges are ordered in a nested traversal way from the root. I.e. it starts from the root and then going into each sub-clade. For example starting from the root (4) into the clade containing node 5 and tips 1 and 2, then going from the root to the next clade (that happens to be just tip 3 here). However, if that attribute is removed, the `plot.phylo` function automatically orders the tree (using `reorder.phylo`)
+
+```{r}
+## Reordering the edges results in a different tree!
+different_phy <- phy
+different_phy$edge <- different_phy$edge[c(3,4,2,1), ]
+
+## Checking the attributes of this tree
+attributes(different_phy)
+
+## Removing the ordering
+different_phy_no_attr <- different_phy
+attr(different_phy_no_attr, "order") <- NULL
+
+op <- par(mfrow =c(2,2))
+plot(phy, main = "Original tree")
+plot(different_phy, main = "Different tree\n(with 'order = cladewise')")
+plot(different_phy_no_attr, main = "Different tree\n(without 'order')")
+par(op)
+
+## The trees are identical, only the plotting order is changing
+all.equal(phy, different_phy)
+all.equal(phy, different_phy_no_attr)
+```
+
+### `$Nnode`: the number of nodes
+
+This should be a single `"integer"` value for the number of nodes in the tree.
+A useful tip is that for any bifurcating tree (each node gives rise to always exactly two descendants), the number of nodes is equal to the number of tips minus 1.
+
+### `$tip.label`: the tip names
+
+This is simply a vector or a list of any elements referring to the tip names.
+Usually this is a `"character"`, `"integer"` or `"numeric"` vector but it can also be `"list"` of these three types or even any other type (you can have a list of `"function"` for example).
+The only restriction is that this vector or list should be of the same length of the numbers of tips.
+
+## Other common aspects
+
+### `$node.label`: names of the nodes {#nodelabels}
+
+Another common aspect to `"phylo"` objects is to have node labels.
+This is a vector of the length of the number of nodes in the tree from the tree to the tips.
+In our example, our first node is the root and our second node the ancestor between A and B:
+
+```{r}
+## Adding node labels
+phy$node.label <- c("root", "ancestor_AB")
+```
+
+This updates the printing of the `"phylo"` object:
+
+```{r}
+phy
+```
+
+But not the structure of the edge table (you can translate it though using the `edge.to.table` function [from above](#edge.to.table)):
+
+```{r}
+## Same edge table structure
+phy$edge
+
+## Here is it more human readable though:
+edge.to.table(phy)
+```
+
+> Note that you can automatically name all nodes in a tree using the function `makeNodeLabel`. Or you can choose to not name all the nodes by using `NULL` (e.g. `phy$node.label <- c("root", NULL)` will only name the root).
+
+
+### `$edge.length`: the length of each edge
+
+In the example above, we've been just looking at the structure of the tree ignoring branch (edge) lengths.
+You can add this information to `"phylo"` objects with the `$edge.length` that's a vector of `"numeric"` values for each edge (in our case 4 values):
+
+```{r}
+## Adding four edge lengths
+phy$edge.length <- c(1.0, 2, 1.3, 1.4)
+```
+
+You can combine that with the "human readable" table from before:
+
+```{r}
+## All the information you need
+edge.to.table(phy)
+```
+
+The tree will now look very different:
+
+```{r}
+## All the information you need
+plot(phy, show.tip.label = FALSE)
+edgelabels(phy$edge.length)
+nodelabels(phy$node.label)
+tiplabels(phy$tip.label)
+## And adding a scale bar
+## (by default in time units from the present)
+axisPhylo()
+```
+
+## Other commonly aspects (not always necessary)
+
+## `$root.time`
+
+This aspect is very often used in packages dealing with palaeontological data, especially when then tree is not dealing with tips that are currently alive (e.g. a tree with only fossils).
+This is commonly used in packages like `Claddis`, `dispRity` or `paleotree`.
+It allows to scale the age of the tree to some point in the past for example, for the exact same tree we have plotted above, we assume that the tip "A" is living in the present and everything else lives in the past (with the root of the tree 3 units of time ago - e.g. 3 million years ago).
+But say tip A is actually 10 million years old, we can set the root of the tree to reflect that (and set it to 13 units of time ago):
+
+```{r}
+## Adding a root age
+phy$root.time <- 13
+## Plotting the tree (the topology did not change)
+plot(phy)
+## Adding the scale bar (the age is now much older)
+axisPhylo()
+```
+
+## `"multiPhylo"`
+
+This is a very useful additional class of `"phylo"` in `ape`.
+It's basically a specific class name for a list that contains _only_ `"phylo"` objects.
+It can then be passed to multiple functions in `ape` or other packages that can directly deal with lists of `"phylo"` objects.
+
+```{r}
+## Creating a list of trees
+my_list_of_trees <- list(phy, read.tree(text = "((A, B), C);"))
+
+## This is just a list containing our modified tree and our original one
+my_list_of_trees
+
+## Making it a multiPhylo object
+class(my_list_of_trees) <- "multiPhylo"
+
+## This is now a multiPhylo object containing 2 trees
+my_list_of_trees
+```
+
+You can access each individual tree using subsetting.
+For example `my_list_of_trees[[1]]` accesses the first tree, `my_list_of_trees[[2]]` the second; but `my_list_of_trees[1]` accesses a list of trees (`"multiPhylo"`) containing only the first tree.
+If you are not familiar with subsetting in `R`, [read the following documentation](https://search.r-project.org/R/refmans/base/html/Extract.html).
