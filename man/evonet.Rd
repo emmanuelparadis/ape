@@ -44,8 +44,8 @@ write.evonet(x, file = "", ...)
   \item{from}{a vector (or a matrix if \code{to = NULL}) giving the node
     or tip numbers involved in the reticulations.}
   \item{to}{a vector of the same length than \code{from}.}
-  \item{col, lty, lwd, node.depth}{colors, line type and width of the 
-    reticulations (recycled if necessary). These are passed to 
+  \item{col, lty, lwd, node.depth}{colors, line type and width of the
+    reticulations (recycled if necessary). These are passed to
     \code{\link{plot.phylo}}.}
   \item{alpha}{a value between 0 and 1 specifying the transparency of
     the reticulations.}

@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.8-1.4
+		CHANGES IN APE VERSION 5.8-2
 
 
 NEW FEATURES
@@ -6,6 +6,9 @@ NEW FEATURES
     o read.nexus() now translates (fully) between tokens and labels
       (including nodes') so that this feature conforms to the NEXUS
       standard (see issue #133 on GitHub).
+
+    o collapse.singles() is now generic with methods for the classes
+      "phylo" and "multiPhylo".
 
 
 BUG FIXES

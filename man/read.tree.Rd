@@ -29,8 +29,8 @@ read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
     single trees are returned in \code{"multiPhylo"} format, with any
     name that is present (see details). Default is \code{FALSE}.}
   \item{\dots}{further arguments to be passed to \code{scan()}.}
-  \item{evonet}{if \code{TRUE} reads in a network in extended newick or rich 
-  newick format.}
+  \item{evonet}{if \code{TRUE} reads in a network in extended newick (or
+    rich Newick)format.}
 }
 \description{
   This function reads a file which contains one or several trees in
@@ -45,17 +45,15 @@ read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
   represented root edge (i.e. with an extra pair of parentheses). For
   instance, the tree "((A:1,B:1):10);" will be read like "(A:1,B:1):10;"
   but a warning message will be issued in the former case as this is
-  apparently not a valid Newick format. If there are two root edges
-  (e.g., "(((A:1,B:1):10):10);"), then the tree is not read and an error
-  message is issued.
+  apparently not a valid Newick format.
 
   If there are any characters preceding the first "(" in a line then
-  this is assigned to the name. This is returned when a "multiPhylo"
-  object is returned and \code{tree.names = NULL}.
+  this is assigned to the name of the tree. This is returned when a
+  "multiPhylo" object is returned and \code{tree.names = NULL}.
 
   Until \pkg{ape} 4.1, the default of \code{comment.char} was \code{"#"}
-  (as in \code{scan}). This has been changed so that extended Newick
-  files can be read.
+  (as in \code{read.table()}). This has been changed so that extended
+  Newick files can be read.
 }
 \value{
   an object of class \code{"phylo"} with the following components:

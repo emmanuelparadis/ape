@@ -1,8 +1,8 @@
-## unique.multiPhylo.R (2021-12-19)
+## unique.multiPhylo.R (2026-01-13)
 
 ##   Revomes Duplicate Trees from a List
 
-## Copyright 2007-2021 Emmanuel Paradis
+## Copyright 2007-2021 Emmanuel Paradis, 2025 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.

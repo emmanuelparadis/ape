@@ -1,12 +1,12 @@
 \name{read.GenBank}
 \alias{read.GenBank}
-\alias{read.GenUniProt}
-\title{Read DNA Sequences from GenBank via Internet}
+\alias{read.UniProt}
+\title{Read DNA Sequences from GenBank or UniProt On-Line Databases}
 \usage{
 read.GenBank(access.nb, seq.names = access.nb, species.names = TRUE,
              as.character = FALSE, chunk.size = 400, quiet = TRUE,
              type = "DNA")
-read.GenBank(access.nb, quiet = FALSE)             
+read.UniProt(access.nb, quiet = FALSE, chunk.size = 400)
 }
 \description{
   This function connects to the GenBank database, and reads nucleotide
@@ -29,8 +29,8 @@ read.GenBank(access.nb, quiet = FALSE)
     "AA" (amino acid) sequences.}
 }
 \details{
-  The function uses the site \url{https://www.ncbi.nlm.nih.gov/} from
-  where the sequences are retrieved.
+  The first function uses the site \url{https://www.ncbi.nlm.nih.gov/}
+  from where the sequences are retrieved.
 
   If \code{species.names = TRUE}, the returned list has an attribute
   \code{"species"} containing the names of the species taken from the
@@ -90,8 +90,9 @@ Rampho[[1]]
 attr(Rampho, "description")
 
 ## read sequences from UniProt
-acc <- c("A0A248QE08", "A0A9D4Z084", "A0A2P6V0Y7", "A0AAD5DYF2", "A0A2P6U1B6", 
-   "A0AAW1P9M4", "I0YJ13", "A0ABR2Z3P8", "A0A150GC51", "A0A836BBQ2")
+acc <- c("A0A248QE08", "A0A9D4Z084", "A0A2P6V0Y7", "A0AAD5DYF2",
+         "A0A2P6U1B6", "A0AAW1P9M4", "I0YJ13", "A0ABR2Z3P8",
+         "A0A150GC51", "A0A836BBQ2")
 ra <- read.UniProt(acc)
 ra
 }

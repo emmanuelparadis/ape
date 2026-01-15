@@ -1,15 +1,19 @@
 \name{collapse.singles}
 \alias{collapse.singles}
+\alias{collapse.singles.phylo}
+\alias{collapse.singles.multiPhylo}
 \alias{has.singles}
 \title{Collapse Single Nodes}
 \description{
   \code{collapse.singles} deletes the single nodes (i.e., with a single
-  descendant) in a tree.
+  descendant) in a tree or a list of trees. This is a generic function.
 
   \code{has.singles} tests for the presence of single node(s) in a tree.
 }
 \usage{
-collapse.singles(tree, root.edge = FALSE)
+collapse.singles(tree, ...)
+\method{collapse.singles}{phylo}(tree, root.edge = FALSE, ...)
+\method{collapse.singles}{multiPhylo}(tree, root.edge = FALSE, ...)
 has.singles(tree)
 }
 \arguments{
@@ -18,9 +22,10 @@ has.singles(tree)
     until the first bifurcating node and put them as \code{root.edge} of
     the returned tree. By default, this is ignored or if the tree has no
     edge lengths (see examples).}
+  \item{\dots}{argments passed to methods.}
 }
 \value{
-  an object of class \code{"phylo"}.
+  an object of the same class than \code{tree}.
 }
 \author{Emmanuel Paradis, Klaus Schliep}
 \seealso{

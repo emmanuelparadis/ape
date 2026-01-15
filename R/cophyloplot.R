@@ -9,10 +9,10 @@
 ## See the file ../COPYING for licensing issues.
 
 cophyloplot <-
-    function (x, y, assoc = NULL, use.edge.length = FALSE, space = 0, 
-            length.line = 1, gap = 2, type = "phylogram", rotate = FALSE, 
-            col = par("fg"), lwd = par("lwd"), lty = par("lty"), show.tip.label = TRUE, 
-            font = 3, ..., node.depth=2) 
+    function (x, y, assoc = NULL, use.edge.length = FALSE, space = 0,
+            length.line = 1, gap = 2, type = "phylogram", rotate = FALSE,
+            col = par("fg"), lwd = par("lwd"), lty = par("lty"), show.tip.label = TRUE,
+            font = 3, ..., node.depth=2)
 {
     if(inherits(x, "cophylo")){
         y <- x$trees[[2]]
@@ -27,24 +27,24 @@ cophyloplot <-
         cat("\n    Click on a node to rotate (right click to exit)\n\n")
         repeat {
             res <- plotCophylo2(x, y, assoc = assoc, use.edge.length = use.edge.length, node.depth = node.depth,
-                space = space, length.line = length.line, gap = gap, 
-                type = type, return = TRUE, col = col, lwd = lwd, lty = lty, show.tip.label = show.tip.label, 
+                space = space, length.line = length.line, gap = gap,
+                type = type, return = TRUE, col = col, lwd = lwd, lty = lty, show.tip.label = show.tip.label,
                 font = font)
             click <- identify(res$c[, 1], res$c[, 2], n = 1)
             if(!length(click)) break
             if (click < length(res$a[, 1]) + 1) {
-                if (click > res$N.tip.x) 
+                if (click > res$N.tip.x)
                   x <- rotate(x, click)
             } else if (click < length(res$c[, 1]) + 1) {
-                if (click > length(res$a[, 1]) + res$N.tip.y) 
+                if (click > length(res$a[, 1]) + res$N.tip.y)
                   y <- rotate(y, click - length(res$a[, 1]))
             }
         }
         cat("done\n")
     }
-    else plotCophylo2(x, y, assoc = assoc, use.edge.length = use.edge.length, node.depth = node.depth, 
-                      space = space, length.line = length.line, gap = gap, 
-                      type = type, return = FALSE, col = col, lwd = lwd, lty = lty, 
+    else plotCophylo2(x, y, assoc = assoc, use.edge.length = use.edge.length, node.depth = node.depth,
+                      space = space, length.line = length.line, gap = gap,
+                      type = type, return = FALSE, col = col, lwd = lwd, lty = lty,
                       show.tip.label = show.tip.label, font = font)
     ans <- list(trees=c(x,y), assoc=assoc)
     class(ans) <- "cophylo"
@@ -68,7 +68,7 @@ plotCophylo2 <-
     N.tip.y <- Ntip(y)
     res$N.tip.x <- N.tip.x
     res$N.tip.y <- N.tip.y
-    a <- plotPhyloCoor(x, use.edge.length = use.edge.length, 
+    a <- plotPhyloCoor(x, use.edge.length = use.edge.length,
                        node.pos = node.depth, type = type)
     res$a <- a
     b <- plotPhyloCoor(y, use.edge.length = use.edge.length, node.pos = node.depth,

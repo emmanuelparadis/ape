@@ -1,8 +1,8 @@
-## evonet.R (2017-07-28)
+## evonet.R (2026-01-13)
 
 ##   Evolutionary Networks
 
-## Copyright 2011-2012 Emmanuel Paradis, 2017 Klaus Schliep
+## Copyright 2011-2012 Emmanuel Paradis, 2017-2025 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -54,7 +54,7 @@ as.phylo.evonet <- function(x, ...)
 }
 
 plot.evonet <- function(x, col = "blue", lty = 1, lwd = 1, alpha = 0.5,
-                        arrows = 0, arrow.type = "classical", node.depth = 2, 
+                        arrows = 0, arrow.type = "classical", node.depth = 2,
                         ...)
 {
     ## changed 5/24/17 by Klaus
@@ -131,14 +131,13 @@ as.evonet <- function(x, ...)
     UseMethod("as.evonet")
 }
 
-
 as.evonet.phylo <- function(x, ...)
 {
     if (hasArg(info)) info <- list(...)$info
-    else info <- NULL  
+    else info <- NULL
     # sort things so indexing is easier
     edge <- x$edge[order(x$edge[,2]), ]
-    if (!is.null(x$edge.length)) 
+    if (!is.null(x$edge.length))
       x$edge.length <- x$edge.length[order(x$edge[, 2])]
     label <- c(x$tip.label, x$node.label)
     label <- label[grep("#", label)]
@@ -195,7 +194,7 @@ as.evonet.phylo <- function(x, ...)
       info <- info[, -c(1, ncol(info)), drop=FALSE]
       info <- cbind(rbind(reticulation, x$edge[pos, ]), info)
       colnames(info) <- c("parent",  "node", colnames(info)[-c(1,2)])
-    }    
+    }
     x$df_edge <- info
     if (!is.null(x$edge.length)) x$edge.length <- x$edge.length[-ind]
     class(x) <- c("evonet", "phylo")
@@ -203,13 +202,14 @@ as.evonet.phylo <- function(x, ...)
     x
 }
 
-
-as.evonet.multiPhylo <- function(x, ...){
-  res <- lapply(x, as.evonet)
-  class(res) <- "multiPhylo"
-  res
+as.evonet.multiPhylo <- function(x, ...)
+{
+    oc <- oldClass(x)
+    class(x) <- NULL
+    res <- lapply(x, as.evonet)
+    class(res) <- oc
+    res
 }
-
 
 extract_hybrid_info <- function(x){
   tpc <- unlist(strsplit(x, "[\\(\\),;]"))
@@ -223,7 +223,7 @@ extract_hybrid_info <- function(x){
     ll <- lengths(tmp)
     if(any(ll != ll[1]))return(NULL)
     if(all(ll<3))return(NULL)
-    
+
     res <- matrix(unlist(tmp), byrow = TRUE, ncol=ll[1])
     colnames(res) <- c("name", "edge.length", "support", "probability")[1:ll[1]]
     df <- as.data.frame(res)
@@ -234,13 +234,11 @@ extract_hybrid_info <- function(x){
   NULL
 }
 
-
 read.evonet <- function(file = "", text = NULL, comment.char = "", ...)
 {
-    x <- read.tree(file = file, text = text, comment.char = comment.char, ..., evonet=TRUE) 
+    x <- read.tree(file = file, text = text, comment.char = comment.char, ..., evonet=TRUE)
     as.evonet(x)
 }
-
 
 .evonet2phylo <-  function(x)
 {

@@ -1,8 +1,8 @@
-## collapse.singles.R (2017-07-27)
+## collapse.singles.R (2026-01-13)
 
 ## Collapse "Single" Nodes
 
-## Copyright 2015 Emmanuel Paradis, 2017 Klaus Schliep
+## Copyright 2015-2026 Emmanuel Paradis, 2017 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -18,7 +18,12 @@ has.singles <- function(tree)
     if (inherits(tree, "multiPhylo")) return(sapply(tree, fun))
 }
 
-collapse.singles <- function(tree, root.edge = FALSE)
+collapse.singles <- function(tree, ...)
+{
+    UseMethod("collapse.singles")
+}
+
+collapse.singles.phylo <- function(tree, root.edge = FALSE, ...)
 {
     n <- length(tree$tip.label)
     if (n == 0) {
@@ -85,4 +90,11 @@ collapse.singles <- function(tree, root.edge = FALSE)
     tree
 }
 
-
+collapse.singles.multiPhylo <- function(tree, root.edge = FALSE, ...)
+{
+    oc <- oldClass(tree)
+    class(tree) <- NULL
+    tree <- lapply(tree, collapse.singles.phylo, root.edge = root.edge, ...)
+    class(tree) <- oc
+    tree
+}

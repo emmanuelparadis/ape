@@ -298,6 +298,9 @@ S3method(as.phylo, phylog)
 
 S3method(coalescent.intervals, default)
 
+S3method(collapse.singles, phylo)
+S3method(collapse.singles, multiPhylo)
+
 S3method(makeLabel, character)
 
 S3method(skyline, coalescentIntervals)

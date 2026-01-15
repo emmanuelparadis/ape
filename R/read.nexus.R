@@ -1,8 +1,8 @@
-## read.nexus.R (2025-06-03)
+## read.nexus.R (2026-01-14)
 
 ##   Read Tree File in Nexus Format
 
-## Copyright 2003-2025 Emmanuel Paradis and 2010-2017 Klaus Schliep
+## Copyright 2003-2025 Emmanuel Paradis and 2010-2025 Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -52,7 +52,6 @@
     phy
 }
 
-
 .evonetBuild <- function(x){ # , colon=TRUE){
     colon <- grepl(":", x)
     if (colon) {
@@ -61,12 +60,11 @@
         y <- .treeBuild(x)
         z <- as.evonet(y, info = info)
     } else {
-        y <- .cladoBuild(x)  
+        y <- .cladoBuild(x)
         z <- as.evonet(y)
-    }  
+    }
     z
 }
-
 
 .decodeTRANSLATE <- function(x)
 {

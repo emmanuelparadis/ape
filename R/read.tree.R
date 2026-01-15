@@ -98,9 +98,9 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
     if (is.null(tree.names) && any(nzchar(tmpnames))) tree.names <- tmpnames
 
     colon <- grep(":", STRING)
-    
+
     if(evonet){
-      obj <- lapply(STRING, .evonetBuild) 
+      obj <- lapply(STRING, .evonetBuild)
     } else{
         if (!length(colon)) {
             obj <- lapply(STRING, .cladoBuild)
