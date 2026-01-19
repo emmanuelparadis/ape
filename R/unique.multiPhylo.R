@@ -1,4 +1,4 @@
-## unique.multiPhylo.R (2026-01-13)
+## unique.multiPhylo.R (2026-01-19)
 
 ##   Revomes Duplicate Trees from a List
 
@@ -40,7 +40,7 @@ unique.multiPhylo <-
     if(!inherits(tmp, "try-error") && !use.edge.length && use.tip.label){
         hash_x <- hash_topo(x)
         keep <- which(!duplicated(hash_x))
-        old.index <- match(hash_x, hash_x)
+        old.index <- match(hash_x, hash_x[keep])
     } else {
         old.index <- seq_len(n)
         for (i in 2:n) {
