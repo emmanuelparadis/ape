@@ -3,6 +3,9 @@
 
 NEW FEATURES
 
+    o The new function mafft calls MAFFT, similarly to clustal() or
+      muscle().
+
     o read.nexus() now translates (fully) between tokens and labels
       (including nodes') so that this feature conforms to the NEXUS
       standard (see issue #133 on GitHub).

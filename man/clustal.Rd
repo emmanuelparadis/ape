@@ -1,6 +1,7 @@
 \name{clustal}
 \alias{clustal}
 \alias{clustalomega}
+\alias{mafft}
 \alias{muscle}
 \alias{muscle5}
 \alias{tcoffee}
@@ -28,6 +29,8 @@ clustal(x, y, guide.tree, pw.gapopen = 10, pw.gapext = 0.1,
         quiet = TRUE, original.ordering = TRUE, file)
 clustalomega(x, y, guide.tree, exec = NULL,MoreArgs = "",
               quiet = TRUE, original.ordering = TRUE, file)
+mafft(x, exec = "mafft", MoreArgs = "", quiet = TRUE,
+      original.ordering = TRUE)
 muscle(x, y, guide.tree, exec, MoreArgs = "",
         quiet = TRUE, original.ordering = TRUE, file)
 muscle5(x, exec = "muscle", MoreArgs = "", quiet = FALSE,
@@ -105,6 +108,11 @@ letterconf(X, exec = "muscle")
   accuracy and high throughput. \emph{Nucleic Acids Research},
   \bold{32}, 1792--1797.
   \url{http://www.drive5.com/muscle/muscle_userguide3.8.html}
+
+  Katoh, K. and Standley, D. M. (2013) MAFFT multiple sequence alignment
+  software version 7: improvements in performance and usability.
+  \emph{Molecular Biology and Evolution}, \bold{30}, 772--780.
+  \url{http://mafft.cbrc.jp/alignment/software/}
 
   Notredame, C., Higgins, D. and Heringa, J. (2000) T-Coffee: A novel
   method for multiple sequence alignments. \emph{Journal of Molecular

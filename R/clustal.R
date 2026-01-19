@@ -1,8 +1,8 @@
-## clustal.R (2022-06-22)
+## clustal.R (2026-01-19)
 
 ##   Multiple Sequence Alignment with External Applications
 
-## Copyright 2011-2022 Emmanuel Paradis, 2018 Franz Krah
+## Copyright 2011-2026 Emmanuel Paradis, 2018 Franz Krah
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -14,6 +14,33 @@
            "  It is recommended that you place the executable of ", prog, "\n",
            "  in a directory on the PATH of your computer which is:\n",
            paste(sort(dirs), collapse = "\n"))
+}
+
+mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.ordering = TRUE)
+{
+    if (missing(x)) {
+        out <- system(paste(exec, "--help"))
+        if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
+        return(invisible(NULL))
+    }
+
+    x <- as.list(x)
+    labels.bak <- names(x)
+    names(x) <- paste0("Id", 1:length(x))
+
+    d <- tempdir()
+    inf <- paste(d, "input_mafft.fas", sep = "/")
+    outf <- paste(d, "output_mafft.fas", sep = "/")
+    write.dna(x, inf, "fasta")
+    opts <- paste("--nuc", inf)
+    if (quiet) opts <- paste("--quiet", opts)
+    opts <- paste(opts, MoreArgs, ">", outf)
+    out <- system(paste(exec, opts))
+    if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
+    res <- read.dna(outf, "fasta")
+    if (original.ordering) res <- res[labels(x), ]
+    rownames(res) <- labels.bak
+    res
 }
 
 clustalomega <- function (x, y, guide.tree, exec = NULL, MoreArgs = "",
