@@ -1,10 +1,14 @@
 ---
-title: "The `\"phylo\"` object in `R`"
+title: "The `"phylo"` object in `R`"
 author: "Thomas Guillerme (t.guillerme@sheffield.ac.uk)"
 date: "`r Sys.Date()`"
 output:
   html_document: default
   pdf_document: default
+vignette: >
+%\VignetteIndexEntry{Phylo Object}
+%\VignettePackage{ape}
+%\VignetteEngine{knitr::knitr}
 ---
 
 ```{r}

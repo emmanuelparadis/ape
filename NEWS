@@ -10,6 +10,9 @@ NEW FEATURES
     o collapse.singles() is now generic with methods for the classes
       "phylo" and "multiPhylo".
 
+    o A new vignette by Thomas Guillerme describes the basics of the
+      "phylo" structure.
+
 
 BUG FIXES
 
@@ -21,6 +24,11 @@ BUG FIXES
 
     o read.tree() failed when the Newick string lacked matching outer
       parentheses (issue #142 on GitHub).
+
+
+OTHER CHANGES
+
+    o 'knitr' has been added as a suggested package.
 
 
 
