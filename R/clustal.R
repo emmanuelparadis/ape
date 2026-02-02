@@ -24,6 +24,8 @@ mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.order
         return(invisible(NULL))
     }
 
+    type <- "DNA"
+    if(inherits(x, "AAbin")) type <- "AA"
     x <- as.list(x)
     labels.bak <- names(x)
     names(x) <- paste0("Id", 1:length(x))
@@ -31,13 +33,14 @@ mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.order
     d <- tempdir()
     inf <- paste(d, "input_mafft.fas", sep = "/")
     outf <- paste(d, "output_mafft.fas", sep = "/")
-    write.dna(x, inf, "fasta")
-    opts <- paste("--nuc", inf)
+    write.FASTA(x, inf)
+    if(type=="DNA") opts <- paste("--nuc", inf)
+    else  opts <- paste("--amino", inf)
     if (quiet) opts <- paste("--quiet", opts)
     opts <- paste(opts, MoreArgs, ">", outf)
     out <- system(paste(exec, opts))
     if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
-    res <- read.dna(outf, "fasta")
+    res <- read.FASTA(outf, type=type) |> as.matrix()
     if (original.ordering) res <- res[labels(x), ]
     rownames(res) <- labels.bak
     res
