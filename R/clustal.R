@@ -1,4 +1,4 @@
-## clustal.R (2026-01-19)
+## clustal.R (2026-02-02)
 
 ##   Multiple Sequence Alignment with External Applications
 
@@ -25,7 +25,7 @@ mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.order
     }
 
     type <- "DNA"
-    if(inherits(x, "AAbin")) type <- "AA"
+    if (inherits(x, "AAbin")) type <- "AA"
     x <- as.list(x)
     labels.bak <- names(x)
     names(x) <- paste0("Id", 1:length(x))
@@ -34,13 +34,12 @@ mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.order
     inf <- paste(d, "input_mafft.fas", sep = "/")
     outf <- paste(d, "output_mafft.fas", sep = "/")
     write.FASTA(x, inf)
-    if(type=="DNA") opts <- paste("--nuc", inf)
-    else  opts <- paste("--amino", inf)
+    opts <- paste(ifelse(type == "DNA", "--nuc", "--amino"), inf)
     if (quiet) opts <- paste("--quiet", opts)
     opts <- paste(opts, MoreArgs, ">", outf)
     out <- system(paste(exec, opts))
     if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
-    res <- read.FASTA(outf, type=type) |> as.matrix()
+    res <- as.matrix(read.FASTA(outf, type = type))
     if (original.ordering) res <- res[labels(x), ]
     rownames(res) <- labels.bak
     res
