@@ -1,4 +1,4 @@
-## clustal.R (2026-02-02)
+## clustal.R (2026-02-03)
 
 ##   Multiple Sequence Alignment with External Applications
 
@@ -16,32 +16,50 @@
            paste(sort(dirs), collapse = "\n"))
 }
 
-mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.ordering = TRUE)
+mafft <- function(x, y, exec = "mafft", MoreArgs = "",
+                  quiet = TRUE, original.ordering = TRUE)
 {
     if (missing(x)) {
         out <- system(paste(exec, "--help"))
         if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
         return(invisible(NULL))
     }
+    noy <- missing(y)
 
     type <- "DNA"
     if (inherits(x, "AAbin")) type <- "AA"
     x <- as.list(x)
     labels.bak <- names(x)
-    names(x) <- paste0("Id", 1:length(x))
+    names(x) <- new_labels <- paste0("Id", seq_along(x))
 
     d <- tempdir()
     inf <- paste(d, "input_mafft.fas", sep = "/")
     outf <- paste(d, "output_mafft.fas", sep = "/")
     write.FASTA(x, inf)
+    if (!noy) {
+        inf2 <- paste(d, "input2_mafft.fas", sep = "/")
+        y <- as.list(y)
+        labels.bak <- c(labels.bak, names(y))
+        names(y) <- paste0("Id", length(x) + seq_along(y))
+        new_labels <- c(new_labels, names(y))
+        write.FASTA(y, inf2)
+        inf <- paste("--add", inf, inf2)
+    }
     opts <- paste(ifelse(type == "DNA", "--nuc", "--amino"), inf)
     if (quiet) opts <- paste("--quiet", opts)
     opts <- paste(MoreArgs, opts, ">", outf)
     out <- system(paste(exec, opts))
     if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
     res <- as.matrix(read.FASTA(outf, type = type))
-    if (original.ordering) res <- res[labels(x), ]
-    rownames(res) <- labels.bak
+
+    if (original.ordering) {
+        m <- match(new_labels, rownames(res))
+        res <- res[m, ]
+        rownames(res) <- labels.bak
+    } else {
+        m <- match(rownames(res), new_labels)
+        rownames(res) <- labels.bak[m]
+    }
     res
 }
 

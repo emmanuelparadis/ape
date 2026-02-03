@@ -29,7 +29,7 @@ clustal(x, y, guide.tree, pw.gapopen = 10, pw.gapext = 0.1,
         quiet = TRUE, original.ordering = TRUE, file)
 clustalomega(x, y, guide.tree, exec = NULL,MoreArgs = "",
               quiet = TRUE, original.ordering = TRUE, file)
-mafft(x, exec = "mafft", MoreArgs = "", quiet = TRUE,
+mafft(x, y, exec = "mafft", MoreArgs = "", quiet = TRUE,
       original.ordering = TRUE)
 muscle(x, y, guide.tree, exec, MoreArgs = "",
         quiet = TRUE, original.ordering = TRUE, file)
