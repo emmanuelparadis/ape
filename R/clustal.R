@@ -36,7 +36,7 @@ mafft <- function(x, exec = "mafft", MoreArgs = "", quiet = TRUE, original.order
     write.FASTA(x, inf)
     opts <- paste(ifelse(type == "DNA", "--nuc", "--amino"), inf)
     if (quiet) opts <- paste("--quiet", opts)
-    opts <- paste(opts, MoreArgs, ">", outf)
+    opts <- paste(MoreArgs, opts, ">", outf)
     out <- system(paste(exec, opts))
     if (out == 127) stop(.errorAlignment(exec, "MAFFT"))
     res <- as.matrix(read.FASTA(outf, type = type))
