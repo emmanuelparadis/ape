@@ -4,7 +4,7 @@
 \title{Read Tree File in Parenthetic Format}
 \usage{
 read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
-    comment.char = "", keep.multi = FALSE, ..., evonet = FALSE)
+    comment.char = "", keep.multi = FALSE, evonet = FALSE)
 }
 \arguments{
   \item{file}{a file name specified by either a variable of mode character,
@@ -28,7 +28,6 @@ read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
   \item{keep.multi}{if \code{TRUE} and \code{tree.names = NULL} then
     single trees are returned in \code{"multiPhylo"} format, with any
     name that is present (see details). Default is \code{FALSE}.}
-  \item{\dots}{further arguments to be passed to \code{scan()}.}
   \item{evonet}{if \code{TRUE} reads in a network in extended newick (or
     rich Newick)format.}
 }
@@ -80,16 +79,13 @@ read.tree(file = "", text = NULL, tree.names = NULL, skip = 0,
 }
 \references{
   Felsenstein, J. The Newick tree format.
-  \url{http://evolution.genetics.washington.edu/phylip/newicktree.html}
+  \url{https://phylipweb.github.io/phylip/newicktree.html}
 
-  Olsen, G. Interpretation of the "Newick's 8:45" tree format standard.
-  \url{http://evolution.genetics.washington.edu/phylip/newick_doc.html}
+  Olsen, G. (1990) Interpretation of the "Newick's 8:45" tree format
+  standard. \url{https://phylipweb.github.io/phylip/newick_doc.html}
 
   Paradis, E. (2020) Definition of Formats for Coding Phylogenetic Trees
   in R. \url{https://emmanuelparadis.github.io/misc/FormatTreeR.pdf}
-
-  Paradis, E. (2012) \emph{Analysis of Phylogenetics and Evolution with
-    R (Second Edition).} New York: Springer.
 }
 
 \author{Emmanuel Paradis and Daniel Lawson \email{dan.lawson@bristol.ac.uk}}

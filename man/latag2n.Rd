@@ -2,9 +2,8 @@
 \alias{latag2n}
 \title{Leading and Trailing Alignment Gaps to N}
 \description{
-  Substitutes leading and trailing alignment gaps in aligned sequences
-  into \code{N} (i.e., A, C, G, or T). The gaps in the middle of the
-  sequences are left unchanged.
+  Substitutes leading and trailing gaps in aligned sequences with
+  \code{N}. The gaps in the middle of the sequences are left unchanged.
 }
 \usage{
 latag2n(x)

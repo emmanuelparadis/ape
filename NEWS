@@ -33,6 +33,12 @@ OTHER CHANGES
 
     o 'knitr' has been added as a suggested package.
 
+    o read.caic() has been removed.
+
+    o The option '...' in read.tree() has been removed.
+
+    o The data set cynipids has been removed.
+
 
 
       		CHANGES IN APE VERSION 5.8-1

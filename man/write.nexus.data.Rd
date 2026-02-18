@@ -9,8 +9,8 @@
 }
 \usage{
 write.nexus.data(x, file, format = "dna", datablock = TRUE,
-                 interleaved = TRUE, charsperline = NULL,
-                 gap = NULL, missing = NULL)
+                 interleaved = TRUE, charsperline = 80,
+                 gap = "-", missing = "?")
 }
 \arguments{
   \item{x}{a matrix or a list of data each made of a single vector
@@ -31,12 +31,9 @@ write.nexus.data(x, file, format = "dna", datablock = TRUE,
     with \code{charsperline = numerical_value}. If \code{FALSE}, the
     data are written in sequential format. Default is \code{TRUE}.}
   \item{charsperline}{a numeric value specifying the number of
-    characters per line when used with \code{interleaved =
-      TRUE}. Default is 80.}
-  \item{gap}{a character specifying the symbol for gap. Default is
-    \dQuote{\code{-}}.}
-  \item{missing}{a character specifying the symbol for missing
-    data. Default is \dQuote{\code{?}}.}
+    characters per line when used with \code{interleaved = TRUE}.}
+  \item{gap}{a character specifying the symbol for gap.}
+  \item{missing}{a character specifying the symbol for missing data.}
 }
 \details{
   If the sequences have no names, then they are given \dQuote{1},
@@ -54,18 +51,19 @@ write.nexus.data(x, file, format = "dna", datablock = TRUE,
 }
 \author{Johan Nylander \email{nylander@scs.fsu.edu} and Thomas Guillerme}
 \seealso{
-  \code{\link{read.nexus}},\code{\link{write.nexus}},
+  \code{\link{read.nexus}}, \code{\link{write.nexus}},
   \code{\link{read.nexus.data}}
 }
 \examples{
 \dontrun{
 ## Write interleaved DNA data with 100 characters per line in a DATA block
 data(woodmouse)
-write.nexus.data(woodmouse, file= "wood.ex.nex", interleaved = TRUE, charsperline = 100)
+write.nexus.data(woodmouse, file = "wood_dna.nex", interleaved = TRUE,
+                 charsperline = 100)
 ## Write sequential DNA data in TAXA and CHARACTERS blocks
-data(cynipids)
-write.nexus.data(cynipids, file = "cyn.ex.nex", format = "protein",
+wood_aa <- trans(woodmouse, 2)
+write.nexus.data(wood_aa, file = "wood_aa.nex", format = "protein",
                  datablock = FALSE, interleaved = FALSE)
-unlink(c("wood.ex.nex", "cyn.ex.nex"))
+unlink(c("wood_dna.nex", "wood_aa.nex"))
 }}
 \keyword{file}

@@ -1,14 +1,14 @@
-## read.tree.R (2024-03-28)
+## read.tree.R (2026-02-18)
 
 ##   Read Tree Files in Parenthetic Format
 
-## Copyright 2002-2024 Emmanuel Paradis, Daniel Lawson and Klaus Schliep
+## Copyright 2002-2026 Emmanuel Paradis, Daniel Lawson and Klaus Schliep
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
 
 read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
-    comment.char = "", keep.multi = FALSE, ..., evonet=FALSE)
+    comment.char = "", keep.multi = FALSE, evonet = FALSE)
 {
     if (!is.null(text)) {
         if (!is.character(text))
@@ -16,7 +16,7 @@ read.tree <- function(file = "", text = NULL, tree.names = NULL, skip = 0,
         tree <- text
     } else {
       tree <- scan(file = file, what = "", sep = "\n", quiet = TRUE,
-                   skip = skip, comment.char = comment.char, ...)
+                   skip = skip, comment.char = comment.char)
     }
 
     ## Suggestion from Eric Durand and Nicolas Bortolussi (added 2005-08-17):
