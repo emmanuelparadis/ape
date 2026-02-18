@@ -21,14 +21,14 @@ bd.time(phy, birth, death, BIRTH = NULL, DEATH = NULL,
   \item{ip}{a numeric vector used as initial values for the estimation
     procedure. If missing, these values are guessed.}
   \item{lower, upper}{the lower and upper bounds of the parameters. If
-    missing, these values are guessed too.}
+    missing, these values are guessed.}
   \item{fast}{a logical value specifying whether to use faster
     integration (see details).}
   \item{boot}{the number of bootstrap replicates to assess the
     confidence intervals of the parameters. Not run by default.}
   \item{trace}{an integer value. If non-zero, the fitting procedure is
-    printed every \code{trace} steps. This can be helpful if convergence
-    is particularly slow.}
+    printed every `\code{trace}' steps. This can be helpful if
+    convergence is slow.}
 }
 \details{
   Details on how to specify the birth and death functions and their

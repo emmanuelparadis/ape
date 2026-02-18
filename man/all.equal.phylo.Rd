@@ -4,9 +4,9 @@
 \title{Global Comparison of two Phylogenies}
 \usage{
 \method{all.equal}{phylo}(target, current, use.edge.length = TRUE,
-          use.tip.label = TRUE, index.return = FALSE,
-          tolerance = .Machine$double.eps ^ 0.5,
-          scale = NULL, \dots)
+        use.tip.label = TRUE, index.return = FALSE,
+        tolerance = .Machine$double.eps^0.5,
+        scale = NULL, \dots)
 }
 \arguments{
   \item{target}{an object of class \code{"phylo"}.}
@@ -27,9 +27,6 @@
   This function makes a global comparison of two phylogenetic trees.
 }
 \details{
-  This function is meant to be an adaptation of the generic function
-  \code{all.equal} for the comparison of phylogenetic trees.
-
   A single phylogenetic tree may have several representations in the Newick
   format and in the \code{"phylo"} class of objects used in `ape'. One
   aim of the present function is to be able to identify whether two

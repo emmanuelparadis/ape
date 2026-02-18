@@ -30,9 +30,8 @@ compar.lynch(x, G, eps = 1e-4)
   both residual and additive values less than or equal to \code{eps}.
 }
 \note{
-  The present function does not perform the estimation of ancestral
-  phentoypes as proposed by Lynch (1991). This will be implemented in
-  a future version.
+  This version does not perform the estimation of ancestral phentoypes
+  as proposed by Lynch (1991).
 }
 \value{
   A list with the following components:
@@ -48,7 +47,7 @@ compar.lynch(x, G, eps = 1e-4)
   Lynch, M. (1991) Methods for the analysis of comparative data in
   evolutionary biology. \emph{Evolution}, \bold{45}, 1065--1080.
 }
-\author{Julien Claude \email{julien.claude@umontpellier.fr}}
+\author{Julien Claude}
 \seealso{
   \code{\link{pic}}, \code{\link{compar.gee}}
 }

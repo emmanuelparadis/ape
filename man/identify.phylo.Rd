@@ -55,8 +55,8 @@ f <- function(col) {
     nodelabels(node=o$nodes, pch = 19, col = col)
 }
 plot(tr)
-f("red") # click close to a node
-f("green")
+f("red") # click near a node
+f("green") # click near another one
 }
 }
 \keyword{aplot}

@@ -13,7 +13,7 @@
   families were not included in the figures in Sibley and Ahlquist, and
   thus are not included here as well. The branch lengths were calculated
   from the values of \eqn{\Delta T_{50}H}{Delta T50H} as found in Sibley
-  and Ahlquist (1990, figs. 354, 355, 356, and 369).
+  and Ahlquist (1990, Figs. 354, 355, 356, and 369).
 }
 \usage{
 data(bird.families)

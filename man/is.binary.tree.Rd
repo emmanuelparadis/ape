@@ -26,9 +26,9 @@ is.binary(phy)
   The test ignores branch lengths. Consider using \code{\link{di2multi}}
   if you want to treat zero-branch lengths as resulting from
   multichotomies.
-  
-  \code{is.binary.tree} is deprecated and will be removed soon:
-  currently it calls \code{is.binary}.
+
+  \code{is.binary.tree} is deprecated and will be removed (sometime):
+  it calls \code{is.binary}.
 }
 \value{
   a logical vector.

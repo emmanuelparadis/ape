@@ -40,7 +40,7 @@ bd.ext(phy, S, conditional = TRUE)
 
   If \code{conditional = TRUE}, the probabilities of the taxonomic data
   are calculated conditioned on no extinction (Rabosky et al. 2007). In
-  previous versions of the present function (until ape 2.6-1),
+  previous versions of the present function (until \pkg{ape} 2.6-1),
   unconditional probabilities were used resulting in underestimated
   extinction rate. Though it does not make much sense to use
   \code{conditional = FALSE}, this option is provided to compare results

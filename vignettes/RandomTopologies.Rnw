@@ -62,8 +62,8 @@ howmanytrees(25)
 @
 
 \noindent Imagine we want to print each of these topologies on an A4
-paper sheet and arrange them side by side to make a (huge)
-poster. This would require (in meters):
+paper sheet and arrange them side by side to make a huge poster. This
+would require (in meters):
 
 <<>>=
 howmanytrees(25) * 0.21
@@ -71,8 +71,8 @@ howmanytrees(25) * 0.21
 
 \noindent The diameter of the observable
 Universe\footnote{\texttt{https://en.wikipedia.org/wiki/Observable\_universe}}
-is estimated to be $\approx 8.8\times 10^{26}$~m, so it would not be
-wide enough to display our trees.
+is estimated to be $\approx 8.8\times 10^{26}$~m, so it is wide enough
+to display our trees.
 
 The number of topologies grows much more gently if they are unlabeled,
 but still reaching huge values if $n$ is moderately large:

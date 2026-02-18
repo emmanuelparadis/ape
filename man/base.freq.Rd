@@ -30,8 +30,7 @@ Ftab(x, y = NULL)
     missing data, and alignment gaps are returned.}
 }
 \details{
-  The base frequencies are computed over all sequences in the
-  sample.
+  The base frequencies are computed over all sequences in \code{x}.
 
   For \code{Ftab}, if the argument \code{y} is given then both \code{x}
   and \code{y} are coerced as vectors and must be of equal length. If
@@ -40,7 +39,7 @@ Ftab(x, y = NULL)
 }
 \value{
   A numeric vector with names \code{c("a", "c", "g", "t")} (and possibly
-  \code{"r", "m", ...}, a single numeric value, or a four by four matrix
+  \code{"r", "m", ...}); a single numeric value; or a four by four matrix
   with similar dimnames.
 }
 \author{Emmanuel Paradis}
@@ -55,7 +54,7 @@ base.freq(woodmouse, TRUE, TRUE)
 GC.content(woodmouse)
 Ftab(woodmouse)
 Ftab(woodmouse[1, ], woodmouse[2, ]) # same than above
-Ftab(woodmouse[14:15, ]) # between the last two
+Ftab(woodmouse[14:15, ]) # between the last two sequences
 }
 \keyword{univar}
 \keyword{manip}

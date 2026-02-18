@@ -73,6 +73,10 @@ LargeNumber(a, b)
   Sinauer Associates.
 }
 \author{Emmanuel Paradis}
+\seealso{
+  The vignette "RandomTopologies" gives more details and many examples
+  of these calculations.
+}
 \examples{
 ### Table 3.1 in Felsenstein 2004:
 for (i in c(1:20, 30, 40, 50))

@@ -37,7 +37,7 @@ maxit.NM = 1000, maxit.SA = 1000, temp.SA = 1, tmax.SA = 1, verbose = FALSE)
 
   \deqn{X[1] =  B[1,0] + B[1,1] * u[1,1] + \epsilon[1]}
   \deqn{X[2] =  B[2,0] + B[2,1] * u[2,1] + \epsilon[2]}
-  \deqn{\epsilon ~ Gaussian(0, V) }
+  \deqn{\epsilon \sim Gaussian(0, V)}{epsilon ~ Gaussian(0, V)}
 
 where \eqn{B[1,0]}, \eqn{B[1,1]}, \eqn{B[2,0]}, and \eqn{B[2,1]} are regression coefficients, and \eqn{V} is a variance-covariance matrix containing the correlation coefficient r, parameters of the OU process \eqn{d1} and \eqn{d2}, and diagonal matrices \eqn{M1} and \eqn{M2} of measurement standard errors for \eqn{X[1]} and \eqn{X[2]}. The matrix \eqn{V} is \eqn{2n x 2n}, with \eqn{n x n} blocks given by
 

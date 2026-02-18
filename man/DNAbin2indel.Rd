@@ -15,7 +15,7 @@ DNAbin2indel(x)
 \details{
   The output matrix has the same dimensions than the input one with,
   either a numeric value where an alignment gap starts giving the length
-  of the gap, or zero. The rownames are kept.
+  of the gap, or zero. The rownames are kept in the output.
 }
 \value{
   a numeric matrix.

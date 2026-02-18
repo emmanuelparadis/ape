@@ -4,7 +4,7 @@
 \description{
   This function helps to explore DNA alignments by zooming in. The user
   clicks twice defining the opposite corners of the portion which is
-  extracted and drawned on a new window.
+  extracted and drawn on a new window.
 }
 \usage{
 alex(x, ...)

@@ -62,7 +62,7 @@ lines(sk2,  show.years=TRUE, subst.rate=0.0023, present.year = 1997)
 legend(.15,500, c("classic", "generalized"), col=c(grey(.8),1),lty=1)
 
 #### various skyline plots for different epsilons
-layout(mat= matrix(1:6,2,3,byrow=TRUE))
+layout(matrix(1:6, 2, 3, TRUE))
 ci <- coalescent.intervals(tree.hiv)
 plot(skyline(ci, 0.0));title(main="0.0")
 plot(skyline(ci, 0.007));title(main="0.007")
@@ -70,6 +70,6 @@ plot(skyline(ci, 0.0119),col=4);title(main="0.0119")
 plot(skyline(ci, 0.02));title(main="0.02")
 plot(skyline(ci, 0.05));title(main="0.05")
 plot(skyline(ci, 0.1));title(main="0.1")
-layout(mat= matrix(1:1,1,1,byrow=TRUE))
+layout(1)
 }
 \keyword{hplot}

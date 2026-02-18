@@ -5,7 +5,7 @@
 chronoMPL(phy, se = TRUE, test = TRUE)
 }
 \arguments{
-  \item{phy}{an object of class \code{"phylo"}.}
+  \item{phy}{an object of class \code{"phylo"} (must be dichotomous).}
   \item{se}{a logical specifying whether to compute the standard-errors
     of the node ages (\code{TRUE} by default).}
   \item{test}{a logical specifying whether to test the molecular clock
@@ -33,9 +33,6 @@ chronoMPL(phy, se = TRUE, test = TRUE)
 
   Absolute dating can be done by multiplying the edge lengths found by
   calibrating one node age.
-}
-\note{
-  The present version requires a dichotomous tree.
 }
 \value{
   an object of class \code{"phylo"} with branch lengths as estimated by

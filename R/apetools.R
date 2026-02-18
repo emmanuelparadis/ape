@@ -8,7 +8,7 @@
 ## See the file ../COPYING for licensing issues.
 
 .file.extensions <-
-    list(clustal = "aln", fasta = c("fas", "fasta", "fa"),
+    list(clustal = "aln", fasta = c("fas", "fasta", "fa", "fna", "faa"),
          fastq = c("fq", "fastq"), newick = c("nwk", "newick", "tre", "tree"),
          nexus = c("nex", "nexus"), phylip = "phy")
 

@@ -15,6 +15,7 @@ matexpo(x)
   a numeric matrix of the same dimensions than `x'.
 }
 \author{Emmanuel Paradis}
+\seealso{\code{\link{ace}}}
 \examples{
 ### a simple rate matrix:
 m <- matrix(0.1, 4, 4)

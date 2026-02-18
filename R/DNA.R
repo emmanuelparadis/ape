@@ -1,8 +1,8 @@
-## DNA.R (2025-02-06)
+## DNA.R (2026-02-18)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
-## Copyright 2002-2025 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
+## Copyright 2002-2026 Emmanuel Paradis, 2015 Klaus Schliep, 2017 Franz Krah
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -400,7 +400,7 @@ Ftab <- function(x, y = NULL)
             stop("'x' and 'y' not of the same length")
     }
     out <- matrix(0, 4, 4)
-    k <- c(136, 40, 72, 24)
+    k <- c(136, 72, 40, 24)
     for (i in 1:4) {
         a <- x == k[i]
         for (j in 1:4) {
@@ -408,7 +408,7 @@ Ftab <- function(x, y = NULL)
             out[i, j] <- sum(a & b)
         }
     }
-    dimnames(out)[1:2] <- list(c("a", "c", "g", "t"))
+    dimnames(out)[1:2] <- list(c("a", "g", "c", "t"))
     out
 }
 
@@ -953,48 +953,44 @@ image.AAbin <-
     function(x, what, col, bg = "white", xlab = "", ylab = "",
              show.labels = TRUE, cex.lab = 1, legend = TRUE,
              grid = FALSE, show.aa = FALSE, aa.cex = 1,
-             aa.font = 1, aa.col = "black", scheme="Ape_AA", ...)
+             aa.font = 1, aa.col = "black", scheme = "Ape_AA", ...)
 {
     scheme <- match.arg(scheme, c("Ape_AA", "Clustal", "Zappo_AA",
                                   "Polarity", "Transmembrane_tendency"))
     scheme <- get(scheme, environment(image.AAbin))
-    if (missing(what)){
-        if(!is.null(scheme)) what <- scheme$properties
-        else what <- Ape_AA$properties
+    if (missing(what)) {
+        what <- if (!is.null(scheme)) scheme$properties else Ape_AA$properties
     }
-    if (missing(col)){
-        if(!is.null(scheme)) col <- scheme$color
-        else col <- c("red", "yellow", "blue")
+    if (missing(col)) {
+        col <- if (!is.null(scheme)) scheme$color else c("red", "yellow", "blue")
     }
     image.worker(x, what, col, bg = bg, xlab = xlab, ylab = ylab,
-                     show.labels = show.labels, cex.lab = cex.lab,
-                     legend = legend,
-                     grid = grid, show.bases = show.aa, base.cex = aa.cex,
-                     base.font = aa.font, base.col = aa.col, scheme=scheme,
-                     bs=.AA_raw, cs=.AA_1letter,...)
+                 show.labels = show.labels, cex.lab = cex.lab,
+                 legend = legend, grid = grid, show.bases = show.aa,
+                 base.cex = aa.cex, base.font = aa.font,
+                 base.col = aa.col, scheme = scheme, bs = .AA_raw,
+                 cs = .AA_1letter, ...)
 }
 
 image.DNAbin <-
     function(x, what, col, bg = "white", xlab = "", ylab = "",
              show.labels = TRUE, cex.lab = 1, legend = TRUE,
              grid = FALSE, show.bases = FALSE, base.cex = 1,
-             base.font = 1, base.col = "black", scheme="Ape_NT", ...)
+             base.font = 1, base.col = "black", scheme = "Ape_NT", ...)
 {
     scheme <- match.arg(scheme, c("Ape_NT", "RY_NT"))
     scheme <- get(scheme, environment(image.AAbin))
-    if (missing(what)){
-        if(!is.null(scheme)) what <- scheme$properties
-        else what <- Ape_AA$properties
+    if (missing(what)) {
+        what <- if (!is.null(scheme)) scheme$properties else Ape_AA$properties
     }
-    if (missing(col)){
-        if(!is.null(scheme)) col <- scheme$color
-        else col <- c("red", "yellow", "blue")
+    if (missing(col)) {
+        col <- if (!is.null(scheme)) scheme$color else c("red", "yellow", "blue")
     }
     image.worker(x, what, col, bg = bg, xlab = xlab, ylab = ylab,
                  show.labels = show.labels, cex.lab = cex.lab, legend = legend,
                  grid = grid, show.bases = show.bases, base.cex = base.cex,
-                 base.font = base.font, base.col = base.col, scheme=scheme,
-                 bs=as.raw(._bs_), cs=._cs_,...)
+                 base.font = base.font, base.col = base.col, scheme = scheme,
+                 bs = as.raw(._bs_), cs = ._cs_, ...)
 }
 
 

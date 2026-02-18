@@ -47,7 +47,7 @@ as.matching(x, ...)
   \code{as.phylo.matching} returns an object of class \code{"phylo"}.
 }
 \note{
-  Branch lengths are not supported in the present version.
+  Branch lengths are not supported.
 }
 \author{Emmanuel Paradis}
 \references{

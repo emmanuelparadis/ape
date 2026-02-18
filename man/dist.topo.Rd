@@ -40,10 +40,6 @@ dist.topo(x, y = NULL, method = "PH85", mc.cores = 1)
   the squared differences of the (internal) branch lengths defining
   similar bipartitions (or splits) in both trees.
 }
-\note{
-  The geodesic distance of Billera et al. (2001) has been disabled: see
-  the package \pkg{distory} on CRAN.
-}
 \references{
   Billera, L. J., Holmes, S. P. and Vogtmann, K. (2001) Geometry of the
   space of phylogenetic trees. \emph{Advances in Applied Mathematics},
@@ -69,6 +65,12 @@ dist.topo(x, y = NULL, method = "PH85", mc.cores = 1)
 \author{Emmanuel Paradis}
 \seealso{
   \code{\link{cophenetic.phylo}}, \code{\link{prop.part}}
+
+  The package \pkg{phangorn} has several methods for tree distances (see
+  \code{?treedist}).
+
+  The geodesic distance of Billera et al. (2001) is implemented in the
+  package \pkg{distory}.
 }
 \examples{
 ta <- rtree(30, rooted = FALSE)

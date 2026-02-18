@@ -48,9 +48,9 @@ binaryPGLMM.sim(formula, data = list(), phy, s2 = NULL, B = NULL, nrep = 1)
 \details{
      The function estimates parameters for the model
 
-  \deqn{Pr(Y = 1) = q }
+  \deqn{Pr(Y = 1) = q}
   \deqn{q = inverse.logit(b0 + b1 * x1 + b2 * x2 + \dots + \epsilon)}
-  \deqn{\epsilon ~ Gaussian(0, s2 * V) }
+  \deqn{\epsilon \sim Gaussian(0, s2 * V)}{epsilon ~ Gaussian(0, s2 * V)}
 
 where \eqn{V} is a variance-covariance matrix derived from a phylogeny (typically under the assumption of Brownian motion evolution). Although mathematically there is no requirement for \eqn{V} to be ultrametric, forcing \eqn{V} into ultrametric form can aide in the interpretation of the model, because in regression for binary dependent variables, only the off-diagonal elements (i.e., covariances) of matrix \eqn{V} are biologically meaningful (see Ives & Garland 2014).
 

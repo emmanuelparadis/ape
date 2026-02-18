@@ -9,9 +9,9 @@ dist.nodes(x, fail.if.no.length = FALSE)
 \arguments{
   \item{x}{an object of class \code{"phylo"}.}
   \item{fail.if.no.length}{a logical values. If the tree has no branch
-    lengths, these are all fixed to one (with a warning) so the
-    computation is done. If you prefer to catch the case of no branch
-    lengths with an error, set this option to \code{TRUE}.}
+    lengths, these are all set equal to one (with a warning). If you
+    prefer to catch the case of no branch lengths with an error, set
+    this option to \code{TRUE}.}
 }
 \description{
   \code{cophenetic.phylo} computes the pairwise distances between the

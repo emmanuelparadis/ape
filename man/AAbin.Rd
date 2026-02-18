@@ -77,13 +77,12 @@ elements.}
     before binding the columns (see details).}
   \item{fill.with.Xs}{a logical indicating whether to keep all
     possible individuals as indicating by the rownames, and eventually
-    filling the missing data with insertion gaps (ignored if
-    \code{check.names = FALSE}).}
+    filling the missing data with X (ignored if \code{check.names =
+FALSE}).}
   \item{quiet}{a logical to switch off warning messages when some rows
     are dropped.}
 \item{what}{a vector of characters specifying the amino acids to
-visualize. Currently, the only possible choice is to show the three
-categories hydrophobic, small, and hydrophilic.}
+visualize; actually set by the argument \code{scheme} below.}
 \item{col}{a vector of colours. If missing, this is set to ``red'',
 ``yellow'' and ``blue''.}
 \item{bg}{the colour used for AA codes not among \code{what} (typically
@@ -117,7 +116,7 @@ AA differences by the sequence length.}
 \details{
 These functions help to manipulate amino acid sequences of class
 \code{"AAbin"}. These objects are stored in vectors, matrices, or lists
-which can be manipulated with the usual \code{[} operator.
+which can be manipulated with the \code{[} operator.
 
 There is a conversion function to and from characters.
 

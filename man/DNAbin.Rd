@@ -10,8 +10,7 @@
 \alias{labels.DNAbin}
 \title{Manipulate DNA Sequences in Bit-Level Format}
 \description{
-  These functions help to manipulate DNA sequences coded in the
-  bit-level coding scheme.
+  These functions help to manipulate DNA sequences.
 }
 \usage{
 \method{print}{DNAbin}(x, printlen = 6, digits = 3, \dots)

@@ -41,7 +41,7 @@ diversi.time(x, census = NULL, censoring.codes = c(1, 0), Tc = NULL)
   time. If beta is equal to one, then Model B reduces to Model A.
 }
 \value{
-  A NULL value is returned, the results are simply printed.
+  NULL (the results are simply printed).
 }
 \references{
   Paradis, E. (1997) Assessing temporal variations in diversification

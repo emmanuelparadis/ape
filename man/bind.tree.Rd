@@ -33,7 +33,7 @@ bind.tree(x, y, where = "root", position = 0, interactive = FALSE)
 
   \preformatted{
     bind.tree(x, y, position = if (is.null(x$root.edge)) 0 else
-    x$root.edge)
+              x$root.edge)
   }
 
   If only one of the trees has no branch length, the branch lengths of

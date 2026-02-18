@@ -40,7 +40,7 @@ diversi.gof(x, null = "exponential", z = NULL)
   simulations. These critical values were used for the present function.
 }
 \value{
-  A NULL value is returned, the results are simply printed.
+  NULL (the results are simply printed).
 }
 \references{
   Paradis, E. (1998) Testing for constant diversification rates using

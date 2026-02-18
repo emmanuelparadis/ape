@@ -3,16 +3,9 @@
 \title{Phylogeny of the Orders of Birds From Sibley and Ahlquist}
 \description{
   This data set describes the phylogenetic relationships of the orders
-  of birds as reported by Sibley and Ahlquist (1990). Sibley and
-  Ahlquist inferred this phylogeny from an extensive number of DNA/DNA
-  hybridization experiments. The ``tapestry'' reported by these two
-  authors (more than 1000 species out of the ca. 9000 extant bird
-  species) generated a lot of debates.
-
-  The present tree is based on the relationships among orders. The
-  branch lengths were calculated from the values of \eqn{\Delta
-    T_{50}H}{Delta T50H} as found in Sibley and Ahlquist (1990,
-  fig. 353).
+  of birds as reported by Sibley and Ahlquist (1990). The branch lengths
+  were calculated from the values of \eqn{\Delta T_{50}H}{Delta T50H} as
+  found in Sibley and Ahlquist (1990, Fig. 353).
 }
 \usage{
 data(bird.orders)

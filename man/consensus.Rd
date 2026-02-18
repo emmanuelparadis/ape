@@ -1,6 +1,6 @@
 \name{consensus}
 \alias{consensus}
-\title{Concensus Trees}
+\title{Consensus Trees}
 \usage{
 consensus(..., p = 1, check.labels = TRUE, rooted = FALSE)
 }

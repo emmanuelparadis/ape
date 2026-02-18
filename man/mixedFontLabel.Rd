@@ -2,7 +2,7 @@
 \alias{mixedFontLabel}
 \title{Mixed Font Labels for Plotting}
 \description{
-  This function helps to format labels with bits of text in different
+  This function helps to format labels with parts of text in different
   font shapes (italics, bold, or bolditalics) and different
   separators. The output is intended to be used for plotting.
 }

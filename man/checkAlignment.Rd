@@ -2,7 +2,8 @@
 \alias{checkAlignment}
 \title{Check DNA Alignments}
 \description{
-  This function performs a series of diagnostics on a DNA alignement.
+  This function performs a series of diagnostics on a DNA sequence
+  alignement.
 }
 \usage{
 checkAlignment(x, check.gaps = TRUE, plot = TRUE, what = 1:4)

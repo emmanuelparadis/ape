@@ -1,5 +1,4 @@
-\name{apetools}
-\alias{apetools}
+\name{Xplor}
 \alias{Xplorefiles}
 \alias{Xplor}
 \alias{editFileExtensions}
@@ -27,13 +26,13 @@ Xplor(from = "HOME")
 \details{
   \code{Xplorefiles} looks for all files with a specified extension in
   their names. The default is to look for the following file types:
-  CLUSTAL (.aln), FASTA (.fas, .fasta), FASTQ (.fq, .fastq), NEWICK
-  (.nwk, .newick, .tre, .tree), NEXUS (.nex, .nexus), and PHYLIP
+  CLUSTAL (.aln), FASTA (.fas, .fasta, .fna, .faa), FASTQ (.fq, .fastq),
+  NEWICK (.nwk, .newick, .tre, .tree), NEXUS (.nex, .nexus), and PHYLIP
   (.phy). This list can be modified with \code{editFileExtensions}.
 
   \code{bydir} sorts the list of files by directories.
 
-  \code{Xplor} combines the other operations and opens the results in
+  \code{Xplor} combines these operations and opens the results in
   a Web browser with clickable links to the directories and files.
 }
 \value{

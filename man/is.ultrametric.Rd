@@ -23,7 +23,7 @@ is.ultrametric(phy, ...)
   The test is based on the distances from each tip to the root and a
   criterion: if \code{option = 1}, the criterion is the scaled range
   ((max - min/max)), if \code{option = 2}, the variance is used (this
-  was the method used until ape 3.5). The default criterion is invariant
+  was the method used until \pkg{ape} 3.5). The default criterion is invariant
   to linear changes of the branch lengths.
 }
 \value{

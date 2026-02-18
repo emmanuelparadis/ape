@@ -59,6 +59,9 @@ mst(X)
 \seealso{
   \code{\link{dist.dna}}, \code{\link{dist.gene}},
   \code{\link[stats]{dist}}, \code{\link[graphics]{plot}}
+
+  The package \pkg{pegas} has a more efficient implementation of the MST
+  (see \code{?rmst}) and plotting methods for haplotypes networks.
 }
 \examples{
 require(stats)

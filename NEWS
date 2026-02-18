@@ -16,6 +16,14 @@ NEW FEATURES
     o A new vignette by Thomas Guillerme describes the basics of the
       "phylo" structure.
 
+    o The file extensions .fna and .faa (particularly used by NCBI)
+      have been added as FASTA file extensions (in addition to .fasta,
+      .fas and .fa) when looking for these files with the functions
+      Xplorefiles() or Xplor().
+
+    o Ftab()'s output has now its rows and columns ordered A, G, C, T
+      instead of the alphabetical order.
+
 
 BUG FIXES
 

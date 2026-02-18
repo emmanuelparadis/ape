@@ -2,6 +2,11 @@
 \alias{birthdeath}
 \alias{print.birthdeath}
 \title{Estimation of Speciation and Extinction Rates With Birth-Death Models}
+\description{
+  This function fits by maximum likelihood a birth-death model to the
+  branching times computed from a phylogenetic tree using the method of
+  Nee et al. (1994).
+}
 \usage{
 birthdeath(phy)
 \method{print}{birthdeath}(x, ...)
@@ -10,11 +15,6 @@ birthdeath(phy)
   \item{phy}{an object of class \code{"phylo"}.}
   \item{x}{an object of class \code{"birthdeath"}.}
   \item{\dots}{further arguments passed to the \code{print} function.}
-}
-\description{
-  This function fits by maximum likelihood a birth-death model to the
-  branching times computed from a phylogenetic tree using the method of
-  Nee et al. (1994).
 }
 \details{
   Nee et al. (1994) used a re-parametrization of the birth-death model
@@ -26,7 +26,7 @@ birthdeath(phy)
   This function computes the standard-errors of the estimated parameters
   using a normal approximations of the maximum likelihood estimates:
   this is likely to be inaccurate because of asymmetries of the
-  likelihood function (Nee et al. 1995). In addition, 95 % confidence
+  likelihood function (Nee et al. 1995). In addition, 95\% confidence
   intervals of both parameters are computed using profile likelihood:
   they are particularly useful if the estimate of \emph{d/b} is at the
   boundary of the parameter space (i.e. 0, which is often the case).

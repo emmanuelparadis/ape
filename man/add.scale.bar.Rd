@@ -1,6 +1,11 @@
 \name{add.scale.bar}
 \alias{add.scale.bar}
 \title{Add a Scale Bar to a Phylogeny Plot}
+\description{
+  This function adds a horizontal bar showing the scale of the branch
+  lengths to a plot of a phylogenetic tree on the current graphical
+  device.
+}
 \usage{
 add.scale.bar(x, y, length = NULL, ask = FALSE,
               lwd = 1, lcol = "black", ...)
@@ -16,11 +21,6 @@ add.scale.bar(x, y, length = NULL, ask = FALSE,
   \item{lcol}{the colour of the bar (use \code{col} for the colour of
     the text).}
   \item{\dots}{further arguments to be passed to \code{text}.}
-}
-\description{
-  This function adds a horizontal bar giving the scale of the branch
-  lengths to a plot of a phylogenetic tree on the current graphical
-  device.
 }
 \details{
   By default, the bar is placed in a corner of the graph depending on
