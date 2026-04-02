@@ -47,11 +47,6 @@ yule.time(phy, birth, BIRTH = NULL, root.time = 0, opti = "nlm", start = 0.01)
   An object of class \code{"yule"} (see \code{\link{yule}}).
 }
 \author{Emmanuel Paradis}
-\references{
-  Hubert, N., Paradis, E., Bruggemann, H. and Planes, S. (2011) Community
-  assembly and diversification in Indo-Pacific coral reef
-  fishes. \emph{Ecology and Evolution}, \bold{1}, 229--277.
-}
 \seealso{
   \code{\link{branching.times}}, \code{\link{ltt.plot}},
   \code{\link{birthdeath}}, \code{\link{yule}}, \code{\link{yule.cov}},

@@ -25,8 +25,9 @@ read.UniProt(access.nb, quiet = FALSE, chunk.size = 400)
   \item{quiet}{a logical value indicating whether to show the progress
     of the downloads. If \code{TRUE}, will also print the (full) name of
     the FASTA file containing the downloaded sequences.}
-  \item{type}{a character specifying to download "DNA" (nucleotide) or
-    "AA" (amino acid) sequences.}
+  \item{type}{a character string specifying to download "DNA"
+    (nucleotide) or "AA" (amino acid) sequences (can be upper- or
+    lowercase).}
 }
 \details{
   The first function uses the site \url{https://www.ncbi.nlm.nih.gov/}
