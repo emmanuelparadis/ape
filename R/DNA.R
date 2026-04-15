@@ -1,4 +1,4 @@
-## DNA.R (2026-02-18)
+## DNA.R (2026-04-15)
 
 ##   Manipulations and Comparisons of DNA and AA Sequences
 
@@ -421,7 +421,8 @@ seg.sites <- function(x, strict = FALSE, trailingGapsAsN = TRUE)
     ## so we use a different test
     dx <- dim(x)
     if (is.null(dx)) return(integer())
-    if (dx[1] == 1) return(integer())
+    if (dx[1L] == 1) return(integer())
+    if (dx[2L] < 1) return(integer())
     if (trailingGapsAsN) x <- latag2n(x)
     ans <- .Call(SegSites, x, strict)
     which(as.logical(ans))

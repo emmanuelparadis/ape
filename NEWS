@@ -39,6 +39,9 @@ BUG FIXES
     o read.tree() failed when the Newick string lacked matching outer
       parentheses (issue #142 on GitHub).
 
+    o seg.sites() made a segfault if the data have no column (issue
+      #152 on GitHub).
+
 
 OTHER CHANGES
 
