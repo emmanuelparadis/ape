@@ -42,6 +42,11 @@ BUG FIXES
     o seg.sites() made a segfault if the data have no column (issue
       #152 on GitHub).
 
+    o read.FASTA(, type = "AA") used to decode the letter 'B' into 'A'
+      (Ala): it is now ignored (see below). Also, all lowercase
+      letters were decoded 'as is' (including 'b'): they are now
+      decoded into uppercase (and 'b' is ignored).
+
 
 OTHER CHANGES
 
@@ -52,6 +57,10 @@ OTHER CHANGES
     o The option '...' in read.tree() has been removed.
 
     o The data set cynipids has been removed.
+
+    o read.FASTA() now gives a warning if some letters were ignored
+      during input because they are not part of the correct IUAPC
+      code: the warning message prints the number of ignored letters.
 
 
 

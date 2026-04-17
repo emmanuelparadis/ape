@@ -1,8 +1,8 @@
-## read.dna.R (2021-11-29)
+## read.dna.R (2026-04-17)
 
 ##   Read DNA Sequences in a File
 
-## Copyright 2003-2021 Emmanuel Paradis, 2017 RJ Ewing
+## Copyright 2003-2026 Emmanuel Paradis, 2017 RJ Ewing
 
 ## This file is part of the R-package `ape'.
 ## See the file ../COPYING for licensing issues.
@@ -48,10 +48,20 @@ read.FASTA <- function(file, type = "DNA")
         icr <- which(x == as.raw(0x0d)) # CR
         if (length(icr)) x <- x[-icr]
     }
-    res <- .Call(rawStreamToDNAorAAbin, x, itype - 2L)
+    skipped <- 0
+    res <- .Call(rawStreamToDNAorAAbin, x, itype - 2L, skipped)
     if (identical(res, 0L)) {
         warning("failed to read sequences, returns NULL")
         return(NULL)
+    }
+    if (skipped) {
+        s2 <- if (skipped == 1) " character was dropped (~" else " characters were dropped (~"
+        msg <- paste0(skipped, s2,
+                      round(100*skipped/sz, 2), "%) using: type=\"",
+                      TYPES[itype], "\"")
+        if (itype == 1)
+            msg <- paste(msg, "(maybe you meant: type=\"AA\")")
+        warning(msg)
     }
     names(res) <- sub("^ +", "", names(res)) # to permit phylosim
     class(res) <- c("DNAbin", "AAbin")[itype]

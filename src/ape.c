@@ -1,6 +1,6 @@
-/* ape.c    2023-06-07 */
+/* ape.c    2026-04-17 */
 
-/* Copyright 2011-2023 Emmanuel Paradis, and 2007 R Development Core Team */
+/* Copyright 2011-2026 Emmanuel Paradis, and 2007 R Development Core Team */
 
 /* This file is part of the R-package `ape'. */
 /* See the file ../COPYING for licensing issues. */
@@ -124,7 +124,7 @@ static R_CallMethodDef Call_entries[] = {
     {"dist_dna", (DL_FUNC) &dist_dna, 7},
     {"dist_nodes", (DL_FUNC) &dist_nodes, 4},
     {"GlobalDeletionDNA", (DL_FUNC) &GlobalDeletionDNA, 1},
-    {"rawStreamToDNAorAAbin", (DL_FUNC) &rawStreamToDNAorAAbin, 2},
+    {"rawStreamToDNAorAAbin", (DL_FUNC) &rawStreamToDNAorAAbin, 3},
     {"seq_root2tip", (DL_FUNC) &seq_root2tip, 3},
     /* {"treeBuildWithTokens", (DL_FUNC) &treeBuildWithTokens, 1}, */
     {"treeBuild", (DL_FUNC) &treeBuild, 1},
