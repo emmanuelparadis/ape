@@ -47,6 +47,9 @@ BUG FIXES
       letters were decoded 'as is' (including 'b'): they are now
       decoded into uppercase (and 'b' is ignored).
 
+    o read.GenBank() used to ignore its option 'seq.names': this is
+      now fixed (issue #153 on GitHub).
+
 
 OTHER CHANGES
 

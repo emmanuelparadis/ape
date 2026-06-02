@@ -1,4 +1,4 @@
-## read.GenBank.R (2026-04-02)
+## read.GenBank.R (2026-06-02)
 
 ##   Read DNA Sequences and Annotations from GenBank
 
@@ -39,11 +39,21 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
     res <- read.FASTA(fl, type = type)
     if (is.null(res)) return(NULL)
     attr(res, "description") <- names(res)
+    #if (length(access.nb) != length(res)) {
+    #    names(res) <- gsub("\\..*$", "", names(res))
+    #    failed <- paste(access.nb[! access.nb %in% names(res)], collapse = ", ")
+    #    warning(paste0("cannot get the following sequence(s):\n", failed))
+    #} else names(res) <- seq.names
+
     if (length(access.nb) != length(res)) {
-        names(res) <- gsub("\\..*$", "", names(res))
-        failed <- paste(access.nb[! access.nb %in% names(res)], collapse = ", ")
+        access.in <- gsub("\\..*$", "", names(res))
+        success <- access.nb %in% access.in
+        failed <- paste(access.nb[!success], collapse = ", ")
         warning(paste0("cannot get the following sequence(s):\n", failed))
-    } else names(res) <- access.nb
+        names(res) <- seq.names[success]
+    } else {
+        names(res) <- seq.names
+    }
 
     if (as.character) res <- as.character(res)
     if (!quiet) cat("\n")
