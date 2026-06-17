@@ -50,6 +50,9 @@ BUG FIXES
     o read.GenBank() used to ignore its option 'seq.names': this is
       now fixed (issue #153 on GitHub).
 
+    o trans(as.DNAbin(c('T','K','A')), code = 5) returned '*'. It now
+      returns 'X' (issue #154 on GitHub).
+
 
 OTHER CHANGES
 

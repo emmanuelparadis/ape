@@ -27,7 +27,8 @@
 #define IsThymine(a) (a == 24)
 
 /* returns 1 if the base is a purine surely, 0 otherwise */
-#define IsPurine(a) (a > 63)
+#define IsPurine(a) (a & 192) /* 192 is 1100 0000 */
+/* #define IsPurine(a) (a > 63) */
 
 /* returns 1 if the base is a pyrimidine surely, 0 otherwise */
 #define IsPyrimidine(a) (a < 64)
