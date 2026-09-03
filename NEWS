@@ -1,4 +1,4 @@
-		CHANGES IN APE VERSION 5.8-2
+		CHANGES IN APE VERSION 5.8-3
 
 
 NEW FEATURES
@@ -52,6 +52,10 @@ BUG FIXES
 
     o trans(as.DNAbin(c('T','K','A')), code = 5) returned '*'. It now
       returns 'X' (issue #154 on GitHub).
+
+    o getAnnotationsGenBank() failed if one downloaded file contains
+      no annotation. It now gives a warning and eventually continues
+      if several accession numbers are given.
 
 
 OTHER CHANGES

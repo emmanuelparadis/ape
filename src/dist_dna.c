@@ -27,17 +27,27 @@
 #define IsThymine(a) (a == 24)
 
 /* returns 1 if the base is a purine surely, 0 otherwise */
-#define IsPurine(a) (a & 192) /* 192 is 1100 0000 */
-/* #define IsPurine(a) (a > 63) */
+#define IsPurine(a) (a & 192)
+/* #define IsPurine(a) (a > 63) code until ape 5.8-1 */
+/* inline int IsPurine(unsigned char a) */
+/* { */
+/*     if (a & 48) return 0; /\* 48 is 0011 0000 *\/ */
+/*     return a & 192;      /\* 192 is 1100 0000 *\/ */
+/* } */
 
 /* returns 1 if the base is a pyrimidine surely, 0 otherwise */
 #define IsPyrimidine(a) (a < 64)
+/* inline int IsPyrimidine(unsigned char a) */
+/* { */
+/*     if (a & 192) return 0; */
+/*     return a & 48; */
+/* } */
 
 /* returns 1 if both bases are different surely, 0 otherwise */
 #define DifferentBase(a, b) ((a & b) < 16)
 
 /* returns 1 if both bases are the same surely, 0 otherwise */
-#define SameBase(a, b) (KnownBase(a) && a == b)
+#define SameBase(a, b) (a == b && KnownBase(a))
 
 /* computes directly the determinant of a 4x4 matrix */
 double detFourByFour(double *x)

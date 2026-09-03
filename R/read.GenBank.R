@@ -1,4 +1,4 @@
-## read.GenBank.R (2026-06-02)
+## read.GenBank.R (2026-09-03)
 
 ##   Read DNA Sequences and Annotations from GenBank
 
@@ -102,6 +102,7 @@ read.GenBank <- function(access.nb, seq.names = access.nb, species.names = TRUE,
     x <- scan(file, what = "", sep = "\n", quiet = TRUE, skip = 1)
     n <- length(x)
     i <- grep("^\t\t\t", x)
+    if (!length(i)) return(NULL)
     i2 <- seq_len(n)[-i]
     Y <- strsplit(x[i2], "\t")
 
@@ -138,6 +139,7 @@ getAnnotationsGenBank <- function(access.nb, quiet = TRUE)
     N <- length(access.nb)
     res <- setNames(vector("list", N), access.nb)
     notfound <- NULL
+    no_annot <- NULL
     s1 <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id="
     s3 <- "&rettype=ft&retmode=text"
     for (i in 1:N) {
@@ -149,13 +151,22 @@ getAnnotationsGenBank <- function(access.nb, quiet = TRUE)
             notfound <- c(notfound, access.nb[i])
             next
         }
-        res[[i]] <- .parse.annotations.file(fl)
+        ans <- .parse.annotations.file(fl)
+        if (is.null(ans)) {
+            no_annot <- c(no_annot, access.nb[i])
+            next
+        }
+        res[[i]] <- ans
     }
     if (!quiet) cat(". Done.\n")
     if (!is.null(notfound)) {
-        warning(paste0("cannot get features for the following accession(s):\n",
+        warning(paste0("cannot download file for the following accession(s):\n",
                        paste(notfound, collapse = ", ")))
         if (length(notfound) == N) return(NULL)
+    }
+    if (!is.null(no_annot)) {
+        warning(paste0("no annotation in downloaded file for the following accession(s):\n",
+                       paste(no_annot, collapse = ", ")))
     }
     if (N == 1) res[[1L]] else res
 }
