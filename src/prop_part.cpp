@@ -40,6 +40,7 @@ List prop_part2(SEXP trees, int nTips){
     IntegerMatrix E = M["edge"];
     std::vector< std::vector<int> > ans = bipartition2(E, nTips);
     std::vector<int> no;
+    no.reserve(ans.size());
     for(unsigned int i=0; i<ans.size();++i) no.push_back(1);
     no[0] = nbtree;
     for(int k=1; k<nbtree; ++k){
